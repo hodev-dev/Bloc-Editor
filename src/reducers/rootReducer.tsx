@@ -1,6 +1,6 @@
 /* ----------------------- SECTION node mudule import ----------------------- */
 import { combineReducers } from 'redux';
-import explorerReducer from './eplorerReducer';
+import explorerReducer from './explorerReducer';
 
 /* ------------------------ SECTION regester reducer ------------------------ */
 const rootReducer = combineReducers({
