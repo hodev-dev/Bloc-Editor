@@ -9,13 +9,6 @@
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
     "@types/electron-devtools-installer": "^2.2.0",
-    "electron-devtools-installer": "^3.0.0",
-    "electron-is-dev": "^1.2.0",
-    "electron-reload": "^1.5.0",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-scripts": "3.4.1",
-    "typescript": "~3.7.2",
     "@types/jest": "^24.9.1",
     "@types/lodash": "^4.14.149",
     "@types/node": "^12.12.32",
@@ -25,15 +18,23 @@
     "@types/react-router-dom": "^5.1.4",
     "@types/uuid": "^7.0.2",
     "dotenv": "^8.2.0",
+    "electron-devtools-installer": "^3.0.0",
+    "electron-is-dev": "^1.2.0",
+    "electron-reload": "^1.5.0",
     "fs": "0.0.1-security",
     "lodash": "^4.17.15",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
     "react-redux": "^7.2.0",
     "react-router-dom": "^5.1.2",
+    "react-scripts": "3.4.1",
     "react-spring": "^9.0.0-beta.34",
     "react-thunk": "^1.0.0",
     "redux": "^4.0.5",
     "redux-thunk": "^2.3.0",
-    "uuid": "^7.0.2"
+    "typescript": "~3.7.2",
+    "uuid": "^7.0.2",
+    "electron-log": "^4.1.1"
   },
   "scripts": {
     "start": "yarn watch:css & react-scripts start",
@@ -63,24 +64,27 @@
     ]
   },
   "devDependencies": {
+    "autoprefixer": "^9.7.5",
     "concurrently": "^5.1.0",
+    "cross-env": "^7.0.2",
     "electron": "^8.2.3",
     "electron-builder": "^22.5.1",
-    "electron-log": "^4.1.1",
-    "wait-on": "^4.0.2",
-    "autoprefixer": "^9.7.5",
-    "cross-env": "^7.0.2",
     "electron-reloader": "^1.0.1",
-    "laravel-mix": "^5.0.4",
     "postcss-cli": "^7.1.0",
     "sass": "^1.26.3",
     "tailwindcss": "^1.2.0",
     "ts-loader": "^7.0.0",
     "vue-template-compiler": "^2.6.11",
+    "wait-on": "^4.0.2",
     "webpack-cli": "^3.3.11"
   },
   "build": {
     "extends": null,
+    "linux": {
+      "target": [
+        "AppImage"
+      ]
+    },
     "files": [
       "build/**/*"
     ],

@@ -1,9 +1,8 @@
-import { app, BrowserWindow, ipcMain, } from 'electron';
+import { app, BrowserWindow, ipcMain,dialog} from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
-import log from 'electron-log';
-import { dialog } from 'electron';
+import * as log from 'electron-log';
 import Setting from './utail/Setting';
 import FileManager from './utail/FileManager';
 import { PROJECT_PATH } from './constants/settingKeys';
