@@ -36,10 +36,11 @@
     "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "yarn watch:css & react-scripts start",
     "build": "react-scripts build",
     "postinstall": "electron-builder install-app-deps",
-    "e:dev": "concurrently \"BROWSER=none yarn start\" \"wait-on http://localhost:3000 && tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron && electron .\"",
+    "r:dev": "BROWSER=none yarn start",
+    "e:dev": "concurrently \"BROWSER=none yarn start\" \"tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron &&  electron .\"",
     "e:build": "yarn build && tsc -p electron && electron-builder",
     "build:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "watch:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
