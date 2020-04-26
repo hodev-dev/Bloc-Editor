@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import ActionBar from '../components/ActionBar';
 import Explorer from '../components/Explorer';
 import BlockEditor from '../components/BlockEditor';
+import Prompt from '../components/Prompt';
+
 import { useSelector, useDispatch } from 'react-redux';
 import { getProjectFolderPath, selectProjectFolderPath, updateList, changeFolder, changeFolderBack } from '../actions/explorerAction';
 
@@ -64,10 +66,14 @@ const Editor = () => {
         }
     }
 
+    const onCreateFolderCallBack = () => {
+
+    }
+
     /* --------------------------------- render --------------------------------- */
 
     return (
-        <div className="flex min-h-screen">
+        <div className="flex justify-center min-h-screen">
             <ActionBar />
             <Explorer
                 folderStack={folderStackState}
@@ -76,8 +82,10 @@ const Editor = () => {
                 isProjectPathExists={isProjectPathExists}
                 setProjectFolderClick={setProjectFolderClick}
                 onClickItemExplorer={onClickItemExplorer}
+                onCreateFolderCallBack={onCreateFolderCallBack}
             />
             <BlockEditor />
+            <Prompt />
         </div>
     );
 }

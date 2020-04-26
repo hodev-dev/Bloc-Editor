@@ -433,4 +433,4 @@ const BlockEditor = () => {
 	);
 }
 
-export default BlockEditor;
+export default React.memo(BlockEditor);
