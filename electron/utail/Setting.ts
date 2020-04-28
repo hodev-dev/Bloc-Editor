@@ -11,7 +11,7 @@ class Setting {
 
     initSetting(): void {
         let setting: any = {};
-        setting[PROJECT_PATH] = '';
+        setting['project_path'] = '';
         const configFilePath = this.path.getConfigFilePath();
         if (!fs.existsSync(this.path.getConfigFolderPath())) {
             fs.mkdirSync(this.path.getConfigFolderPath());

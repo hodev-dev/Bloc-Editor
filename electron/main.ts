@@ -60,8 +60,17 @@ app.on('ready', () => {
 	_filemanager = new FileManager();
 	_path = new Path();
 	_setting.initSetting();
+	/* -------------------------------- shortcuts ------------------------------- */
 	globalShortcut.register('CommandOrControl+Shift+p', () => {
 		contents.send('prompt:toggleDisplay');
+	})
+	contents.on('did-finish-load', () => {
+		const configFile = _setting.readSetting();
+		configFile.then((configString) => {
+			const config = JSON.parse(configString);
+			const project_path = config.project_path;
+			contents.send('files:project_path', project_path);
+		});
 	})
 });
 
@@ -77,94 +86,3 @@ app.on('activate', () => {
 	}
 });
 
-/* -------------------------------- explorer functions ------------------------------- */
-
-const setProjectPath = (event: any, projectPath: any) => {
-	_setting.readSetting().then((data: string) => {
-		let _projectPath;
-		if (projectPath === 'local') {
-			_projectPath = _setting.getSettingByKey(data, PROJECT_PATH);
-		} else {
-			_projectPath = projectPath;
-		}
-		event.sender.send('explorer:setProjectPath', _projectPath);
-	});
-}
-
-const updateExplorerList = (event: any, data: any) => {
-	const read = _filemanager.getFIleAndFolders(data.fullPath);
-	const explorer: any = [];
-	let item: any = {};
-	read.then((files: any) => {
-		files.forEach((file: any) => {
-			const extention = path.extname(path.join(data.fullPath, file));
-			item.title = file;
-			if (extention !== '') {
-				item.type = "F";
-			} else {
-				item.type = "D";
-			}
-			item.sub = {};
-			explorer.push(item);
-			item = {};
-		});
-		event.sender.send('explorer:updateList@response', explorer, null);
-	}).catch((err) => {
-		event.sender.send('explorer:updateList@response', explorer, err);
-	});
-}
-
-/* --------------------------------- explorer events --------------------------------- */
-
-ipcMain.on('explorer:getProjectPath', (event) => {
-	setProjectPath(event, 'local');
-});
-
-ipcMain.on('explorer:selectProjectFolderPath', (event) => {
-	const projectPath = dialog.showOpenDialogSync(win, {
-		properties: ['openDirectory']
-	});
-	let path;
-	if (projectPath !== undefined && projectPath.length > 0) {
-		path = projectPath[0];
-	}
-	const config = [
-		{
-			key: "root-folder",
-			value: path,
-		},
-		{
-			key: "project-path",
-			value: path,
-		},
-	];
-	_setting.updateSetting(config);
-	setProjectPath(event, path);
-});
-
-ipcMain.on('explorer:updateList', (event, data) => {
-	if (data) {
-		if (data.projectPath !== '' && data.projectPath !== undefined) {
-			updateExplorerList(event, data);
-		}
-	}
-});
-
-ipcMain.on('explorer:changeFolderAndUpdateList', (event, data) => {
-	if (data.projectPath !== '' && data.projectPath !== undefined) {
-		const normal = [_path.normilizePath(data.projectPath)];
-		const fullpath = path.join.apply(null, normal.concat(data.stackFolder));
-		updateExplorerList(event, { 'projectPath': data.projectPath, 'folderName': data.folderName, 'fullPath': fullpath });
-	}
-});
-
-ipcMain.on('explorer:changeFolderBackAndUpdateList', (event, data) => {
-	log.info('test4');
-	if (data.projectPath !== '' && data.projectPath !== undefined) {
-		if (data.projectPath !== '' && data.projectPath !== undefined) {
-			const normal = [_path.normilizePath(data.projectPath)];
-			const fullpath = path.join.apply(null, normal.concat(data.stackFolder));
-			updateExplorerList(event, { 'projectPath': data.projectPath, 'folderName': data.folderName, 'fullPath': fullpath });
-		}
-	}
-});

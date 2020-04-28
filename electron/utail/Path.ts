@@ -5,7 +5,7 @@ const env = dotenv.config();
 
 class Path {
    getConfigFolderPath(): string{
-      return path.join(app.getPath('appData'),String(process.env.PROJECT_NAME) || "NONAME");
+      return path.join(app.getPath('appData'),"Notilda-Config");
    }
    getConfigFilePath(): string{
     let configfolder: string = this.getConfigFolderPath();

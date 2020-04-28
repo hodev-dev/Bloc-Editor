@@ -81,12 +81,5 @@ const changeFolder = (data: any) => {
     }
 }
 
-const changeFolderBack = (data:any ) => {
-    return function (dispatch: any) {
-        ipcRenderer.send('explorer:changeFolderBackAndUpdateList', data);
-        dispatch(setRootFolder(data.folderName, data.fullPath));
-        dispatch(stackFolders(data.folderName));
-    }
-}
 
-export { getProjectFolderPath, selectProjectFolderPath, updateList, changeFolder, changeFolderBack };
+export { getProjectFolderPath, selectProjectFolderPath, updateList, changeFolder};

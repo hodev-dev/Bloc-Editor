@@ -28,7 +28,7 @@ const listenToggleDisplay = () => {
 
 /* -------------------------- unsbscribe to events -------------------------- */
 const unsubscribe = () => {
-    ipcRenderer.unsubsrice('prompt:toggleDisplay', listenToggleDisplay);
+    ipcRenderer.removeListener('prompt:toggleDisplay', listenToggleDisplay);
 }
 
 export { listen, dispatchToggleDisplay, unsubscribe }
