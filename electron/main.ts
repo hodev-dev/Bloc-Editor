@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut, dialog } from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
@@ -11,6 +11,7 @@ import Path from '../electron/utail/Path';
 /* ---------------------------- global variables ---------------------------- */
 
 let win: BrowserWindow | null | any = null;
+let contents: null | any;
 let _setting: Setting;
 let _filemanager: FileManager;
 let _path: Path;
@@ -54,10 +55,14 @@ const createWindow = () => {
 
 app.on('ready', () => {
 	createWindow();
+	contents = win.webContents;
 	_setting = new Setting();
 	_filemanager = new FileManager();
 	_path = new Path();
 	_setting.initSetting();
+	globalShortcut.register('CommandOrControl+Shift+p', () => {
+		contents.send('prompt:toggleDisplay');
+	})
 });
 
 app.on('window-all-closed', () => {

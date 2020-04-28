@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import Fuse from 'fuse.js';
-import { fireEvent } from '@testing-library/react';
-
-const Promp = () => {
+import * as promptAction from '../actions/promptAction';
+import { useSelector } from 'react-redux';
+const Prompt = () => {
     interface InitAction {
         title: string,
         item?: any,
@@ -18,7 +18,7 @@ const Promp = () => {
         findAllMatches: false,
         minMatchCharLength: 5,
         location: 0,
-        threshold: 0.6,
+        threshold: 0.2,
         distance: 100,
         useExtendedSearch: false,
         keys: [
@@ -55,7 +55,6 @@ const Promp = () => {
         },
     ]
 
-    const inputref = useRef<any | null>(null);
     const [value, setValue] = useState('');
     const [info, setInfo] = useState('');
     const [select, setSelect] = useState<any | undefined>({});
@@ -63,12 +62,20 @@ const Promp = () => {
     const [fuse, setFuse] = useState<Array<InitAction> | any>();
     const [cursor, setCursor] = useState<number>(0);
     const [answerMod, setAnswerMod] = useState(false);
+    const { display } = useSelector((store: any) => store.promptReducer);
 
     useEffect(() => {
         let fuse: Array<InitAction> | any = new Fuse(actionList, fuseOptions);
         setFuse(fuse);
-        inputref.current.focus();
+        promptAction.listen();
+        return () => {
+            promptAction.unsubscribe();
+        }
     }, []);
+
+    useEffect(() => {
+        console.log(display)
+    }, [display]);
 
     useEffect(() => {
         if (actionList[cursor].item !== undefined) {
@@ -106,7 +113,7 @@ const Promp = () => {
             e.preventDefault();
             setCursor((prevCursor) => prevCursor + 1);
         } else if (e.keyCode === 13) {
-            const listItem =   (actionList[cursor].item) ? actionList[cursor].item : actionList[cursor];
+            const listItem = (actionList[cursor].item) ? actionList[cursor].item : actionList[cursor];
             const { response } = listItem;
             if (response !== undefined) {
                 setAnswerMod(true)
@@ -118,7 +125,7 @@ const Promp = () => {
             }
         } else if (e.keyCode === 27) {
             setValue('');
-            setAnswerMod(false);
+            promptAction.dispatchToggleDisplay();
             setActionList(initAction);
         }
     }
@@ -143,16 +150,28 @@ const Promp = () => {
         });
         return render;
     }, [actionList, cursor]);
-
+    const renderBody = () => {
+        if (display) {
+            return (
+                <div className={"w-2/6 h-12 bg-transparent mt-10"}>
+                    <input autoFocus onClick={(e: any) => handleClick(e)} onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto shadow-lg bg-gray-100 h-full w-full bg-white text p-2 border outline-none" value={value} type="text" />
+                    <div className="text-gray-500 text-center">{info}</div>
+                    <div className="mt-3">
+                        {renderActionList}
+                    </div>
+                </div>
+            )
+        } else {
+            return (
+                <div></div>
+            )
+        }
+    }
     return (
-        <div className="absolute w-2/6 h-12 bg-transparent mt-10">
-            <input onClick={(e: any) => handleClick(e)} onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto shadow-lg bg-gray-100 h-full w-full bg-white text p-2 border outline-none" ref={inputref} value={value} type="text" />
-            <div className="text-gray-500 text-center">{info}</div>
-            <div className="mt-3">
-                {renderActionList}
-            </div>
-        </div>
+       <div className={`${(display) ? "absolute" : 'hidden'} w-full flex justify-center`}>
+           {renderBody()}
+       </div>
     );
 }
 
-export default React.memo(Promp);
+export default React.memo(Prompt);
