@@ -7,6 +7,8 @@ const Files = () => {
 	/* ------------------------------ global state ------------------------------ */
 
 	const { project_path } = useSelector((store: any) => store.filesReducer);
+	const { root_path } = useSelector((store: any) => store.filesReducer);
+	const { folder_stack } = useSelector((store: any) => store.filesReducer);
 	const { list } = useSelector((store: any) => store.filesReducer);
 
 	useEffect(() => {
@@ -21,25 +23,37 @@ const Files = () => {
 		};
 	}, [project_path]);
 
+	useEffect(() => {
+		if (folder_stack.length > 0) {
+			filesAction.get_list();
+		}
+		return () => {
+			filesAction.unsubscribe();
+		}
+	}, [folder_stack])
 	/* --------------------------------- events --------------------------------- */
-	const handleClick = () => {
+	const select_project_path = () => {
 		filesAction.select_project_path();
+	}
+	const go_to_folder = (dir: { title: string, type: string, full_path: string }) => {
+		// add folderanme to stack
+		filesAction.got_to_folder(dir);
 	}
 	/* --------------------------------- render --------------------------------- */
 
 	const renderList = () => {
-		if (true) {
-			return list.map((dir: string, index: number) => {
+		if (list) {
+			return list.map((dir: { title: string, type: string, full_path: string }, index: number) => {
 				return (
-					<div key={index} className="flex-1">
-						<h1>{dir}</h1>
+					<div key={index} className="">
+						<button onClick={() => go_to_folder(dir)} className="w-full bg-white text-gray-700 text-left p-2 cursor-pointer border hover:bg-pink-900 hover:text-white">{dir.title}</button>
 					</div>
 				)
 			});
 		} else {
 			return (
 				<div>
-					<button className="btn bg-pink-900 w-full text-white p-3" onClick={() => handleClick()}>select folder</button>
+					<button className="btn bg-pink-900 w-full text-white p-3" onClick={() => select_project_path()}>select folder</button>
 				</div>
 			)
 		}
@@ -75,4 +89,4 @@ const Files = () => {
 
 }
 
-export default Files
+export default React.memo(Files);

@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, dialog } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 import * as isDev from 'electron-is-dev';
 import * as chokidar from 'chokidar';
 import * as log from 'electron-log';
@@ -10,6 +11,7 @@ import Path from '../electron/utail/Path';
 /* ---------------------------- import type interFace ---------------------------- */
 
 import { OpenDialogReturnValue } from 'electron';
+import { resolve } from 'dns';
 
 /* ---------------------------- global variables ---------------------------- */
 
@@ -99,7 +101,17 @@ const boot = () => {
 const get_list = (_event: any, _project_path: string) => {
 	const list_dir: Promise<Array<string>> = _filemanager.getFIleAndFolders(_project_path);
 	list_dir.then((list: Array<string>) => {
-		_event.sender.send('files:get_list@response', list);
+		let list_tree: any = [];
+		let item: any = {};
+		list.forEach((dirname: string) => {
+			const format = path.extname((path.join(_project_path, dirname)));
+			item.title = dirname;
+			item.type = (format === '') ? 'D' : "F";
+			item.full_path = path.join(_project_path, dirname);
+			list_tree.push(item);
+			item = {};
+		});
+		_event.sender.send('files:get_list@response', list_tree);
 	}).catch((err) => {
 		log.error(err)
 	});
@@ -124,15 +136,18 @@ ipcMain.on('files:select_project_path', (event: any) => {
 	});
 });
 
-ipcMain.on('files:get_List', (_event: any, project_path: string) => {
-	if (project_path !== '') {
-		const watcher = chokidar.watch(project_path, { persistent: true, usePolling: false });
-		watcher.on('ready', (event: any, path: any) => {
-			// update list once on start up and w8 for changes
-			get_list(_event, project_path)
+ipcMain.on('files:get_List', (_event: any, project_path: string, root_path: string, folder_stack: Array<string>) => {
+	if (project_path !== '' && root_path !== '') {
+		const currnt_path = path.join(root_path, ...folder_stack);
+		const watcher = chokidar.watch(project_path, {
+			persistent: true, usePolling: false, ignoreInitial: true,
+		});
+		watcher.on('ready', () => {
+			log.info('run form ready');
+			get_list(_event, currnt_path);
 			watcher.on('all', (event: any, path: any) => {
-				// update list again on change
-				get_list(_event, project_path)
+				log.info('run from all');
+				get_list(_event, currnt_path);
 			});
 		});
 	}
