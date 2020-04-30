@@ -1,23 +1,30 @@
 /* ---------------------- SECTION typescript interface ---------------------- */
 interface IAction {
-    type: string
+    type: string,
+    payload: any
 }
-interface initialCount {
-    count: number,
+interface initialFiles {
+    project_path: string,
+    list: Array<string>
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialCount: initialCount = {
-    count: 0,
+const initialFiles: initialFiles = {
+    project_path: "",
+    list: []
 }
 /* -------------------------- SECTION reducer body -------------------------- */
-function counterReducer(state = initialCount, action: IAction) {
+function filesReducer(state = initialFiles, action: IAction) {
     switch (action.type) {
-        case "INC":
+        case "SET_PROJECT_PATH":
             return {
-                ...state, count: state.count + 1
+                ...state, project_path: action.payload.project_path
+            }
+        case "SET_LIST":
+            return {
+                ...state, list: action.payload.list
             }
         default:
             return state;
     }
 };
-export default counterReducer;
+export default filesReducer;

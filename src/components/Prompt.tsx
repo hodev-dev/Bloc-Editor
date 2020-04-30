@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Fuse from 'fuse.js';
 import * as promptAction from '../actions/promptAction';
 import { useSelector } from 'react-redux';
@@ -57,7 +57,7 @@ const Prompt = () => {
 
     const [value, setValue] = useState('');
     const [info, setInfo] = useState('');
-    const [select, setSelect] = useState<any | undefined>({});
+    const [select] = useState<any | undefined>({});
     const [actionList, setActionList] = useState<Array<InitAction> | any>(initAction);
     const [fuse, setFuse] = useState<Array<InitAction> | any>();
     const [cursor, setCursor] = useState<number>(0);
@@ -74,7 +74,6 @@ const Prompt = () => {
     }, []);
 
     useEffect(() => {
-        console.log(display)
     }, [display]);
 
     useEffect(() => {
@@ -168,9 +167,9 @@ const Prompt = () => {
         }
     }
     return (
-       <div className={`${(display) ? "absolute" : 'hidden'} w-full flex justify-center`}>
-           {renderBody()}
-       </div>
+        <div className={`${(display) ? "absolute" : 'hidden'} w-full flex justify-center`}>
+            {renderBody()}
+        </div>
     );
 }
 

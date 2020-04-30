@@ -1,12 +1,15 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, dialog } from 'electron';
 import * as path from 'path';
 import * as isDev from 'electron-is-dev';
-import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
+import * as chokidar from 'chokidar';
 import * as log from 'electron-log';
+import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import Setting from './utail/Setting';
 import FileManager from './utail/FileManager';
-import { PROJECT_PATH } from './constants/settingKeys';
 import Path from '../electron/utail/Path';
+/* ---------------------------- import type interFace ---------------------------- */
+
+import { OpenDialogReturnValue } from 'electron';
 
 /* ---------------------------- global variables ---------------------------- */
 
@@ -65,13 +68,11 @@ app.on('ready', () => {
 		contents.send('prompt:toggleDisplay');
 	})
 	contents.on('did-finish-load', () => {
-		const configFile = _setting.readSetting();
-		configFile.then((configString) => {
-			const config = JSON.parse(configString);
-			const project_path = config.project_path;
-			contents.send('files:project_path', project_path);
+		chokidar.watch(_path.getConfigFilePath(), { persistent: true, usePolling: true }).on('all', (event, path) => {
+			// start and watch setting config file
+			boot();
 		});
-	})
+	});
 });
 
 app.on('window-all-closed', () => {
@@ -83,6 +84,48 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
 	if (win === null) {
 		createWindow();
+	}
+});
+
+const boot = () => {
+	const read_config_file = _setting.readSetting();
+	read_config_file.then((configString: string) => {
+		const config = JSON.parse(configString);
+		const project_path = config.project_path;
+		contents.send('files:project_path', project_path);
+	});
+}
+
+
+ipcMain.on('files:select_project_path', (event: any) => {
+	const select_dialog = dialog.showOpenDialog({
+		properties: ['openDirectory']
+	});
+	select_dialog.then((selected_path: OpenDialogReturnValue) => {
+		if (!selected_path.canceled) {
+			const project_path: string | undefined = selected_path.filePaths.pop();
+			const config: { key: string, value: string | undefined }[] = [
+				{
+					key: "project_path",
+					value: project_path
+				}
+			]
+			_setting.updateSetting(config);
+			contents.send('files:project_path', project_path);
+		}
+	});
+});
+
+ipcMain.on('files:get_List', (_event: any, project_path: string) => {
+	if (project_path !== '') {
+		chokidar.watch(project_path, { persistent: true, usePolling: true }).on('all', (event: any, path: any) => {
+			const list_dir: Promise<Array<string>> = _filemanager.getFIleAndFolders(project_path);
+			list_dir.then((list: Array<string>) => {
+				_event.sender.send('files:get_list@response', list);
+			}).catch((err) => {
+				log.error(err)
+			});
+		});
 	}
 });
 

@@ -25,9 +25,11 @@ class Setting {
         const read = await new Promise<string>((resolve, reject) => {
             fs.readFile(this.path.getConfigFilePath(), 'utf-8', (err, data: string) => {
                 if (err) {
+                    console.log(err)
                     reject(err);
+                } else {
+                    resolve(data);
                 }
-                resolve(data);
             });
         }).then((data: string) => {
             return data;
@@ -41,7 +43,7 @@ class Setting {
         const setting: Promise<string> = this.readSetting();
         return setting.then((settingFile: any) => {
             let parsedSetting = JSON.parse(settingFile);
-            config.map( (item :any) => {
+            config.map((item: any) => {
                 parsedSetting[item.key] = item.value;
             });
             fs.writeFileSync(this.path.getConfigFilePath(), JSON.stringify(parsedSetting));

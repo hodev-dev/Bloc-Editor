@@ -1,14 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import * as filesAction from '../actions/filesAction';
+import { useSelector } from 'react-redux';
 
 const Files = () => {
+
+	/* ------------------------------ global state ------------------------------ */
+
+	const { project_path } = useSelector((store: any) => store.filesReducer);
+	const { list } = useSelector((store: any) => store.filesReducer);
 
 	useEffect(() => {
 		filesAction.listen();
 		return () => {
 			filesAction.unsubscribe();
 		};
-	}, []);
+	}, [project_path]);
+
+	/* --------------------------------- events --------------------------------- */
+	const handleClick = () => {
+		filesAction.select_project_path();
+	}
+	/* --------------------------------- render --------------------------------- */
+
+	const renderList = () => {
+		if (true) {
+			return list.map((dir: string, index: number) => {
+				return (
+					<div key={index} className="flex-1">
+						<h1>{dir}</h1>
+					</div>
+				)
+			});
+		} else {
+			return (
+				<div>
+					<button className="btn bg-pink-900 w-full text-white p-3" onClick={() => handleClick()}>select folder</button>
+				</div>
+			)
+		}
+	}
+
+	/* ------------------------------- main render ------------------------------ */
 
 	return (
 		<div className="w-64 bg-white self-stretch">
@@ -30,12 +62,12 @@ const Files = () => {
 			{/* ----------------------------- phone menu body ---------------------------- */}
 			<div className="flex">
 				<ul className="flex flex-col w-screen justify-center" >
-
+					{renderList()}
 				</ul>
 			</div>
 		</div>
 	)
-	
+
 }
 
 export default Files
