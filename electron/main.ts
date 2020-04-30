@@ -96,6 +96,14 @@ const boot = () => {
 	});
 }
 
+const get_list = (_event: any, _project_path: string) => {
+	const list_dir: Promise<Array<string>> = _filemanager.getFIleAndFolders(_project_path);
+	list_dir.then((list: Array<string>) => {
+		_event.sender.send('files:get_list@response', list);
+	}).catch((err) => {
+		log.error(err)
+	});
+}
 
 ipcMain.on('files:select_project_path', (event: any) => {
 	const select_dialog = dialog.showOpenDialog({
@@ -118,12 +126,13 @@ ipcMain.on('files:select_project_path', (event: any) => {
 
 ipcMain.on('files:get_List', (_event: any, project_path: string) => {
 	if (project_path !== '') {
-		chokidar.watch(project_path, { persistent: true, usePolling: true }).on('all', (event: any, path: any) => {
-			const list_dir: Promise<Array<string>> = _filemanager.getFIleAndFolders(project_path);
-			list_dir.then((list: Array<string>) => {
-				_event.sender.send('files:get_list@response', list);
-			}).catch((err) => {
-				log.error(err)
+		const watcher = chokidar.watch(project_path, { persistent: true, usePolling: false });
+		watcher.on('ready', (event: any, path: any) => {
+			// update list once on start up and w8 for changes
+			get_list(_event, project_path)
+			watcher.on('all', (event: any, path: any) => {
+				// update list again on change
+				get_list(_event, project_path)
 			});
 		});
 	}

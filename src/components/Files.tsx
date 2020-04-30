@@ -10,7 +10,12 @@ const Files = () => {
 	const { list } = useSelector((store: any) => store.filesReducer);
 
 	useEffect(() => {
-		filesAction.listen();
+		if (project_path === '') {
+			filesAction.listen();
+		} else {
+			filesAction.get_list();
+			filesAction.set_list();
+		}
 		return () => {
 			filesAction.unsubscribe();
 		};

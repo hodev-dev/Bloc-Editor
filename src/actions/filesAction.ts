@@ -4,8 +4,6 @@ const ipcRenderer = window.require('electron').ipcRenderer;
 /* ------------------------- listen too all electron evenets ------------------------- */
 const listen = () => {
     project_path();
-    get_list();
-    set_list();
 }
 /* ------------------------------ redux actions ----------------------------- */
 
@@ -39,11 +37,13 @@ const select_project_path = () => {
 
 const get_list = () => {
     const { project_path } = store.getState().filesReducer;
+    console.log('get list')
     ipcRenderer.send('files:get_List', project_path);
 }
 
 const set_list = () => {
     ipcRenderer.on('files:get_list@response', (event: any, list: Array<string>) => {
+        console.log('set list')
         store.dispatch(dispatch_set_list(list));
     });
 }
@@ -52,6 +52,7 @@ const set_list = () => {
 const unsubscribe = () => {
     ipcRenderer.removeListener('files:project_path', project_path);
     ipcRenderer.removeListener('files:get_list', get_list);
+    ipcRenderer.removeListener('files:get_list@response', set_list);
 }
 
-export { listen, select_project_path, unsubscribe }
+export { listen, select_project_path, get_list, set_list, unsubscribe }
