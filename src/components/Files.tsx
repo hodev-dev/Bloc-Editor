@@ -1,66 +1,60 @@
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import * as filesAction from '../actions/filesAction';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 
 const Files = () => {
-
 	/* ------------------------------ global state ------------------------------ */
-
 	const { project_path } = useSelector((store: any) => store.filesReducer);
-	const { root_path } = useSelector((store: any) => store.filesReducer);
-	const { folder_stack } = useSelector((store: any) => store.filesReducer);
+	const { loading } = useSelector((store: any) => store.filesReducer);
 	const { list } = useSelector((store: any) => store.filesReducer);
+	const { folder_stack } = useSelector((store: any) => store.filesReducer);
+	const dispatch = useDispatch();
+
+	/* ------------------------------- local state ------------------------------ */
+	useEffect(() => {
+		dispatch(filesAction.request_path());
+		dispatch(filesAction.get_list());
+		return () => {
+			filesAction.unsubscribe();
+		};
+	}, []);
 
 	useEffect(() => {
-		if (project_path === '') {
-			filesAction.listen();
-		} else {
-			filesAction.get_list();
-			filesAction.set_list();
+		dispatch(filesAction.get_path());
+		if (project_path === '' && loading === false) {
+			dispatch(filesAction.select_path());
 		}
 		return () => {
 			filesAction.unsubscribe();
 		};
-	}, [project_path]);
+	}, [loading, project_path]);
 
 	useEffect(() => {
-		if (folder_stack.length > 0) {
-			filesAction.get_list();
+		if (project_path !== '') {
+			dispatch(filesAction.go_to_folder_stack());
 		}
-		return () => {
-			filesAction.unsubscribe();
-		}
-	}, [folder_stack])
+	}, [project_path, folder_stack])
 	/* --------------------------------- events --------------------------------- */
-	const select_project_path = () => {
-		filesAction.select_project_path();
-	}
-	const go_to_folder = (dir: { title: string, type: string, full_path: string }) => {
-		// add folderanme to stack
-		filesAction.got_to_folder(dir);
+	const click_on_list_item = (item: any) => {
+		dispatch(filesAction.add_to_folder_stack(item));
 	}
 	/* --------------------------------- render --------------------------------- */
-
 	const renderList = () => {
-		if (list) {
-			return list.map((dir: { title: string, type: string, full_path: string }, index: number) => {
+		if (loading) {
+			return (
+				<div>loading</div>
+			)
+		} else {
+			return list.map((item: any, index: number) => {
 				return (
 					<div key={index} className="">
-						<button onClick={() => go_to_folder(dir)} className="w-full bg-white text-gray-700 text-left p-2 cursor-pointer border hover:bg-pink-900 hover:text-white">{dir.title}</button>
+						<button onClick={() => click_on_list_item(item)} className="w-full bg-white text-gray-700 text-left p-2 cursor-pointer border hover:bg-pink-900 hover:text-white">{item}</button>
 					</div>
 				)
 			});
-		} else {
-			return (
-				<div>
-					<button className="btn bg-pink-900 w-full text-white p-3" onClick={() => select_project_path()}>select folder</button>
-				</div>
-			)
 		}
 	}
-
 	/* ------------------------------- main render ------------------------------ */
-
 	return (
 		<div className="w-64 bg-white self-stretch">
 			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto border">
@@ -86,7 +80,6 @@ const Files = () => {
 			</div>
 		</div>
 	)
-
 }
 
 export default React.memo(Files);

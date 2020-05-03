@@ -4,6 +4,7 @@ interface IAction {
     payload: any
 }
 interface initialFiles {
+    loading: boolean,
     project_path: string,
     root_path: string,
     list: Array<string>,
@@ -11,6 +12,7 @@ interface initialFiles {
 }
 /* -------------------------- SECTION initial state ------------------------- */
 const initialFiles: initialFiles = {
+    loading: true,
     project_path: "",
     root_path: "",
     list: [],
@@ -21,7 +23,7 @@ function filesReducer(state = initialFiles, action: IAction) {
     switch (action.type) {
         case "SET_PROJECT_PATH":
             return {
-                ...state, project_path: action.payload.project_path, root_path: action.payload.project_path
+                ...state, loading: false, project_path: action.payload.project_path, root_path: action.payload.project_path
             }
         case "SET_LIST":
             return {

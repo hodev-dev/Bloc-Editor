@@ -12,6 +12,7 @@ class Setting {
     initSetting(): void {
         let setting: any = {};
         setting['project_path'] = '';
+        setting['folder_stack'] = [];
         const configFilePath = this.path.getConfigFilePath();
         if (!fs.existsSync(this.path.getConfigFolderPath())) {
             fs.mkdirSync(this.path.getConfigFolderPath());

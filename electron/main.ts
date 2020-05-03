@@ -11,7 +11,8 @@ import Path from '../electron/utail/Path';
 /* ---------------------------- import type interFace ---------------------------- */
 
 import { OpenDialogReturnValue } from 'electron';
-import { resolve } from 'dns';
+import { FSWatcher } from 'chokidar';
+import { rejects } from 'assert';
 
 /* ---------------------------- global variables ---------------------------- */
 
@@ -20,6 +21,9 @@ let contents: null | any;
 let _setting: Setting;
 let _filemanager: FileManager;
 let _path: Path;
+let _chikodar: any;
+let _setting_watcher: any;
+let _files_watcher: any;
 
 /* ------------------------------- main window ------------------------------- */
 
@@ -70,10 +74,6 @@ app.on('ready', () => {
 		contents.send('prompt:toggleDisplay');
 	})
 	contents.on('did-finish-load', () => {
-		chokidar.watch(_path.getConfigFilePath(), { persistent: true, usePolling: true }).on('all', (event, path) => {
-			// start and watch setting config file
-			boot();
-		});
 	});
 });
 
@@ -81,6 +81,9 @@ app.on('window-all-closed', () => {
 	if (process.platform !== 'darwin') {
 		app.quit();
 	}
+	_setting_watcher.close().then(() => console.log('setting watcher closed'));
+	_files_watcher.close().then(() => console.log('files watcher closed'));
+	_setting_watcher.unwatch(_path.getConfigFilePath());
 });
 
 app.on('activate', () => {
@@ -89,67 +92,64 @@ app.on('activate', () => {
 	}
 });
 
-const boot = () => {
-	const read_config_file = _setting.readSetting();
-	read_config_file.then((configString: string) => {
-		const config = JSON.parse(configString);
-		const project_path = config.project_path;
-		contents.send('files:project_path', project_path);
-	});
-}
-
-const get_list = (_event: any, _project_path: string) => {
-	const list_dir: Promise<Array<string>> = _filemanager.getFIleAndFolders(_project_path);
-	list_dir.then((list: Array<string>) => {
-		let list_tree: any = [];
-		let item: any = {};
-		list.forEach((dirname: string) => {
-			const format = path.extname((path.join(_project_path, dirname)));
-			item.title = dirname;
-			item.type = (format === '') ? 'D' : "F";
-			item.full_path = path.join(_project_path, dirname);
-			list_tree.push(item);
-			item = {};
+ipcMain.on('files:get_path', () => {
+	_setting_watcher = chokidar.watch(_path.getConfigFilePath(), { usePolling: true });
+	_setting_watcher.on('all', (event: any, path: any) => {
+		log.info(event, path);
+		const setting = _setting.readSetting();
+		setting.then((config: any) => {
+			const parsed_config = JSON.parse(config);
+			contents.send('files:get_path', parsed_config.project_path);
 		});
-		_event.sender.send('files:get_list@response', list_tree);
-	}).catch((err) => {
-		log.error(err)
 	});
-}
+});
 
-ipcMain.on('files:select_project_path', (event: any) => {
-	const select_dialog = dialog.showOpenDialog({
+ipcMain.on('files:select_path', () => {
+	const project_path: Promise<OpenDialogReturnValue> = dialog.showOpenDialog(win, {
 		properties: ['openDirectory']
 	});
-	select_dialog.then((selected_path: OpenDialogReturnValue) => {
-		if (!selected_path.canceled) {
-			const project_path: string | undefined = selected_path.filePaths.pop();
-			const config: { key: string, value: string | undefined }[] = [
+	project_path.then((dialog_data: OpenDialogReturnValue) => {
+		if (dialog_data.canceled) {
+			// on cancel
+		} else {
+			let new_config = [
 				{
 					key: "project_path",
-					value: project_path
+					value: dialog_data.filePaths[0]
 				}
-			]
-			_setting.updateSetting(config);
-			contents.send('files:project_path', project_path);
+			];
+			const update = _setting.updateSetting(new_config);
 		}
 	});
 });
 
-ipcMain.on('files:get_List', (_event: any, project_path: string, root_path: string, folder_stack: Array<string>) => {
-	if (project_path !== '' && root_path !== '') {
-		const currnt_path = path.join(root_path, ...folder_stack);
-		const watcher = chokidar.watch(project_path, {
-			persistent: true, usePolling: false, ignoreInitial: true,
-		});
-		watcher.on('ready', () => {
-			log.info('run form ready');
-			get_list(_event, currnt_path);
-			watcher.on('all', (event: any, path: any) => {
-				log.info('run from all');
-				get_list(_event, currnt_path);
+ipcMain.on('files:request_list_once', (event: any, project_path: any) => {
+	if (project_path !== '') {
+		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0 });
+		_files_watcher.on('ready', () => {
+			log.info('ready')
+			const files = _filemanager.getFIleAndFolders(project_path);
+			files.then((list) => {
+				contents.send('files:request_list', list);
 			});
 		});
 	}
 });
 
+ipcMain.on('files:request_list', (event: any, project_path: any) => {
+	if (project_path !== '') {
+		let run_count = 0;
+		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0, awaitWriteFinish: true });
+		_files_watcher.on('all', (path: any) => {
+			run_count++;
+			if (run_count === 1) {
+				log.info(path)
+				const files = _filemanager.getFIleAndFolders(project_path);
+				files.then((list) => {
+					contents.send('files:request_list', list);
+					run_count = 0;
+				});
+			}
+		});
+	}
+});
