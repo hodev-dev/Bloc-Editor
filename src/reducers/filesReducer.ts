@@ -31,7 +31,11 @@ function filesReducer(state = initialFiles, action: IAction) {
             }
         case "ADD_TO_FOLDER_STACK":
             return {
-                ...state, folder_stack: [...state.folder_stack, action.payload.folder_stack]
+                ...state, folder_stack: [...state.folder_stack, action.payload.foldername]
+            }
+        case "POP_FOLDER_STACK":
+            return {
+                ...state, folder_stack: [...action.payload.folder_stack]
             }
         default:
             return state;

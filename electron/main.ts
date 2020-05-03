@@ -21,7 +21,6 @@ let contents: null | any;
 let _setting: Setting;
 let _filemanager: FileManager;
 let _path: Path;
-let _chikodar: any;
 let _setting_watcher: any;
 let _files_watcher: any;
 
@@ -100,6 +99,10 @@ ipcMain.on('files:get_path', () => {
 		setting.then((config: any) => {
 			const parsed_config = JSON.parse(config);
 			contents.send('files:get_path', parsed_config.project_path);
+			contents.removeAllListeners('files:get_path');
+			if (_files_watcher !== undefined) {
+				_files_watcher.close().then(() => console.log('closed'));
+			}
 		});
 	});
 });
@@ -123,33 +126,33 @@ ipcMain.on('files:select_path', () => {
 	});
 });
 
-ipcMain.on('files:request_list_once', (event: any, project_path: any) => {
-	if (project_path !== '') {
-		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0 });
-		_files_watcher.on('ready', () => {
-			log.info('ready')
-			const files = _filemanager.getFIleAndFolders(project_path);
-			files.then((list) => {
-				contents.send('files:request_list', list);
-			});
-		});
-	}
-});
-
 ipcMain.on('files:request_list', (event: any, project_path: any) => {
 	if (project_path !== '') {
-		let run_count = 0;
+		if (_files_watcher !== undefined) {
+			_files_watcher.close().then(() => console.log('closed'));
+		}
 		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0, awaitWriteFinish: true });
-		_files_watcher.on('all', (path: any) => {
+		let run_count = 0;
+		_files_watcher.on('all', (_event: any, _path: any) => {
 			run_count++;
 			if (run_count === 1) {
-				log.info(path)
 				const files = _filemanager.getFIleAndFolders(project_path);
+				const list_with_meta: any = [];
+				let item: any = {};
 				files.then((list) => {
-					contents.send('files:request_list', list);
+					list.map((foldername) => {
+						item.title = foldername;
+						const extention = path.extname(path.join(project_path, foldername));
+						item.type = (extention === '.bloc') ? "F" : 'D';
+						list_with_meta.push(item);
+						item = {};
+					});
+					log.info(_event, _path)
+					contents.send('files:request_list', list_with_meta);
 					run_count = 0;
 				});
 			}
+			contents.removeAllListeners('files:request_list');
 		});
 	}
 });

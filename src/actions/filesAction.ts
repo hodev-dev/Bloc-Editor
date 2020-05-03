@@ -1,6 +1,11 @@
 import path from 'path';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
+
+const list_all_listener = () => {
+    ipcRenderer.eventNames().forEach((channel: any) => console.log(ipcRenderer.rawListeners(channel)))
+
+}
 const request_path = () => (dispatch: any) => {
     ipcRenderer.send('files:get_path');
 }
@@ -25,14 +30,8 @@ const request_list = () => (dispatch: any, getState: any) => {
     ipcRenderer.send('files:request_list', project_path);
 }
 
-const request_list_once = () => (dispatch: any, getState: any) => {
-    const { project_path } = getState().filesReducer;
-    ipcRenderer.send('files:request_list_once', project_path);
-}
-
 const get_list = () => (dispatch: any) => {
     ipcRenderer.on('files:request_list', (event: any, _list: any) => {
-        console.log(_list);
         dispatch({
             type: "SET_LIST",
             payload: {
@@ -46,7 +45,18 @@ const add_to_folder_stack = (foldername: any) => (dispatch: any, getState: any) 
     dispatch({
         type: "ADD_TO_FOLDER_STACK",
         payload: {
-            folder_stack: foldername
+            foldername: foldername
+        }
+    });
+}
+
+const pop_folder_stack = () => (dispatch: any, getState: any) => {
+    const { folder_stack } = getState().filesReducer;
+    folder_stack.pop();
+    dispatch({
+        type: "POP_FOLDER_STACK",
+        payload: {
+            folder_stack: folder_stack
         }
     });
 }
@@ -57,13 +67,28 @@ const go_to_folder_stack = () => (dispatch: any, getState: any) => {
     const _path = path.join(project_path, ...folder_stack);
     ipcRenderer.send('files:request_list', _path);
 }
+
+
 /* -------------------------- unsbscribe to events -------------------------- */
 const unsubscribe = () => {
     ipcRenderer.removeListener('files:get_path', get_path);
     ipcRenderer.removeListener('files:select_path', select_path);
     ipcRenderer.removeListener('files:request_list', request_list);
-    ipcRenderer.removeListener('files:request_list_on_ready', request_list_once);
+    ipcRenderer.removeListener('files:request_list', add_to_folder_stack);
+    ipcRenderer.removeListener('files:request_list', go_to_folder_stack);
+    ipcRenderer.removeListener('files:request_list', pop_folder_stack);
     ipcRenderer.removeListener('files:get_list', get_list);
 }
 
-export { request_path, request_list, request_list_once, get_path, get_list, select_path, add_to_folder_stack, go_to_folder_stack, unsubscribe }
+export {
+    request_path,
+    request_list,
+    get_path,
+    get_list,
+    select_path,
+    add_to_folder_stack,
+    pop_folder_stack,
+    go_to_folder_stack,
+    unsubscribe,
+    list_all_listener
+}
