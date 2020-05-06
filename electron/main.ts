@@ -94,7 +94,6 @@ app.on('activate', () => {
 ipcMain.on('files:get_path', () => {
 	_setting_watcher = chokidar.watch(_path.getConfigFilePath(), { usePolling: true });
 	_setting_watcher.on('all', (event: any, path: any) => {
-		log.info(event, path);
 		const setting = _setting.readSetting();
 		setting.then((config: any) => {
 			const parsed_config = JSON.parse(config);
@@ -129,7 +128,7 @@ ipcMain.on('files:select_path', () => {
 ipcMain.on('files:request_list', (event: any, project_path: any) => {
 	if (project_path !== '') {
 		if (_files_watcher !== undefined) {
-			_files_watcher.close().then(() => console.log('closed'));
+			_files_watcher.close().then(() => console.log(' files watcher closed'));
 		}
 		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0, awaitWriteFinish: true });
 		let run_count = 0;
@@ -147,7 +146,6 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 						list_with_meta.push(item);
 						item = {};
 					});
-					log.info(_event, _path)
 					contents.send('files:request_list', list_with_meta);
 					run_count = 0;
 				});
@@ -155,4 +153,13 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 			contents.removeAllListeners('files:request_list');
 		});
 	}
+});
+
+ipcMain.on('prompt:create_folder', (event: any, _path: string) => {
+	if (!fs.existsSync(_path)) {
+		fs.mkdirSync(_path);
+	} else {
+		log.info('folder exist')
+	}
+	log.info({ _path });
 });

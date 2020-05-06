@@ -2,10 +2,6 @@ import path from 'path';
 
 const ipcRenderer = window.require('electron').ipcRenderer;
 
-const list_all_listener = () => {
-    ipcRenderer.eventNames().forEach((channel: any) => console.log(ipcRenderer.rawListeners(channel)))
-
-}
 const request_path = () => (dispatch: any) => {
     ipcRenderer.send('files:get_path');
 }
@@ -90,5 +86,4 @@ export {
     pop_folder_stack,
     go_to_folder_stack,
     unsubscribe,
-    list_all_listener
 }
