@@ -371,9 +371,9 @@ const BlockEditor = () => {
 		return componentList.map((component, index) => {
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
-					<div className="flex" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
+					<div className="flex h-full relative" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
 						<div className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" >{index + 1}</div>
-						<div className="absolute flex w-auto bg-white h-10  border items-center ml-10" >
+						<div className="absolute top-0 flex w-auto bg-white h-10 border items-center ml-10" >
 							<svg onClick={() => setShowControll(false)} className="w-3 h-3 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
 							<svg className="w-4 h-4 m-2 cursor-move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M1 1h2v2H1V1zm0 4h2v2H1V5zm0 4h2v2H1V9zm0 4h2v2H1v-2zm0 4h2v2H1v-2zM5 1h2v2H5V1zm0 8h2v2H5V9zm0 8h2v2H5v-2zM9 1h2v2H9V1zm0 4h2v2H9V5zm0 4h2v2H9V9zm0 4h2v2H9v-2zm0 4h2v2H9v-2zm4-16h2v2h-2V1zm0 8h2v2h-2V9zm0 8h2v2h-2v-2zm4-16h2v2h-2V1zm0 4h2v2h-2V5zm0 4h2v2h-2V9zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z" /></svg>
 							<svg onClick={() => swapComponents(index, index, 'SHIFTUP')} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10.707 7.05L10 6.343 4.343 12l1.414 1.414L10 9.172l4.243 4.242L15.657 12z" /></svg>
@@ -408,8 +408,8 @@ const BlockEditor = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="flex flex-col w-full max-h-screen bg-white-600 border border-t-0">
-			<div className="overflow-y-auto" onDragEnd={(e) => dragEnd(e)}  >
+		<div className="flex flex-col w-full  max-h-screen bg-white-600 border border-t-0">
+			<div className="overflow-y-scroll" onDragEnd={(e) => dragEnd(e)}  >
 				{renderComponents()}
 			</div>
 			<div className="sticky bottom-0 bg-white">
@@ -429,7 +429,6 @@ const BlockEditor = () => {
 				</nav>
 			</div>
 		</div>
-
 	);
 }
 
