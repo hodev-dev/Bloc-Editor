@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import Text from './Text';
 
@@ -12,169 +13,11 @@ const BlockEditor = () => {
 		state: any
 	}
 
-	/* ---------------------------- state management ---------------------------- */
+	/* ------------------------------ globla state ------------------------------ */
+	const { bloc_state } = useSelector((store: any) => store.blocReducer);
+	/* ------------------------------- local state ------------------------------ */
 
 	const componetsListInit: Array<IComponentsList> = [
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
 		{
 			id: uuidv4(),
 			component: Text,
@@ -367,11 +210,64 @@ const BlockEditor = () => {
 		}
 	}
 
+	const renderTopPanel = () => {
+		if (bloc_state.length > 0) {
+			return (
+				<div className="sticky bottom-0 bg-white">
+					<nav className="flex flex-wrap sticky items-center justify-between border p-2 mx-auto ">
+						{/* ---------------------------------- left ---------------------------------- */}
+						<div className="hidden md:flex justify-start items-center mx-auto w-1/3 h-4">
+							<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
+						</div>
+						{/* --------------------------------- center --------------------------------- */}
+						<div className="flex justify-center items-center w-1/3  mx-auto">
+							<h2 className="text-gray-700 text-sm font-semibold ">Title</h2>
+						</div>
+						{/* ---------------------------------- right --------------------------------- */}
+						<div className="hidden md:flex justify-end items-center mx-auto w-1/3">
+							<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
+						</div>
+					</nav>
+				</div>
+			)
+		} else {
+			return (
+				''
+			)
+		}
+	}
+
+	const renderBlocPlaceHolder = () => {
+		return (
+			<div className="flex flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden">
+				<div className="flex flex-row mt-5 mx-auto w-8/12 justify-center">
+					<h1 className="font-light text-6xl text-pink-900 select-none">.Bloc Editor</h1>
+				</div>
+				<div className="flex flex-row mt-5 mx-auto min-w-64 justify-center">
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Ctrl</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Shift</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">P</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">Command Prompt</h1>
+				</div>
+				<div className="flex flex-row mt-5 mx-auto min-w-64 justify-center">
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Ctrl</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Shift</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
+					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">N</h1>
+					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">New Files</h1>
+				</div>
+			</div>
+		)
+	}
+
 	const renderComponents = () => {
 		return componentList.map((component, index) => {
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
-					<div className="flex h-full relative" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
+					<div className="flex relative" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
 						<div className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" >{index + 1}</div>
 						<div className="absolute top-0 flex w-auto bg-white h-10 border items-center ml-10" >
 							<svg onClick={() => setShowControll(false)} className="w-3 h-3 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
@@ -408,25 +304,10 @@ const BlockEditor = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="flex flex-col w-full  max-h-screen bg-white-600 border border-t-0">
-			<div className="overflow-y-scroll" onDragEnd={(e) => dragEnd(e)}  >
-				{renderComponents()}
-			</div>
-			<div className="sticky bottom-0 bg-white">
-				<nav className="flex flex-wrap sticky items-center justify-between border p-2 mx-auto ">
-					{/* ---------------------------------- left ---------------------------------- */}
-					<div className="hidden md:flex justify-start items-center mx-auto w-1/3 h-4">
-						<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
-					</div>
-					{/* --------------------------------- center --------------------------------- */}
-					<div className="flex justify-center items-center w-1/3  mx-auto">
-						<h2 className="text-gray-700 text-sm font-semibold ">Title</h2>
-					</div>
-					{/* ---------------------------------- right --------------------------------- */}
-					<div className="hidden md:flex justify-end items-center mx-auto w-1/3">
-						<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
-					</div>
-				</nav>
+		<div className="flex flex-col w-full max-h-screen bg-white-600">
+			{renderTopPanel()}
+			<div className="overflow-y-auto" onDragEnd={(e) => dragEnd(e)}  >
+				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}
 			</div>
 		</div>
 	);

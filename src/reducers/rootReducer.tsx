@@ -2,10 +2,12 @@
 import { combineReducers } from 'redux';
 import promptReducer from './promptReducer';
 import filesReducer from './filesReducer';
+import blocReducer from './blocReducer';
 /* ------------------------ SECTION regester reducer ------------------------ */
 const rootReducer = combineReducers({
     promptReducer,
-    filesReducer
+    filesReducer,
+    blocReducer
 });
 
 export default rootReducer;

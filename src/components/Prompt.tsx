@@ -132,11 +132,11 @@ const Prompt = () => {
         e.preventDefault();
         setValue(e.target.value);
         if (e.target.value === '') {
-            setActionList(initAction);
+            setSelect(initAction);
         } else {
             if (answerMod === false) {
                 const filteredActionList: Array<InitAction> = fuse?.search(value);
-                setActionList(filteredActionList);
+                setSelect(filteredActionList);
             }
         }
     }
@@ -190,6 +190,7 @@ const Prompt = () => {
         promptAction.dispatchToggleDisplay();
         setSelect(initAction);
         setAnswerStack([]);
+        setAnswerMod(false);
     }
 
     const enter = (cmd: InitAction) => {
@@ -218,14 +219,14 @@ const Prompt = () => {
         let render: Array<JSX.Element> = actionList.map((action: InitAction, index: number) => {
             if (action.item) {
                 return (
-                    <div key={index} className="auto shadow-md border p-2 text-gray-500 bg-gray-100 select-none cursor-pointer" onClick={() => action.item.fire()}>
-                        <h1 className={(index === cursor) ? 'text-pink-900' : 'text-blue-600'}>{action.item.title}</h1>
+                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" : "auto border mt-2 p-2 text-gray-500 bg-gray-100 select-none cursor-pointer"} onClick={() => action.item.fire()}>
+                        <h1 className={(index === cursor) ? 'text-pink-900' : 'text-gray-600'}>{action.item.title}</h1>
                     </div>
                 )
             } else {
                 return (
-                    <div key={index} className="auto shadow-md border p-2 text-gray-500 bg-gray-100 select-none cursor-pointer" onClick={() => action.item.fire()}>
-                        <h1 className={(index === cursor) ? 'text-pink-900' : 'text-blue-600'}>{action.title}</h1>
+                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" : "auto border mt-2 p-2 text-gray-500 bg-gray-100 select-none cursor-pointer"} onClick={() => action.item.fire()}>
+                        <h1 className={(index === cursor) ? 'text-pink-900' : 'text-gray-600'}>{action.title}</h1>
                     </div>
                 )
             }
@@ -236,7 +237,7 @@ const Prompt = () => {
         if (display) {
             return (
                 <div className={"w-2/6 h-12 bg-transparent mt-10"}>
-                    <input autoFocus onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto shadow-lg bg-gray-100 h-full w-full bg-white text p-2 border outline-none" value={value} type="text" />
+                    <input autoFocus onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto bg-gray-100 h-full w-full bg-white text p-2 border rounded outline-none" value={value} type="text" />
                     {/* <div className="text-gray-500 text-center">{info}</div> */}
                     <div className="mt-3">
                         {renderActionList}

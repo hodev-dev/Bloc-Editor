@@ -43,7 +43,13 @@ const Files = () => {
 	/* --------------------------------- events --------------------------------- */
 	const click_on_list_item = (item: any) => {
 		// updates folder stack with adding item to it
-		dispatch(filesAction.add_to_folder_stack(item.title));
+		if (item.title.includes('.bloc')) {
+			//its file
+			console.log('files', item);
+		} else {
+			// its dir
+			dispatch(filesAction.add_to_folder_stack(item.title));
+		}
 	}
 	const click_on_back = () => {
 		dispatch(filesAction.pop_folder_stack());
@@ -52,12 +58,13 @@ const Files = () => {
 	const click_new_folder = () => {
 		console.log('clicked');
 	}
+
 	/* --------------------------------- render --------------------------------- */
 	const renderBack = () => {
 		if (loading === false && folder_stack.length > 0) {
 			return (
 				<div className="">
-					<button onClick={() => click_on_back()} className="flex w-full p-2 bg-white cursor-pointer border text-gray-700 hover:bg-pink-900 hover:text-white">
+					<button onClick={() => click_on_back()} className="flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 hover:bg-pink-900 hover:text-white">
 						<svg className="w-5 h-5 fill-current mr-2 mt-0 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M217.9 256L345 129c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.3-34 0L167 239c-9.1 9.1-9.3 23.7-.7 33.1L310.9 417c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4 9.4-24.6 0-33.9L217.9 256z" /></svg>
 						<div className="font-bold text-sm text-left">
 							back
@@ -91,8 +98,8 @@ const Files = () => {
 		} else {
 			return list.map((item: any, index: number) => {
 				return (
-					<div key={index} className="">
-						<button onClick={() => click_on_list_item(item)} className="flex w-full p-2 bg-white cursor-pointer border text-gray-700 font-bold text-sm text-left hover:bg-pink-900 hover:text-white">
+					<div key={index} className="bg-gray-100">
+						<button onClick={() => click_on_list_item(item)} className="flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 font-bold text-sm text-left hover:bg-pink-900 hover:text-white">
 							{render_list_icon(item)}
 							{item.title}
 						</button>
@@ -103,7 +110,7 @@ const Files = () => {
 	}
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="w-64 bg-white self-stretch">
+		<div className="w-64 bg-gray-100 self-stretch">
 			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto border">
 				{/* ---------------------------------- left ---------------------------------- */}
 				<div className="flex justify-start items-center mx-auto w-1/3 h-4">
