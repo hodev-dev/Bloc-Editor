@@ -5,6 +5,7 @@ import * as cmp from '../components';
 import _ from 'lodash';
 import Text from './Text';
 import * as filesAction from '../actions/filesAction';
+import { start } from 'repl';
 
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
@@ -102,7 +103,7 @@ const BlockEditor = () => {
 		setShowControll(true);
 	}
 
-	const dragStart = (id: string, index: number) => {
+	const dragEnter = (e: any, id: string, index: number) => {
 		setDragIndex(index);
 		setShowDropZone(true);
 		setDragging(true);
@@ -112,6 +113,12 @@ const BlockEditor = () => {
 	const dragEnd = (e: any) => {
 		setShowDropZone(false);
 		setDragging(false);
+	}
+
+	const dragStart = (e: any) => {
+		var elem: any = document.createElement("div");
+		elem.textNode = "Dragging";
+		e.dataTransfer.setDragImage(elem, 500, 600);
 	}
 
 	const dragOverDropZone = useMemo(() => {
@@ -257,7 +264,7 @@ const BlockEditor = () => {
 			}
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
-					<div className="flex relative" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
+					<div className="flex relative" key={component.id} draggable={draggable} onDragStart={(e: any) => dragStart(e)} onDragEnter={(e: any) => dragEnter(e, component.id, index)} >
 						<div className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" >{index + 1}</div>
 						<div className="absolute top-0 flex w-auto bg-white h-10 border items-center ml-10" >
 							<svg onClick={() => setShowControll(false)} className="w-3 h-3 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
@@ -269,7 +276,7 @@ const BlockEditor = () => {
 							<svg onClick={() => deleteComponent(index)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z" /></svg>
 							{renderMoreControll(index)}
 						</div>
-						<div className="w-10/12 w-full" data-id={component.id} key={component.id} >
+						<div className="w-10/12 w-full" data-id={component.id} key={component.id}>
 							<div key={component.id} >
 								<component.component key={component.id} title={component.state} />
 							</div>
