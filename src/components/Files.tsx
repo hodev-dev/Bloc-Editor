@@ -43,9 +43,9 @@ const Files = () => {
 	/* --------------------------------- events --------------------------------- */
 	const click_on_list_item = (item: any) => {
 		// updates folder stack with adding item to it
-		if (item.title.includes('.bloc')) {
+		if (item.type === "F") {
 			//its file
-			console.log('files', item);
+			dispatch(filesAction.read_file(item));
 		} else {
 			// its dir
 			dispatch(filesAction.add_to_folder_stack(item.title));

@@ -1,23 +1,27 @@
 /* ---------------------- SECTION typescript interface ---------------------- */
 interface IAction {
   type: string
-  palyload: any
+  payload: any
 }
 interface initialBloc {
   loading: boolean,
-  bloc_state: Array<any>
+  bloc_state: Array<any>,
+  bloc_name: string,
+  bloc_path: string
 }
 /* -------------------------- SECTION initial state ------------------------- */
 const initialBloc: initialBloc = {
   loading: true,
-  bloc_state: []
+  bloc_state: [],
+  bloc_name: '',
+  bloc_path: ''
 }
 /* -------------------------- SECTION reducer body -------------------------- */
 function counterReducer(state = initialBloc, action: IAction) {
   switch (action.type) {
-    case "INC":
+    case "SET_BLOC":
       return {
-        ...state
+        ...state, bloc_state: action.payload.bloc_state, bloc_name: action.payload.bloc_name, bloc_path: action.payload.bloc_path
       }
     default:
       return state;

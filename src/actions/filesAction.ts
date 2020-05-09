@@ -1,5 +1,6 @@
 import path from 'path';
-
+import { v4 as uuidv4 } from 'uuid';
+import * as cmp from '../components/';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const request_path = () => (dispatch: any) => {
@@ -64,6 +65,54 @@ const go_to_folder_stack = () => (dispatch: any, getState: any) => {
     ipcRenderer.send('files:request_list', _path);
 }
 
+const read_file = (item: any) => (dispatch: any, getState: any) => {
+    const { project_path } = getState().filesReducer;
+    const { folder_stack } = getState().filesReducer;
+    const _path = path.join(project_path, ...folder_stack, item.title);
+    ipcRenderer.send('files:read_file', _path);
+    ipcRenderer.on('files:read_file', (event: any, data: any) => {
+        const parse_file = JSON.parse(data);
+        dispatch({
+            type: 'SET_BLOC',
+            payload: {
+                bloc_name: item.title,
+                bloc_state: parse_file,
+                bloc_path: _path,
+            }
+        })
+    });
+}
+
+const create_file = (answer: Array<string>) => (dispatch: any, getState: any) => {
+    const init_component = [
+        {
+            id: uuidv4(),
+            component: cmp.Text.name,
+            state: 'text-1'
+        }, {
+            id: uuidv4(),
+            component: cmp.Text.name,
+            state: 'text-2'
+        }
+    ];
+    const { project_path } = getState().filesReducer;
+    const { folder_stack } = getState().filesReducer;
+    const file_name = answer[0];
+    const _path = path.join(project_path, ...folder_stack, file_name + '.bloc');
+    ipcRenderer.send('files:create_bloc', _path, init_component);
+}
+
+const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => {
+    const cmplist = componentList.map((obj: any) => {
+        if (obj.component) {
+            obj.component = obj.component.name;
+        }
+        return obj;
+    });
+    console.log(cmplist)
+    ipcRenderer.send('files:save_bloc', bloc_path, cmplist);
+}
+
 
 /* -------------------------- unsbscribe to events -------------------------- */
 const unsubscribe = () => {
@@ -74,6 +123,7 @@ const unsubscribe = () => {
     ipcRenderer.removeListener('files:request_list', go_to_folder_stack);
     ipcRenderer.removeListener('files:request_list', pop_folder_stack);
     ipcRenderer.removeListener('files:get_list', get_list);
+    ipcRenderer.removeListener('files:read_file', read_file);
 }
 
 export {
@@ -85,5 +135,8 @@ export {
     add_to_folder_stack,
     pop_folder_stack,
     go_to_folder_stack,
+    read_file,
+    create_file,
+    save_file,
     unsubscribe,
 }

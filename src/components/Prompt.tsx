@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import path from 'path';
 import Fuse from 'fuse.js';
 import * as promptAction from '../actions/promptAction';
+import * as filesAction from '../actions/filesAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Prompt = () => {
@@ -81,23 +82,26 @@ const Prompt = () => {
             ]
         },
         {
-            title: "rename folder",
-            key: 'rnf',
+            title: "create bloc",
+            key: 'crb',
             mod: 'answer',
             value_mod: 'string',
-            value: ['test'],
+            value: [''],
             response: [
                 {
                     title: "confirm",
                     key: 'c',
-                    value: ['_value', 'yes'],
-                    fire: () => null,
+                    value: ['_value'],
+                    fire: (answer: Array<string>) => {
+                        dispatch(filesAction.create_file(answer));
+                        escape();
+                    },
                 },
                 {
                     title: "cancel",
                     key: 'c',
-                    value: ['no'],
-                    fire: () => null,
+                    value: [''],
+                    fire: (answer: Array<string>) => null,
                 }
             ]
         },

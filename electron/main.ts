@@ -1,4 +1,4 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, dialog } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut, dialog, ipcRenderer } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as isDev from 'electron-is-dev';
@@ -130,9 +130,10 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 		if (_files_watcher !== undefined) {
 			_files_watcher.close().then(() => console.log(' files watcher closed'));
 		}
-		_files_watcher = chokidar.watch(project_path, { usePolling: true, ignoreInitial: false, depth: 0, awaitWriteFinish: true });
+		_files_watcher = chokidar.watch(project_path, { persistent: true, usePolling: false, ignoreInitial: false, depth: 0, awaitWriteFinish: false });
 		let run_count = 0;
 		_files_watcher.on('all', (_event: any, _path: any) => {
+			console.log('run')
 			run_count++;
 			if (run_count === 1) {
 				const files = _filemanager.getFIleAndFolders(project_path);
@@ -162,4 +163,35 @@ ipcMain.on('prompt:create_folder', (event: any, _path: string) => {
 		log.info('folder exist')
 	}
 	log.info({ _path });
+});
+
+ipcMain.on('files:read_file', (event: any, _path: any) => {
+	fs.readFile(_path, { encoding: 'utf-8' }, (err, data) => {
+		if (!err) {
+			contents.send('files:read_file', data);
+		} else {
+			log.error(err);
+		}
+	});
+});
+
+ipcMain.on('files:create_bloc', (event: any, _path: string, component_data: any) => {
+	if (!fs.existsSync(_path)) {
+		fs.writeFile(_path, JSON.stringify(component_data), (err) => {
+			if (err) {
+				return log.error(err);
+			}
+		});
+	} else {
+		log.info('bloc exist');
+	}
+
+});
+
+ipcMain.on('files:save_bloc', (event: any, _path: string, component_data: any) => {
+	fs.writeFile(_path, JSON.stringify(component_data), (err) => {
+		if (err) {
+			log.error(err);
+		}
+	});
 });

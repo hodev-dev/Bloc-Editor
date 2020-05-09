@@ -1,46 +1,30 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useSelector, useDispatch } from 'react-redux';
+import * as cmp from '../components';
 import _ from 'lodash';
 import Text from './Text';
+import * as filesAction from '../actions/filesAction';
 
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
 
 	interface IComponentsList {
 		id: any,
-		component: (props: any) => JSX.Element,
+		component: (props: any) => JSX.Element | any
 		state: any
 	}
 
 	/* ------------------------------ globla state ------------------------------ */
+	const dispatch = useDispatch();
 	const { bloc_state } = useSelector((store: any) => store.blocReducer);
+	const { bloc_name } = useSelector((store: any) => store.blocReducer);
+	const { bloc_path } = useSelector((store: any) => store.blocReducer);
 	/* ------------------------------- local state ------------------------------ */
 
-	const componetsListInit: Array<IComponentsList> = [
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-1 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-2 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-3 state'
-		},
-		{
-			id: uuidv4(),
-			component: Text,
-			state: 'text-4 state'
-		},
-	];
+	const componetsListInit: Array<IComponentsList> = [];
 
-	const [componentList, setComponentList] = useState(componetsListInit);
+	const [componentList, setComponentList] = useState(bloc_state);
 	const [selectId, setSelectId] = useState('');
 	const [showDropZone, setShowDropZone] = useState(false);
 	const [showControll, setShowControll] = useState(false);
@@ -59,6 +43,10 @@ const BlockEditor = () => {
 			setDragOverID('')
 		};
 	}, [selectId]);
+
+	useEffect(() => {
+		setComponentList(bloc_state);
+	}, [bloc_state])
 	/* --------------------------------- methods -------------------------------- */
 
 	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string, ) => {
@@ -217,15 +205,15 @@ const BlockEditor = () => {
 					<nav className="flex flex-wrap sticky items-center justify-between border p-2 mx-auto ">
 						{/* ---------------------------------- left ---------------------------------- */}
 						<div className="hidden md:flex justify-start items-center mx-auto w-1/3 h-4">
-							<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
+							<h2 className="text-gray-700 text-sm font-semibold ">{bloc_path}</h2>
 						</div>
 						{/* --------------------------------- center --------------------------------- */}
 						<div className="flex justify-center items-center w-1/3  mx-auto">
-							<h2 className="text-gray-700 text-sm font-semibold ">Title</h2>
+							<h2 className="text-gray-700 text-sm font-semibold ">{bloc_name}</h2>
 						</div>
 						{/* ---------------------------------- right --------------------------------- */}
 						<div className="hidden md:flex justify-end items-center mx-auto w-1/3">
-							<h2 className="text-gray-700 text-sm font-semibold ">Controll</h2>
+							<button onClick={() => dispatch(filesAction.save_file(bloc_path, componentList))} className="text-gray-700 text-sm font-semibold ">Save</button>
 						</div>
 					</nav>
 				</div>
@@ -262,9 +250,11 @@ const BlockEditor = () => {
 			</div>
 		)
 	}
-
 	const renderComponents = () => {
-		return componentList.map((component, index) => {
+		return componentList.map((component: IComponentsList, index: number) => {
+			if (typeof (component.component) === 'string') {
+				component.component = cmp[component.component];
+			}
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
 					<div className="flex relative" key={component.id} draggable={draggable} onDragEnter={() => dragStart(component.id, index)} >
