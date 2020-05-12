@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { useSelector, useDispatch } from 'react-redux';
-import * as cmp from '../components';
+import * as cmp from '../../blocs';
 import _ from 'lodash';
-import Text from './Text';
-import * as filesAction from '../actions/filesAction';
+import Text from '../../blocs/Text';
+import * as filesAction from '../../actions/filesAction';
 import { start } from 'repl';
 
 const BlockEditor = () => {
@@ -21,6 +21,7 @@ const BlockEditor = () => {
 	const { bloc_state } = useSelector((store: any) => store.blocReducer);
 	const { bloc_name } = useSelector((store: any) => store.blocReducer);
 	const { bloc_path } = useSelector((store: any) => store.blocReducer);
+	const { is_changed } = useSelector((store: any) => store.blocReducer);
 	/* ------------------------------- local state ------------------------------ */
 
 	const componetsListInit: Array<IComponentsList> = [];
@@ -48,6 +49,7 @@ const BlockEditor = () => {
 	useEffect(() => {
 		setComponentList(bloc_state);
 	}, [bloc_state])
+
 	/* --------------------------------- methods -------------------------------- */
 
 	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string, ) => {
@@ -95,6 +97,11 @@ const BlockEditor = () => {
 		setToInput(e.target.value);
 	}
 
+	const saveFile = () => {
+		dispatch(filesAction.save_file(bloc_path, componentList));
+		dispatch(filesAction.togge_is_changed(false));
+	}
+
 	/* --------------------------------- events --------------------------------- */
 
 	const toggleControll = (e: any, id: string) => {
@@ -139,6 +146,7 @@ const BlockEditor = () => {
 		const _dragIndex = dragIndex;
 		const _dropIndex = index;
 		reOrderComponents(_dragIndex, _dropIndex, pos);
+		dispatch(filesAction.togge_is_changed(true));
 	}
 
 	/* ---------------------------- render functions ---------------------------- */
@@ -207,20 +215,21 @@ const BlockEditor = () => {
 
 	const renderTopPanel = () => {
 		if (bloc_state.length > 0) {
+			// 
 			return (
-				<div className="sticky bottom-0 bg-white">
-					<nav className="flex flex-wrap sticky items-center justify-between border p-2 mx-auto ">
+				<div className="sticky bottom-0">
+					<nav className="flex sticky items-center justify-between border mx-auto ">
 						{/* ---------------------------------- left ---------------------------------- */}
 						<div className="hidden md:flex justify-start items-center mx-auto w-1/3 h-4">
 							<h2 className="text-gray-700 text-sm font-semibold ">{bloc_path}</h2>
 						</div>
 						{/* --------------------------------- center --------------------------------- */}
 						<div className="flex justify-center items-center w-1/3  mx-auto">
-							<h2 className="text-gray-700 text-sm font-semibold ">{bloc_name}</h2>
+							<h2 className="text-gray-700 text-sm font-semibold">{bloc_name}</h2>
 						</div>
 						{/* ---------------------------------- right --------------------------------- */}
-						<div className="hidden md:flex justify-end items-center mx-auto w-1/3">
-							<button onClick={() => dispatch(filesAction.save_file(bloc_path, componentList))} className="text-gray-700 text-sm font-semibold ">Save</button>
+						<div className="hidden md:flex justify-end items-stretch mx-auto w-1/3">
+							<button onClick={() => saveFile()} className="text-gray-700 text-sm font-semibold rounded p-2">Save</button>
 						</div>
 					</nav>
 				</div>
@@ -231,6 +240,7 @@ const BlockEditor = () => {
 			)
 		}
 	}
+
 
 	const renderBlocPlaceHolder = () => {
 		return (
@@ -285,7 +295,7 @@ const BlockEditor = () => {
 				)
 			}
 			return (
-				<div className="flex" key={component.id}>
+				<div className="flex relative" key={component.id}>
 					<div onMouseOver={(e) => toggleControll(e, component.id)} className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500">{index + 1}</div>
 					<div className={(dragging && component.id === selectId) ? "w-11/12 w-full opacity-25" : "w-11/12 w-full"} key={component.id}   >
 						{(showDropZone) ? renderDropZones('BEFORE', index, component.id, component) : ''}
@@ -301,7 +311,7 @@ const BlockEditor = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="flex flex-col w-full max-h-screen bg-white-600">
+		<div className="flex flex-col w-full min-h-screen bg-white">
 			{renderTopPanel()}
 			<div className="overflow-y-auto" onDragEnd={(e) => dragEnd(e)}  >
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}

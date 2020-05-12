@@ -133,7 +133,6 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 		_files_watcher = chokidar.watch(project_path, { persistent: true, usePolling: false, ignoreInitial: false, depth: 0, awaitWriteFinish: false });
 		let run_count = 0;
 		_files_watcher.on('all', (_event: any, _path: any) => {
-			console.log('run')
 			run_count++;
 			if (run_count === 1) {
 				const files = _filemanager.getFIleAndFolders(project_path);
@@ -144,6 +143,7 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 						item.title = foldername;
 						const extention = path.extname(path.join(project_path, foldername));
 						item.type = (extention === '.bloc') ? "F" : 'D';
+						item.path = path.join(project_path, foldername);
 						list_with_meta.push(item);
 						item = {};
 					});

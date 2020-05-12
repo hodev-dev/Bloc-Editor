@@ -1,6 +1,6 @@
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
-import * as cmp from '../components/';
+import * as cmp from '../blocs';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const request_path = () => (dispatch: any) => {
@@ -109,11 +109,17 @@ const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => 
         }
         return obj;
     });
-    console.log(cmplist)
     ipcRenderer.send('files:save_bloc', bloc_path, cmplist);
 }
 
-
+const togge_is_changed = (_is_changed: boolean) => (dispatch: any) => {
+    dispatch({
+        type: 'TOGGLE_IS_CHANGED',
+        payload: {
+            is_changed: _is_changed
+        }
+    });
+}
 /* -------------------------- unsbscribe to events -------------------------- */
 const unsubscribe = () => {
     ipcRenderer.removeListener('files:get_path', get_path);
@@ -138,5 +144,6 @@ export {
     read_file,
     create_file,
     save_file,
+    togge_is_changed,
     unsubscribe,
 }

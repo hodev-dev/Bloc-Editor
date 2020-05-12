@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import path from 'path';
 import Fuse from 'fuse.js';
-import * as promptAction from '../actions/promptAction';
-import * as filesAction from '../actions/filesAction';
+import * as promptAction from '../../actions/promptAction';
+import * as filesAction from '../../actions/filesAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Prompt = () => {
@@ -20,6 +20,7 @@ const Prompt = () => {
         title: string,
         item?: any,
         value?: any,
+        info?: any,
         key: string,
         value_mod?: string,
         mod?: string,
@@ -34,7 +35,7 @@ const Prompt = () => {
         findAllMatches: false,
         minMatchCharLength: 0,
         location: 0,
-        threshold: 0.1,
+        threshold: 0.5,
         distance: 100,
         useExtendedSearch: false,
         keys: [
@@ -47,6 +48,7 @@ const Prompt = () => {
         {
             title: "create folder",
             key: 'crf',
+            info: 'Create Folder:',
             value: ['project_path', 'folder_stack'],
             mod: 'answer',
             value_mod: 'path',
@@ -54,11 +56,13 @@ const Prompt = () => {
                 {
                     title: "confirm",
                     key: 'cr',
+                    info: 'Enter Path To Create Folder:',
                     value: [''],
                     response: [
                         {
                             title: "create",
                             key: 'cr',
+                            info: 'Enter Folder Name:',
                             value: [''],
                             fire: (answer: Array<string>) => {
                                 dispatch(promptAction.create_folder(answer));
@@ -68,6 +72,7 @@ const Prompt = () => {
                         {
                             title: "cancel",
                             key: 'c',
+                            info: 'Cancel:',
                             value: [''],
                             fire: () => null,
                         }
@@ -75,6 +80,7 @@ const Prompt = () => {
                 },
                 {
                     title: "cancel",
+                    info: 'Cancel:',
                     key: 'c',
                     value: ['value'],
                     fire: () => null,
@@ -84,6 +90,7 @@ const Prompt = () => {
         {
             title: "create bloc",
             key: 'crb',
+            info: 'Create Bloc File:',
             mod: 'answer',
             value_mod: 'string',
             value: [''],
@@ -91,6 +98,7 @@ const Prompt = () => {
                 {
                     title: "confirm",
                     key: 'c',
+                    info: 'Enter Bloc File Name:',
                     value: ['_value'],
                     fire: (answer: Array<string>) => {
                         dispatch(filesAction.create_file(answer));
@@ -100,6 +108,7 @@ const Prompt = () => {
                 {
                     title: "cancel",
                     key: 'c',
+                    info: 'Cancel:',
                     value: [''],
                     fire: (answer: Array<string>) => null,
                 }
@@ -195,6 +204,7 @@ const Prompt = () => {
         setSelect(initAction);
         setAnswerStack([]);
         setAnswerMod(false);
+        setCursor(0);
     }
 
     const enter = (cmd: InitAction) => {
@@ -216,6 +226,11 @@ const Prompt = () => {
         }
         setValue(gv);
         setDepth(depth + 1);
+        setCursor(0);
+    }
+
+    const normalize_actionlist = () => {
+        return (actionList[cursor] && actionList[cursor].item !== undefined) ? actionList[cursor].item.info : (actionList[cursor] !== undefined) ? actionList[cursor].info : '';
     }
 
     /* --------------------------------- render --------------------------------- */
@@ -237,12 +252,14 @@ const Prompt = () => {
         });
         return render;
     }, [actionList, cursor]);
+
     const renderBody = () => {
+        console.log(select)
         if (display) {
             return (
                 <div className={"w-2/6 h-12 bg-transparent mt-10"}>
+                    <div className="text-gray-500 text-left">{normalize_actionlist()}</div>
                     <input autoFocus onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto bg-gray-100 h-full w-full bg-white text p-2 border rounded outline-none" value={value} type="text" />
-                    {/* <div className="text-gray-500 text-center">{info}</div> */}
                     <div className="mt-3">
                         {renderActionList}
                     </div>
@@ -254,6 +271,7 @@ const Prompt = () => {
             )
         }
     }
+
     return (
         <div className={`${(display) ? "absolute" : 'hidden'} w-full flex justify-center`}>
             {renderBody()}

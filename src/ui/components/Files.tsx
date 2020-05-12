@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import * as filesAction from '../actions/filesAction';
+import React, { useState, useEffect, useMemo } from 'react';
+import * as filesAction from '../../actions/filesAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Files = () => {
@@ -8,6 +8,10 @@ const Files = () => {
 	const { loading } = useSelector((store: any) => store.filesReducer);
 	const { list } = useSelector((store: any) => store.filesReducer);
 	const { folder_stack } = useSelector((store: any) => store.filesReducer);
+	const { is_changed } = useSelector((store: any) => store.blocReducer);
+	const { bloc_name } = useSelector((store: any) => store.blocReducer);
+	const { bloc_path } = useSelector((store: any) => store.blocReducer);
+
 	const dispatch = useDispatch();
 
 	/* ------------------------------- local state ------------------------------ */
@@ -91,15 +95,15 @@ const Files = () => {
 	}
 
 	const renderList = () => {
-		if (loading) {
+		if (loading && list.length === 0) {
 			return (
 				<div>loading</div>
 			)
-		} else {
+		} else if (!loading && list.length > 0) {
 			return list.map((item: any, index: number) => {
 				return (
 					<div key={index} className="bg-gray-100">
-						<button onClick={() => click_on_list_item(item)} className="flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 font-bold text-sm text-left hover:bg-pink-900 hover:text-white">
+						<button onClick={() => click_on_list_item(item)} className={`flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 font-bold text-sm text-left hover:bg-pink-900 hover:text-white ${(is_changed && item.path === bloc_path) ? 'bg-yellow-200' : 'bg-white'} bg-white`}>
 							{render_list_icon(item)}
 							{item.title}
 						</button>
@@ -108,6 +112,9 @@ const Files = () => {
 			});
 		}
 	}
+
+	const renderListMemo = useMemo(() => renderList(), [loading, list, is_changed]);
+
 	/* ------------------------------- main render ------------------------------ */
 	return (
 		<div className="w-64 bg-gray-100 self-stretch">
@@ -131,7 +138,7 @@ const Files = () => {
 						{renderBack()}
 					</div>
 					<div>
-						{renderList()}
+						{renderListMemo}
 					</div>
 				</ul>
 			</div>
