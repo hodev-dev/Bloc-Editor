@@ -159,8 +159,20 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 ipcMain.on('prompt:create_folder', (event: any, _path: string) => {
 	if (!fs.existsSync(_path)) {
 		fs.mkdirSync(_path);
+		contents.send('notification:push', [
+			{
+				type: "Success",
+				messege: "Folder Created",
+			}
+		]);
 	} else {
 		log.info('folder exist')
+		contents.send('notification:push', [
+			{
+				type: "Error",
+				messege: "Folder Already Exists!",
+			}
+		]);
 	}
 	log.info({ _path });
 });
@@ -178,9 +190,13 @@ ipcMain.on('files:read_file', (event: any, _path: any) => {
 ipcMain.on('files:create_bloc', (event: any, _path: string, component_data: any) => {
 	fs.writeFile(_path, JSON.stringify(component_data), (err) => {
 		if (err) {
-			return log.error(err);
+			contents.send('notification:push', [
+				{
+					type: "Error",
+					messege: "Can't Create Bloc File!",
+				}
+			]);
 		}
-		log.info('send')
 		contents.send('notification:push', [
 			{
 				type: "Success",
@@ -193,7 +209,18 @@ ipcMain.on('files:create_bloc', (event: any, _path: string, component_data: any)
 ipcMain.on('files:save_bloc', (event: any, _path: string, component_data: any) => {
 	fs.writeFile(_path, JSON.stringify(component_data), (err) => {
 		if (err) {
-			log.error(err);
+			contents.send('notification:push', [
+				{
+					type: "Error",
+					messege: "Can't Save File!",
+				}
+			]);
 		}
+		contents.send('notification:push', [
+			{
+				type: "Info",
+				messege: "Bloc File Saved!",
+			}
+		]);
 	});
 });

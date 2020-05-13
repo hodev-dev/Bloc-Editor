@@ -14,10 +14,10 @@ const Notification = () => {
   }, []);
 
   useEffect(() => {
-    const notification_timeout = notification_list.forEach(() => {
+    const notification_timeout = notification_list.forEach((item: any, index: number) => {
       setTimeout(() => {
         dispatch(notificationAction.shift_notification())
-      }, 6000);
+      }, 5000 + (index * 5000));
     });
     return () => {
       clearTimeout(notification_timeout);
