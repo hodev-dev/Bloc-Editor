@@ -139,6 +139,10 @@ const Prompt = () => {
             setActionList(select);
         }
     }, [select, value]);
+
+    useEffect(() => {
+        setValue('');
+    }, [display])
     /* --------------------------------- events --------------------------------- */
 
     const handleChange = (e: any) => {
@@ -199,12 +203,12 @@ const Prompt = () => {
         return _value;
     }
     const escape = () => {
-        setValue('');
         promptAction.dispatchToggleDisplay();
         setSelect(initAction);
         setAnswerStack([]);
         setAnswerMod(false);
         setCursor(0);
+        setValue('');
     }
 
     const enter = (cmd: InitAction) => {
@@ -254,7 +258,6 @@ const Prompt = () => {
     }, [actionList, cursor]);
 
     const renderBody = () => {
-        console.log(select)
         if (display) {
             return (
                 <div className={"w-2/6 h-12 bg-transparent mt-10"}>

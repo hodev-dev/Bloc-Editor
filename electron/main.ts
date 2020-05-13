@@ -176,16 +176,18 @@ ipcMain.on('files:read_file', (event: any, _path: any) => {
 });
 
 ipcMain.on('files:create_bloc', (event: any, _path: string, component_data: any) => {
-	if (!fs.existsSync(_path)) {
-		fs.writeFile(_path, JSON.stringify(component_data), (err) => {
-			if (err) {
-				return log.error(err);
+	fs.writeFile(_path, JSON.stringify(component_data), (err) => {
+		if (err) {
+			return log.error(err);
+		}
+		log.info('send')
+		contents.send('notification:push', [
+			{
+				type: "Success",
+				messege: "bloc file created",
 			}
-		});
-	} else {
-		log.info('bloc exist');
-	}
-
+		]);
+	});
 });
 
 ipcMain.on('files:save_bloc', (event: any, _path: string, component_data: any) => {

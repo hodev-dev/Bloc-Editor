@@ -3,6 +3,7 @@ import ActionBar from '../ui/components/ActionBar';
 import BlockEditor from '../ui/components/BlockEditor';
 import Prompt from '../ui/components/Prompt';
 import Files from '../ui/components/Files';
+import Notification from '../ui/components/Notification';
 
 const Editor = () => {
     return (
@@ -12,6 +13,7 @@ const Editor = () => {
             <Files />
             <BlockEditor />
             <Prompt />
+            <Notification />
         </div>
     );
 }

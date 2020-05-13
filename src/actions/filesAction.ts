@@ -6,6 +6,7 @@ const ipcRenderer = window.require('electron').ipcRenderer;
 const request_path = () => (dispatch: any) => {
     ipcRenderer.send('files:get_path');
 }
+
 const get_path = () => (dispatch: any) => {
     ipcRenderer.on('files:get_path', (event: any, _project_path: string) => {
         dispatch({
@@ -130,6 +131,7 @@ const unsubscribe = () => {
     ipcRenderer.removeListener('files:request_list', pop_folder_stack);
     ipcRenderer.removeListener('files:get_list', get_list);
     ipcRenderer.removeListener('files:read_file', read_file);
+    ipcRenderer.removeAllListeners('files:create_bloc');
 }
 
 export {
