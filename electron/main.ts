@@ -158,6 +158,7 @@ ipcMain.on('files:request_list', (event: any, project_path: any) => {
 
 ipcMain.on('prompt:create_folder', (event: any, _path: string) => {
 	if (!fs.existsSync(_path)) {
+		log.info({ _path })
 		fs.mkdirSync(_path);
 		contents.send('notification:push', [
 			{

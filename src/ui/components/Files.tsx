@@ -1,9 +1,12 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import * as filesAction from '../../actions/filesAction';
+import * as promptAction from '../../actions/promptAction';
 import { useSelector, useDispatch } from 'react-redux';
 
 const Files = () => {
 	/* ------------------------------ global state ------------------------------ */
+	const dispatch = useDispatch();
+
 	const { project_path } = useSelector((store: any) => store.filesReducer);
 	const { loading } = useSelector((store: any) => store.filesReducer);
 	const { list } = useSelector((store: any) => store.filesReducer);
@@ -11,8 +14,7 @@ const Files = () => {
 	const { is_changed } = useSelector((store: any) => store.blocReducer);
 	const { bloc_name } = useSelector((store: any) => store.blocReducer);
 	const { bloc_path } = useSelector((store: any) => store.blocReducer);
-
-	const dispatch = useDispatch();
+	const { bloc_state } = useSelector((store: any) => store.blocReducer);
 
 	/* ------------------------------- local state ------------------------------ */
 	useEffect(() => {
@@ -49,18 +51,26 @@ const Files = () => {
 		// updates folder stack with adding item to it
 		if (item.type === "F") {
 			//its file
-			dispatch(filesAction.read_file(item));
+			if (is_changed) {
+				// if file changed save file first then switch to other file
+				dispatch(filesAction.save_file(bloc_path, bloc_state));
+				dispatch(filesAction.togge_is_changed(false));
+				dispatch(filesAction.read_file(item));
+			} else {
+				dispatch(filesAction.read_file(item));
+			}
 		} else {
 			// its dir
 			dispatch(filesAction.add_to_folder_stack(item.title));
 		}
 	}
+
 	const click_on_back = () => {
 		dispatch(filesAction.pop_folder_stack());
 	}
 
 	const click_new_folder = () => {
-		console.log('clicked');
+		dispatch(promptAction.set_select('crf'));
 	}
 
 	/* --------------------------------- render --------------------------------- */

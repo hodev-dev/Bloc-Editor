@@ -13,6 +13,7 @@ const Prompt = () => {
     const { project_path } = useSelector((store: any) => store.filesReducer);
     const { folder_stack } = useSelector((store: any) => store.filesReducer);
     const { display } = useSelector((store: any) => store.promptReducer);
+    const { select_action } = useSelector((store: any) => store.promptReducer);
 
     /* ------------------------------- local state ------------------------------ */
 
@@ -39,7 +40,6 @@ const Prompt = () => {
         distance: 100,
         useExtendedSearch: false,
         keys: [
-            "title",
             'key'
         ]
     };
@@ -141,11 +141,28 @@ const Prompt = () => {
     }, [select, value]);
 
     useEffect(() => {
+        // set value to empty when display mod change
         setValue('');
     }, [display])
+
+    useEffect(() => {
+        // listen to change key of list and enter that key
+        if (select_action) {
+            actionList.forEach((action: any) => {
+                if (action.key === select_action) {
+                    enter(action)
+                    setAnswerStack([]);
+                    promptAction.display(true);
+                }
+            });
+        }
+    }, [select_action, value]);
+
+
     /* --------------------------------- events --------------------------------- */
 
     const handleChange = (e: any) => {
+        // two way data binding for input and update fuzzy search
         e.preventDefault();
         setValue(e.target.value);
         if (e.target.value === '') {
@@ -159,6 +176,7 @@ const Prompt = () => {
     }
 
     const handleKeyDown = (e: any) => {
+        // handle arrow up and arrow down key
         if (e.keyCode === 38 && cursor > 0) {
             e.preventDefault();
             setCursor((prevCursor) => prevCursor - 1);
@@ -191,7 +209,6 @@ const Prompt = () => {
                 temp.push(...cmd.value);
             }
         });
-
         // middleware
         if (cmd.value_mod && cmd.value_mod === "path") {
             _value = path.join(...temp, '/');
@@ -201,14 +218,6 @@ const Prompt = () => {
         }
         temp = [];
         return _value;
-    }
-    const escape = () => {
-        promptAction.dispatchToggleDisplay();
-        setSelect(initAction);
-        setAnswerStack([]);
-        setAnswerMod(false);
-        setCursor(0);
-        setValue('');
     }
 
     const enter = (cmd: InitAction) => {
@@ -231,6 +240,16 @@ const Prompt = () => {
         setValue(gv);
         setDepth(depth + 1);
         setCursor(0);
+    }
+
+    const escape = () => {
+        promptAction.dispatchToggleDisplay();
+        setSelect(initAction);
+        setAnswerStack([]);
+        setAnswerMod(false);
+        setCursor(0);
+        setValue('');
+        dispatch(promptAction.set_select(''));
     }
 
     const normalize_actionlist = () => {
