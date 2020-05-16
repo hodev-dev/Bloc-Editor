@@ -270,7 +270,7 @@ const BlockEditor = () => {
 	const renderComponents = () => {
 		return componentList.map((component: IComponentsList, index: number) => {
 			if (typeof (component.component) === 'string') {
-				component.component = cmp[component.component];
+				component.component = cmp[component.component]['component'];
 			}
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (

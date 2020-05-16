@@ -45,7 +45,7 @@
     "postinstall": "electron-builder install-app-deps",
     "r:dev": "BROWSER=none yarn start",
     "e:dev": "concurrently \"BROWSER=none yarn start\" \"tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron &&  electron .\"",
-    "e:build": "yarn build && tsc -p electron && electron-builder",
+    "e:build": "yarn build && tsc -p electron && electron-builder --linux --windows",
     "build:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "watch:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "test": "react-scripts test",
@@ -87,6 +87,9 @@
       "target": [
         "AppImage"
       ]
+    },
+    "win": {
+      "target": "nsis"
     },
     "files": [
       "build/**/*"

@@ -88,14 +88,15 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
     const init_component = [
         {
             id: uuidv4(),
-            component: cmp.Text.name,
+            component: cmp._Text.name,
             state: 'text-1'
         }, {
             id: uuidv4(),
-            component: cmp.Text.name,
+            component: cmp._Text.name,
             state: 'text-2'
         }
     ];
+    console.log({ init_component })
     const { project_path } = getState().filesReducer;
     const { folder_stack } = getState().filesReducer;
     const file_name = answer[0];
@@ -106,7 +107,7 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
 const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => {
     const cmplist = componentList.map((obj: any) => {
         if (obj.component) {
-            obj.component = obj.component.name;
+            obj.component = "_" + obj.component.name;
         }
         return obj;
     });
