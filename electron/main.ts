@@ -72,6 +72,9 @@ app.on('ready', () => {
 	globalShortcut.register('CommandOrControl+Shift+p', () => {
 		contents.send('prompt:toggleDisplay');
 	})
+	globalShortcut.register('CommandOrControl+Shift+n', () => {
+		contents.send('searchableList:toggleDisplay');
+	});
 	contents.on('did-finish-load', () => {
 	});
 });

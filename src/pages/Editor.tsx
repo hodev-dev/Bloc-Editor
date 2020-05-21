@@ -12,7 +12,6 @@ const Editor = () => {
             {/* <Explorer/> */}
             <Files />
             <BlockEditor />
-            <Prompt />
             <Notification />
         </div>
     );

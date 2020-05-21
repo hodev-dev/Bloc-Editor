@@ -32,15 +32,15 @@ const Prompt = () => {
         isCaseSensitive: false,
         // includeScore: false,
         shouldSort: true,
-        includeMatches: false,
-        findAllMatches: false,
-        minMatchCharLength: 0,
+        includeMatches: true,
+        findAllMatches: true,
+        minMatchCharLength: 3,
         location: 0,
-        threshold: 0.5,
+        threshold: 0.1,
         distance: 100,
-        useExtendedSearch: false,
+        useExtendedSearch: true,
         keys: [
-            'key'
+            'title'
         ]
     };
 
@@ -171,6 +171,7 @@ const Prompt = () => {
             if (answerMod === false) {
                 const filteredActionList: Array<InitAction> = fuse?.search(value);
                 setSelect(filteredActionList);
+                setActionList(filteredActionList)
             }
         }
     }

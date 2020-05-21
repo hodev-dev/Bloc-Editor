@@ -88,11 +88,11 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
     const init_component = [
         {
             id: uuidv4(),
-            component: cmp._Text.name,
+            component: cmp.Bloc_Components.Text.name,
             state: 'text-1'
         }, {
             id: uuidv4(),
-            component: cmp._Text.name,
+            component: cmp.Bloc_Components.Text.name,
             state: 'text-2'
         }
     ];
@@ -107,7 +107,7 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
 const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => {
     const cmplist = componentList.map((obj: any) => {
         if (obj.component) {
-            obj.component = "_" + obj.component.name;
+            obj.component = cmp.Bloc_Components[obj.component.name]['name'];
         }
         return obj;
     });

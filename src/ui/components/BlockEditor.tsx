@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { useSelector, useDispatch } from 'react-redux';
 import * as cmp from '../../blocs';
 import _ from 'lodash';
-import Text from '../../blocs/Text';
 import * as filesAction from '../../actions/filesAction';
-import { start } from 'repl';
+import * as searchableListAction from '../../actions/searchableListAction';
+import SearchableList from "../components/SearchableList";
+import Prompt from '../components/Prompt';
 
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
@@ -22,6 +22,7 @@ const BlockEditor = () => {
 	const { bloc_name } = useSelector((store: any) => store.blocReducer);
 	const { bloc_path } = useSelector((store: any) => store.blocReducer);
 	const { is_changed } = useSelector((store: any) => store.blocReducer);
+	const { display } = useSelector((store: any) => store.searchableListReducer);
 	/* ------------------------------- local state ------------------------------ */
 
 	const componetsListInit: Array<IComponentsList> = [];
@@ -40,6 +41,13 @@ const BlockEditor = () => {
 	const [toInput, setToInput] = useState(-1);
 
 	/* ---------------------------------- hooks --------------------------------- */
+	useEffect(() => {
+		searchableListAction.listen();
+		return () => {
+			searchableListAction.unsubscribe();
+		};
+	}, [])
+
 	useEffect(() => {
 		return () => {
 			setDragOverID('')
@@ -244,7 +252,7 @@ const BlockEditor = () => {
 
 	const renderBlocPlaceHolder = () => {
 		return (
-			<div className="flex flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden">
+			<div className="flex w-full flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden">
 				<div className="flex flex-row mt-5 mx-auto w-8/12 justify-center">
 					<h1 className="font-light text-6xl text-pink-900 select-none">.Bloc Editor</h1>
 				</div>
@@ -267,10 +275,27 @@ const BlockEditor = () => {
 			</div>
 		)
 	}
+	const renderBlocComponentList = (): Array<JSX.Element> | any => {
+		let temp: Array<any> = [];
+		Object.keys(cmp.Bloc_Components).map(key => {
+			temp.push(cmp.Bloc_Components[key]);
+		});
+		return temp.map((item) => {
+			return (
+				<div className="flex w-full border mt-1">
+					<div className="w-5/6 p-2 font-semibold">
+						{item.name}
+					</div>
+					<button className="w-1/6 bg-green-600 text-white text-center bg-gray-200 h-full self-stretch p-2">Add</button>
+				</div>
+			)
+		});
+	}
+
 	const renderComponents = () => {
 		return componentList.map((component: IComponentsList, index: number) => {
 			if (typeof (component.component) === 'string') {
-				component.component = cmp[component.component]['component'];
+				component.component = cmp.Bloc_Components[component.component]['component'];
 			}
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
@@ -311,11 +336,13 @@ const BlockEditor = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="flex flex-col w-full min-h-screen bg-white">
+		<div className="flex flex-col max-w-full w-full min-h-screen bg-white relative">
 			{renderTopPanel()}
 			<div className="overflow-y-auto" onDragEnd={(e) => dragEnd(e)}  >
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}
 			</div>
+			<SearchableList display={display} list={cmp.Bloc_Components_Array} is_exist={bloc_path} />
+			<Prompt />
 		</div>
 	);
 }
