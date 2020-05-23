@@ -3,7 +3,7 @@ interface IAction {
     type: string,
     payload: any
 }
-interface initialFiles {
+export interface IinitialFiles {
     loading: boolean,
     project_path: string,
     root_path: string,
@@ -11,7 +11,7 @@ interface initialFiles {
     folder_stack: Array<string>
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialFiles: initialFiles = {
+const initialFiles: IinitialFiles = {
     loading: true,
     project_path: "",
     root_path: "",

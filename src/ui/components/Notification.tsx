@@ -1,10 +1,11 @@
 import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as notificationAction from '../../actions/notificationAction';
+import { IrootReducer } from '../../reducers/rootReducer';
 
 const Notification = () => {
   const dispatch = useDispatch();
-  const { notification_list } = useSelector((store: any) => store.notificationReducer);
+  const { notification_list } = useSelector((store: IrootReducer) => store.notificationReducer);
 
   useEffect(() => {
     dispatch(notificationAction.listen());
@@ -14,13 +15,14 @@ const Notification = () => {
   }, []);
 
   useEffect(() => {
+    let _timer: NodeJS.Timeout;
     const notification_timeout = notification_list.forEach((item: any, index: number) => {
-      setTimeout(() => {
+      _timer = setTimeout(() => {
         dispatch(notificationAction.shift_notification())
       }, 5000 + (index * 5000));
     });
     return () => {
-      clearTimeout(notification_timeout);
+      clearTimeout(_timer);
     }
   }, [notification_list])
 

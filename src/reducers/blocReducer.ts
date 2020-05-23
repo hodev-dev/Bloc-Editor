@@ -5,7 +5,7 @@ interface IAction {
   type: string
   payload: any
 }
-interface initialBloc {
+export interface IinitialBloc {
   loading: boolean,
   bloc_state: Array<any>,
   bloc_name: string,
@@ -13,7 +13,7 @@ interface initialBloc {
   is_changed: boolean
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialBloc: initialBloc = {
+const initialBloc: IinitialBloc = {
   loading: true,
   bloc_state: [],
   bloc_name: '',

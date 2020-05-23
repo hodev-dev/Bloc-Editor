@@ -3,11 +3,11 @@ interface IAction {
   type: string,
   payload: any
 }
-interface initialNotification {
+export interface IinitialNotification {
   notification_list: Array<any>,
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialNotification: initialNotification = {
+const initialNotification: IinitialNotification = {
   notification_list: [],
 }
 /* -------------------------- SECTION reducer body -------------------------- */

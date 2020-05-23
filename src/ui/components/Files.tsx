@@ -2,19 +2,20 @@ import React, { useState, useEffect, useMemo } from 'react';
 import * as filesAction from '../../actions/filesAction';
 import * as promptAction from '../../actions/promptAction';
 import { useSelector, useDispatch } from 'react-redux';
-
+import { IrootReducer } from '../../reducers/rootReducer';
 const Files = () => {
+
 	/* ------------------------------ global state ------------------------------ */
 	const dispatch = useDispatch();
 
-	const { project_path } = useSelector((store: any) => store.filesReducer);
-	const { loading } = useSelector((store: any) => store.filesReducer);
-	const { list } = useSelector((store: any) => store.filesReducer);
-	const { folder_stack } = useSelector((store: any) => store.filesReducer);
-	const { is_changed } = useSelector((store: any) => store.blocReducer);
-	const { bloc_name } = useSelector((store: any) => store.blocReducer);
-	const { bloc_path } = useSelector((store: any) => store.blocReducer);
-	const { bloc_state } = useSelector((store: any) => store.blocReducer);
+	const { project_path } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { loading } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { list } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { folder_stack } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { is_changed } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { bloc_name } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { bloc_path } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 
 	/* ------------------------------- local state ------------------------------ */
 	useEffect(() => {

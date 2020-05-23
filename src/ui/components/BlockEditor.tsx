@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import * as cmp from '../../blocs';
 import _ from 'lodash';
+import * as cmp from '../../blocs';
 import * as uuid from 'uuid';
 import * as filesAction from '../../actions/filesAction';
 import * as searchableListAction from '../../actions/searchableListAction';
 import SearchableList from "../components/SearchableList";
 import Prompt from '../components/Prompt';
+import { IrootReducer } from '../../reducers/rootReducer';
 
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
@@ -19,11 +20,11 @@ const BlockEditor = () => {
 
 	/* ------------------------------ globla state ------------------------------ */
 	const dispatch = useDispatch();
-	const { bloc_state } = useSelector((store: any) => store.blocReducer);
-	const { bloc_name } = useSelector((store: any) => store.blocReducer);
-	const { bloc_path } = useSelector((store: any) => store.blocReducer);
-	const { is_changed } = useSelector((store: any) => store.blocReducer);
-	const { display } = useSelector((store: any) => store.searchableListReducer);
+	const { bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { bloc_name } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { bloc_path } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { is_changed } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { display } = useSelector((store: IrootReducer) => store.searchableListReducer);
 	/* ------------------------------- local state ------------------------------ */
 
 	const componetsListInit: Array<IComponentsList> = [];
@@ -102,8 +103,8 @@ const BlockEditor = () => {
 		setShowControll(false);
 	}
 
-	const componentInput = (e: any) => {
-		setToInput(e.target.value);
+	const componentInput = (e: React.FormEvent<HTMLInputElement>) => {
+		setToInput(Number((e.target as HTMLInputElement).value));
 	}
 
 	const saveFile = () => {
@@ -132,7 +133,7 @@ const BlockEditor = () => {
 	}
 
 	const dragStart = (e: any) => {
-		var elem: any = document.createElement("div");
+		let elem: any = document.createElement("div");
 		elem.textNode = "Dragging";
 		e.dataTransfer.setDragImage(elem, 500, 600);
 	}
@@ -164,7 +165,7 @@ const BlockEditor = () => {
 			component: _component.component,
 			state: 'text'
 		}
-		setComponentList((prevState: any) => [...prevState, _generate_component]);
+		setComponentList((prevState: Array<IComponentsList>) => [...prevState, _generate_component]);
 	}
 	/* ---------------------------- render functions ---------------------------- */
 
@@ -284,23 +285,6 @@ const BlockEditor = () => {
 			</div>
 		)
 	}
-	const renderBlocComponentList = (): Array<JSX.Element> | any => {
-		let temp: Array<any> = [];
-		Object.keys(cmp.Bloc_Components).map(key => {
-			temp.push(cmp.Bloc_Components[key]);
-		});
-		return temp.map((item) => {
-			return (
-				<div className="flex w-full border mt-1">
-					<div className="w-5/6 p-2 font-semibold">
-						{item.name}
-					</div>
-					<button className="w-1/6 bg-green-600 text-white text-center bg-gray-200 h-full self-stretch p-2">Add</button>
-				</div>
-			)
-		});
-	}
-
 	const renderComponents = () => {
 		return componentList.map((component: IComponentsList, index: number) => {
 			if (typeof (component.component) === 'string') {

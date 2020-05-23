@@ -4,16 +4,17 @@ import Fuse from 'fuse.js';
 import * as promptAction from '../../actions/promptAction';
 import * as filesAction from '../../actions/filesAction';
 import { useSelector, useDispatch } from 'react-redux';
+import { IrootReducer } from '../../reducers/rootReducer';
 
 const Prompt = () => {
     const dispatch = useDispatch();
 
     /* ------------------------------ global state ------------------------------ */
 
-    const { project_path } = useSelector((store: any) => store.filesReducer);
-    const { folder_stack } = useSelector((store: any) => store.filesReducer);
-    const { display } = useSelector((store: any) => store.promptReducer);
-    const { select_action } = useSelector((store: any) => store.promptReducer);
+    const { project_path } = useSelector((store: IrootReducer) => store.filesReducer);
+    const { folder_stack } = useSelector((store: IrootReducer) => store.filesReducer);
+    const { display } = useSelector((store: IrootReducer) => store.promptReducer);
+    const { select_action } = useSelector((store: IrootReducer) => store.promptReducer);
 
     /* ------------------------------- local state ------------------------------ */
 

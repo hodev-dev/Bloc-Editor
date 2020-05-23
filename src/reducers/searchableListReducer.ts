@@ -3,11 +3,11 @@ interface IAction {
   type: string,
   payload: any
 }
-interface initialCount {
+export interface IinitialSearchableList {
   display: boolean,
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialCount: initialCount = {
+const initialCount: IinitialSearchableList = {
   display: false,
 }
 /* -------------------------- SECTION reducer body -------------------------- */

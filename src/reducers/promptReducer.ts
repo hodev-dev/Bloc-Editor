@@ -3,12 +3,12 @@ interface IAction {
     type: string,
     payload: any
 }
-interface initialCount {
+export interface IinitialPrompt {
     display: boolean,
     select_action: string
 }
 /* -------------------------- SECTION initial state ------------------------- */
-const initialPrompt: initialCount = {
+const initialPrompt: IinitialPrompt = {
     display: false,
     select_action: ''
 }
