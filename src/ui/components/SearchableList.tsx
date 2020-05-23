@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Fuse from 'fuse.js';
+import * as searchableListAction from '../../actions/searchableListAction';
+
 const SearchableList = (props: any) => {
 
   const fuseOptions = {
@@ -18,7 +20,7 @@ const SearchableList = (props: any) => {
     ]
   };
 
-  const { list, display, is_exist } = props;
+  const { list, display, is_exist, callback } = props;
   const inputRef = useRef<any>(null);
   const bodyRef = useRef<any>(null);
   const [value, setValue] = useState('');
@@ -52,6 +54,7 @@ const SearchableList = (props: any) => {
 
   const handleChange = () => {
     setValue(inputRef.current.value);
+    setCursor(0);
   }
 
   const normalizer = (component: any) => {
@@ -63,16 +66,17 @@ const SearchableList = (props: any) => {
     if (e.keyCode === 38 && cursor > 0) {
       // e.preventDefault();
       setCursor((prevCursor) => prevCursor - 1);
-      bodyRef.current.scrollTo(bodyRef.current.scrollTop, bodyRef.current.scrollTop - bodyRef.current.childNodes[cursor - 1].scrollHeight);
-    } else if (e.keyCode === 40 && cursor < list.length - 1) {
+      // bodyRef.current.scrollTo(bodyRef.current.scrollTop, bodyRef.current.scrollTop - bodyRef.current.childNodes[cursor - 1].scrollHeight);
+    } else if (e.keyCode === 40 && cursor < listArray.length - 1) {
       // e.preventDefault();
       setCursor((prevCursor) => prevCursor + 1);
-      bodyRef.current.scrollTo(bodyRef.current.scrollTop, bodyRef.current.childNodes[cursor + 1].scrollHeight + bodyRef.current.scrollTop);
-      console.log(bodyRef);
+      // bodyRef.current.scrollTo(bodyRef.current.scrollTop, bodyRef.current.childNodes[cursor + 1].scrollHeight + bodyRef.current.scrollTop);
     } else if (e.keyCode === 13) {
-      console.log('escape')
+      console.log({ listArray })
+      const _listAraay = (listArray[cursor].item) ? listArray[cursor].item : listArray[cursor];
+      callback(_listAraay);
     } else if (e.keyCode === 27) {
-      console.log('enter')
+      searchableListAction.dispatchToggleDisplay();
     }
   }
 

@@ -17,6 +17,10 @@ const Bloc_Components: any = {
     name: "Link",
     component: Text
   },
+  Math_Table: {
+    name: "Math_Table",
+    component: Text
+  },
   Video: {
     name: "Video",
     component: Text

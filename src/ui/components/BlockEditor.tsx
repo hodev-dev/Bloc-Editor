@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import * as cmp from '../../blocs';
 import _ from 'lodash';
+import * as uuid from 'uuid';
 import * as filesAction from '../../actions/filesAction';
 import * as searchableListAction from '../../actions/searchableListAction';
 import SearchableList from "../components/SearchableList";
@@ -157,6 +158,14 @@ const BlockEditor = () => {
 		dispatch(filesAction.togge_is_changed(true));
 	}
 
+	const add_component = (_component: any) => {
+		const _generate_component = {
+			id: uuid.v1(),
+			component: _component.component,
+			state: 'text'
+		}
+		setComponentList((prevState: any) => [...prevState, _generate_component]);
+	}
 	/* ---------------------------- render functions ---------------------------- */
 
 	const renderMoreControll = (index: number) => {
@@ -341,7 +350,7 @@ const BlockEditor = () => {
 			<div className="overflow-y-auto" onDragEnd={(e) => dragEnd(e)}  >
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}
 			</div>
-			<SearchableList display={display} list={cmp.Bloc_Components_Array} is_exist={bloc_path} />
+			<SearchableList display={display} list={cmp.Bloc_Components_Array} is_exist={bloc_path} callback={add_component} />
 			<Prompt />
 		</div>
 	);
