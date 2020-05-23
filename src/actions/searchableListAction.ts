@@ -1,8 +1,6 @@
 import path from 'path';
 import { store } from '../App';
-
 const ipcRenderer = window.require('electron').ipcRenderer;
-
 /* ------------------------- listen too all electron evenets ------------------------- */
 const listen = () => {
   listenToggleDisplay();
@@ -16,8 +14,6 @@ const toggleDisplay = (display: boolean) => {
     }
   }
 }
-
-
 /* -------------------------- redux action dispatcher -------------------------- */
 const dispatchToggleDisplay = () => {
   const { display } = store.getState().searchableListReducer;

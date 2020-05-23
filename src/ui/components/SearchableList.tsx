@@ -5,7 +5,19 @@ import * as searchableListAction from '../../actions/searchableListAction';
 const SearchableList = (props: any) => {
 
   /* ---------------------------- global variables ---------------------------- */
-  const fuseOptions = {
+  interface IfuseOption {
+    isCaseSensitive: boolean;
+    shouldSort: boolean;
+    includeMatches: boolean;
+    findAllMatches: boolean;
+    minMatchCharLength: number;
+    location: number;
+    threshold: number;
+    distance: number;
+    useExtendedSearch: boolean;
+    keys: string[];
+  }
+  const fuseOptions: IfuseOption = {
     isCaseSensitive: false,
     // includeScore: false,
     shouldSort: true,
@@ -30,7 +42,7 @@ const SearchableList = (props: any) => {
   const [fuse, setFuse] = useState<any>();
   /* --------------------------------- effects -------------------------------- */
   useEffect(() => {
-    let fuse: any = new Fuse(list, fuseOptions);
+    let fuse: Fuse<any, IfuseOption> = new Fuse(list, fuseOptions);
     setFuse(fuse);
   }, []);
 

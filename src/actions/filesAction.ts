@@ -96,7 +96,6 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
             state: 'text-2'
         }
     ];
-    console.log({ init_component })
     const { project_path } = getState().filesReducer;
     const { folder_stack } = getState().filesReducer;
     const file_name = answer[0];
@@ -123,6 +122,7 @@ const togge_is_changed = (_is_changed: boolean) => (dispatch: any) => {
     });
 }
 /* -------------------------- unsbscribe to events -------------------------- */
+// memory leak bug fix
 const unsubscribe = () => {
     ipcRenderer.removeListener('files:get_path', get_path);
     ipcRenderer.removeListener('files:select_path', select_path);
