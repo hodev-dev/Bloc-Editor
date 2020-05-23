@@ -4,6 +4,7 @@ import * as searchableListAction from '../../actions/searchableListAction';
 
 const SearchableList = (props: any) => {
 
+  /* ---------------------------- global variables ---------------------------- */
   const fuseOptions = {
     isCaseSensitive: false,
     // includeScore: false,
@@ -19,7 +20,7 @@ const SearchableList = (props: any) => {
       'name'
     ]
   };
-
+  /* ------------------------------ local states ------------------------------ */
   const { list, display, is_exist, callback } = props;
   const inputRef = useRef<any>(null);
   const bodyRef = useRef<any>(null);
@@ -27,7 +28,7 @@ const SearchableList = (props: any) => {
   const [listArray, setListArray] = useState(list);
   const [cursor, setCursor] = useState(0);
   const [fuse, setFuse] = useState<any>();
-
+  /* --------------------------------- effects -------------------------------- */
   useEffect(() => {
     let fuse: any = new Fuse(list, fuseOptions);
     setFuse(fuse);
@@ -52,6 +53,7 @@ const SearchableList = (props: any) => {
     }
   }, [value, cursor]);
 
+  /* --------------------------------- events --------------------------------- */
   const handleChange = () => {
     setValue(inputRef.current.value);
     setCursor(0);
@@ -77,9 +79,11 @@ const SearchableList = (props: any) => {
       callback(_listAraay);
     } else if (e.keyCode === 27) {
       searchableListAction.dispatchToggleDisplay();
+      setValue('');
+      setListArray(list);
     }
   }
-
+  /* ---------------------------- render functions ---------------------------- */
   const renderBlocComponentList = () => {
     return listArray.map((component: any, index: number) => {
       return (
@@ -91,6 +95,7 @@ const SearchableList = (props: any) => {
       )
     });
   }
+  /* ------------------------------- main render ------------------------------ */
   if (display && is_exist) {
     return (
       <div className="absolute top-0 left-0 w-full flex flex-col justify-center mt-12 items-center">

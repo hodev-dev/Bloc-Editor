@@ -7,40 +7,38 @@ import * as filesAction from '../../actions/filesAction';
 import * as searchableListAction from '../../actions/searchableListAction';
 import SearchableList from "../components/SearchableList";
 import Prompt from '../components/Prompt';
+
+/* ------------------------------ import types ------------------------------ */
 import { IrootReducer } from '../../reducers/rootReducer';
 
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
-
 	interface IComponentsList {
 		id: any,
 		component: (props: any) => JSX.Element | any
 		state: any
 	}
-
 	/* ------------------------------ globla state ------------------------------ */
 	const dispatch = useDispatch();
 	const { bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_name } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_path } = useSelector((store: IrootReducer) => store.blocReducer);
-	const { is_changed } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { display } = useSelector((store: IrootReducer) => store.searchableListReducer);
 	/* ------------------------------- local state ------------------------------ */
-
 	const componetsListInit: Array<IComponentsList> = [];
 
-	const [componentList, setComponentList] = useState(bloc_state);
-	const [selectId, setSelectId] = useState('');
-	const [showDropZone, setShowDropZone] = useState(false);
-	const [showControll, setShowControll] = useState(false);
-	const [draggable, setDraggable] = useState(true);
-	const [dragIndex, setDragIndex] = useState(0);
-	const [dragging, setDragging] = useState(false);
-	const [isDraggedOn, setIsDraggedOn] = useState(false);
-	const [dragOverID, setDragOverID] = useState('');
-	const [draggOverPos, setDraggOverPos] = useState('');
-	const [showMoreControll, setShowMoreControll] = useState(false);
-	const [toInput, setToInput] = useState(-1);
+	const [componentList, setComponentList] = useState<Array<IComponentsList>>(bloc_state);
+	const [selectId, setSelectId] = useState<string>('');
+	const [showDropZone, setShowDropZone] = useState<boolean>(false);
+	const [showControll, setShowControll] = useState<boolean>(false);
+	const [draggable, setDraggable] = useState<boolean>(true);
+	const [dragIndex, setDragIndex] = useState<number>(0);
+	const [dragging, setDragging] = useState<boolean>(false);
+	const [isDraggedOn, setIsDraggedOn] = useState<boolean>(false);
+	const [dragOverID, setDragOverID] = useState<string>('');
+	const [draggOverPos, setDraggOverPos] = useState<string>('');
+	const [showMoreControll, setShowMoreControll] = useState<boolean>(false);
+	const [toInput, setToInput] = useState<number>(-1);
 
 	/* ---------------------------------- hooks --------------------------------- */
 	useEffect(() => {
@@ -61,7 +59,6 @@ const BlockEditor = () => {
 	}, [bloc_state])
 
 	/* --------------------------------- methods -------------------------------- */
-
 	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string, ) => {
 		let newDropIndex: number = _dropIndex;
 		let cutOut = componentList.splice(_dragIndex, 1)[0];
@@ -113,7 +110,6 @@ const BlockEditor = () => {
 	}
 
 	/* --------------------------------- events --------------------------------- */
-
 	const toggleControll = (e: any, id: string) => {
 		setDraggable(true);
 		setSelectId(id);
@@ -168,7 +164,6 @@ const BlockEditor = () => {
 		setComponentList((prevState: Array<IComponentsList>) => [...prevState, _generate_component]);
 	}
 	/* ---------------------------- render functions ---------------------------- */
-
 	const renderMoreControll = (index: number) => {
 		if (showMoreControll) {
 			return (
@@ -259,7 +254,6 @@ const BlockEditor = () => {
 		}
 	}
 
-
 	const renderBlocPlaceHolder = () => {
 		return (
 			<div className="flex w-full flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden">
@@ -285,6 +279,7 @@ const BlockEditor = () => {
 			</div>
 		)
 	}
+
 	const renderComponents = () => {
 		return componentList.map((component: IComponentsList, index: number) => {
 			if (typeof (component.component) === 'string') {

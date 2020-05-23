@@ -10,6 +10,7 @@ import FileManager from './utail/FileManager';
 import Path from '../electron/utail/Path';
 /* ---------------------------- import type interFace ---------------------------- */
 
+import { EventEmitter } from 'events';
 import { OpenDialogReturnValue } from 'electron';
 import { FSWatcher } from 'chokidar';
 import { rejects } from 'assert';
@@ -21,8 +22,8 @@ let contents: null | any;
 let _setting: Setting;
 let _filemanager: FileManager;
 let _path: Path;
-let _setting_watcher: any;
-let _files_watcher: any;
+let _setting_watcher: FSWatcher;
+let _files_watcher: FSWatcher;
 
 /* ------------------------------- main window ------------------------------- */
 
