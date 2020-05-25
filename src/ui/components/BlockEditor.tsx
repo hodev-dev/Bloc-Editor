@@ -20,7 +20,9 @@ const BlockEditor = () => {
 	}
 	/* ------------------------------ globla state ------------------------------ */
 	const dispatch = useDispatch();
+	const { past_bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
+	const { future_bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_name } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_path } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { display } = useSelector((store: IrootReducer) => store.searchableListReducer);
@@ -49,19 +51,25 @@ const BlockEditor = () => {
 	}, [])
 
 	useEffect(() => {
+		setComponentList(bloc_state);
+	}, [bloc_state])
+
+	useEffect(() => {
+		console.log({ past_bloc_state })
+	}, [past_bloc_state])
+
+	useEffect(() => {
 		return () => {
 			setDragOverID('')
 		};
 	}, [selectId]);
 
-	useEffect(() => {
-		setComponentList(bloc_state);
-	}, [bloc_state])
-
 	/* --------------------------------- methods -------------------------------- */
 	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string, ) => {
+		dispatch(filesAction.add_to_past(componentList));
+		let clone: any = [...componentList];
 		let newDropIndex: number = _dropIndex;
-		let cutOut = componentList.splice(_dragIndex, 1)[0];
+		let cutOut = clone.splice(_dragIndex, 1)[0];
 		if (_dragIndex === 0 && pos === 'BEFORE') {
 			newDropIndex = _dropIndex;
 		}
@@ -75,7 +83,9 @@ const BlockEditor = () => {
 				newDropIndex = _dropIndex;
 			}
 		}
-		componentList.splice(newDropIndex, 0, cutOut);
+		clone.splice(newDropIndex, 0, cutOut);
+		setComponentList(clone);
+		clone = [];
 		setShowControll(false);
 	}
 
@@ -91,12 +101,15 @@ const BlockEditor = () => {
 		let temp = componentListClone[_dragIndex];
 		componentListClone[_dragIndex] = componentListClone[_dropIndex];
 		componentListClone[_dropIndex] = temp;
+		dispatch(filesAction.add_to_past(componentList));
 		setComponentList(componentListClone);
 		componentListClone = [];
 	}
 
 	const deleteComponent = (index: number) => {
-		componentList.splice(index, 1);
+		dispatch(filesAction.add_to_past(componentList));
+		const cmp = componentList.filter((item: any, _index: number) => _index !== index);
+		setComponentList(cmp);
 		setShowControll(false);
 	}
 
@@ -107,6 +120,16 @@ const BlockEditor = () => {
 	const saveFile = () => {
 		dispatch(filesAction.save_file(bloc_path, componentList));
 		dispatch(filesAction.togge_is_changed(false));
+	}
+
+	const undo = () => {
+		console.log('undo')
+		dispatch(filesAction.undo(future_bloc_state, componentList, past_bloc_state));
+	}
+
+	const redo = () => {
+		console.log('redo')
+		dispatch(filesAction.redo(future_bloc_state, componentList, past_bloc_state));
 	}
 
 	/* --------------------------------- events --------------------------------- */
@@ -147,12 +170,13 @@ const BlockEditor = () => {
 		};
 	}, []);
 
-	const drop = (e: any, index: number, _pos: string, _id: string) => {
+	const drop = async (e: any, index: number, _pos: string, _id: string) => {
 		const pos = _pos;
 		const _dragIndex = dragIndex;
 		const _dropIndex = index;
+		// dispatch(filesAction.togge_is_changed(true));
+		console.log('drop')
 		reOrderComponents(_dragIndex, _dropIndex, pos);
-		dispatch(filesAction.togge_is_changed(true));
 	}
 
 	const add_component = (_component: any) => {
@@ -161,13 +185,22 @@ const BlockEditor = () => {
 			component: _component.component,
 			state: 'text'
 		}
+		dispatch(filesAction.add_to_past(componentList));
 		setComponentList((prevState: Array<IComponentsList>) => [...prevState, _generate_component]);
 	}
+
+	const handle_key_down_on_more_control = (e: any) => {
+		if (e.keyCode === 27) {
+			setShowMoreControll(false);
+			setShowControll(false);
+		}
+	}
+
 	/* ---------------------------- render functions ---------------------------- */
 	const renderMoreControll = (index: number) => {
 		if (showMoreControll) {
 			return (
-				<div className="flex items-center justify-center">
+				<div className="flex items-center justify-center" onKeyDown={(e) => handle_key_down_on_more_control(e)}>
 					<svg onClick={() => setShowMoreControll(false)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
 						<path d="M7.05 9.293L6.343 10 12 15.657l1.414-1.414L9.172 10l4.242-4.243L12 4.343z" />
 					</svg>
@@ -243,6 +276,8 @@ const BlockEditor = () => {
 						{/* ---------------------------------- right --------------------------------- */}
 						<div className="hidden md:flex justify-end items-stretch mx-auto w-1/3">
 							<button onClick={() => saveFile()} className="text-gray-700 text-sm font-semibold rounded p-2">Save</button>
+							<button onClick={() => undo()} className="text-gray-700 text-sm font-semibold rounded p-2">Undo</button>
+							<button onClick={() => redo()} className="text-gray-700 text-sm font-semibold rounded p-2">Redo</button>
 						</div>
 					</nav>
 				</div>

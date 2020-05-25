@@ -1,6 +1,7 @@
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import * as cmp from '../blocs';
+import { store } from '../App';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const request_path = () => (dispatch: any) => {
@@ -121,6 +122,52 @@ const togge_is_changed = (_is_changed: boolean) => (dispatch: any) => {
         }
     });
 }
+
+const add_to_past: any = (_bloc_state: any) => (dispatch: any, getState: any): Promise<any> => {
+    return new Promise((resolve) => {
+        console.log({ _bloc_state })
+        dispatch({
+            type: "ADD_TO_PAST",
+            payload: {
+                past_bloc_state: _bloc_state
+            }
+        });
+        resolve();
+    });
+}
+
+
+
+const undo = (_future_bloc_state: any, _bloc_state: any, _past_bloc_state: any) => (dispatch: any, getState: any) => {
+    if (_past_bloc_state.length > 0) {
+        let current = _past_bloc_state[_past_bloc_state.length - 1];
+        let new_past = _past_bloc_state.slice(0, _past_bloc_state.length - 1);
+        dispatch({
+            type: "UNDO",
+            payload: {
+                past_bloc_state: new_past,
+                bloc_state: [...current],
+                future_bloc_state: [_bloc_state, ..._future_bloc_state]
+            }
+        })
+    }
+}
+
+const redo = (_future_bloc_state: any, _bloc_state: any, _past_bloc_state: any) => (dispatch: any, getState: any) => {
+    if (_future_bloc_state.length > 0) {
+        const current = _future_bloc_state[0];
+        const new_future = _future_bloc_state.slice(1);
+        dispatch({
+            type: "REDO",
+            payload: {
+                past_bloc_state: [..._past_bloc_state, _bloc_state],
+                bloc_state: current,
+                future_bloc_state: new_future
+            }
+        })
+    }
+}
+
 /* -------------------------- unsbscribe to events -------------------------- */
 // memory leak bug fix
 const unsubscribe = () => {
@@ -148,5 +195,8 @@ export {
     create_file,
     save_file,
     togge_is_changed,
+    add_to_past,
+    undo,
+    redo,
     unsubscribe,
 }
