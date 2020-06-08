@@ -1,6 +1,11 @@
 import Text from './Text';
+import HeaderText from './HeaderText';
 
 const Bloc_Components: any = {
+  HeaderText: {
+    name: "HeaderText",
+    component: HeaderText
+  },
   Text: {
     name: "Text",
     component: Text

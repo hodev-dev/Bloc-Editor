@@ -315,6 +315,14 @@ const BlockEditor = () => {
 		)
 	}
 
+	const handleChange = (key: string, state: any) => {
+		componentList.map((component) => {
+			if (component.id === key) {
+				component.state = state;
+			}
+		});
+	}
+
 	const renderComponents = () => {
 		return componentList.map((component: IComponentsList, index: number) => {
 			if (typeof (component.component) === 'string') {
@@ -334,9 +342,9 @@ const BlockEditor = () => {
 							<svg onClick={() => deleteComponent(index)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z" /></svg>
 							{renderMoreControll(index)}
 						</div>
-						<div className="w-10/12 w-full" data-id={component.id} key={component.id}>
+						<div className="w-full" data-id={component.id} key={component.id}>
 							<div key={component.id} >
-								<component.component key={component.id} title={component.state} />
+								<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
 							</div>
 						</div>
 					</div>
@@ -345,10 +353,10 @@ const BlockEditor = () => {
 			return (
 				<div className="flex relative" key={component.id}>
 					<div onMouseOver={(e) => toggleControll(e, component.id)} className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500">{index + 1}</div>
-					<div className={(dragging && component.id === selectId) ? "w-11/12 w-full opacity-25" : "w-11/12 w-full"} key={component.id}   >
+					<div className={(dragging && component.id === selectId) ? "w-full opacity-25" : "w-full "} key={component.id}   >
 						{(showDropZone) ? renderDropZones('BEFORE', index, component.id, component) : ''}
-						<div key={component.id} >
-							<component.component key={component.id} title={component.state} />
+						<div key={component.id} className="">
+							<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
 						</div>
 						{(showDropZone) ? renderDropZones('AFTER', index, component.id, component) : ''}
 					</div>
