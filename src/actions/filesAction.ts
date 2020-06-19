@@ -168,6 +168,19 @@ const redo = (_future_bloc_state: any, _bloc_state: any, _past_bloc_state: any) 
     }
 }
 
+
+const import_media = (_project_path: any) => (dispatch: any) => {
+    ipcRenderer.send('files:import_media', _project_path);
+    ipcRenderer.on('files:import_media_path', (event: any, last_file_imported_path: string) => {
+        dispatch({
+            type: "SET_LAST_FILE_IMPORTED",
+            payload: {
+                last_file_imported: last_file_imported_path
+            }
+        })
+    });
+}
+
 /* -------------------------- unsbscribe to events -------------------------- */
 // memory leak bug fix
 const unsubscribe = () => {
@@ -198,5 +211,6 @@ export {
     add_to_past,
     undo,
     redo,
+    import_media,
     unsubscribe,
 }

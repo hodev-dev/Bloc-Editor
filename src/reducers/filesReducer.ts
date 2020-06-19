@@ -9,6 +9,7 @@ export interface IinitialFiles {
     root_path: string,
     list: Array<string>,
     folder_stack: Array<string>
+    last_file_imported: string | null
 }
 /* -------------------------- SECTION initial state ------------------------- */
 const initialFiles: IinitialFiles = {
@@ -16,7 +17,8 @@ const initialFiles: IinitialFiles = {
     project_path: "",
     root_path: "",
     list: [],
-    folder_stack: []
+    folder_stack: [],
+    last_file_imported: null,
 }
 /* -------------------------- SECTION reducer body -------------------------- */
 function filesReducer(state = initialFiles, action: IAction) {
@@ -36,6 +38,10 @@ function filesReducer(state = initialFiles, action: IAction) {
         case "POP_FOLDER_STACK":
             return {
                 ...state, folder_stack: [...action.payload.folder_stack]
+            }
+        case "SET_LAST_FILE_IMPORTED":
+            return {
+                ...state, last_file_imported: action.payload.last_file_imported
             }
         default:
             return state;

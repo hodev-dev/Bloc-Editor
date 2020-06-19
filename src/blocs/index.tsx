@@ -1,17 +1,18 @@
 import Text from './Text';
 import HeaderText from './HeaderText';
+import Image from './Image';
 
 const Bloc_Components: any = {
   HeaderText: {
     name: "HeaderText",
     component: HeaderText
   },
-  Text: {
-    name: "Text",
-    component: Text
-  },
   Image: {
     name: "Image",
+    component: Image
+  },
+  Text: {
+    name: "Text",
     component: Text
   },
   Table: {

@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import ReactDOM from 'react-dom';
 import * as uuid from 'uuid';
 import "draft-js/dist/Draft.css";
+import { prependOnceListener } from 'cluster';
 
 
 const HANDLE_REGEX = /\@[\w]+/g;
@@ -44,7 +45,26 @@ const HashtagSpan = (props: any) => {
   );
 };
 
+
+
+const MediaComponent = (props: any) => {
+  const { editorState } = props;
+  let selection = editorState.getSelection();
+  const anchorKey = selection.getAnchorKey();
+  const currentContent = editorState.getCurrentContent();
+  const currentBlock = currentContent.getBlockForKey(anchorKey);
+
+  //Then based on the docs for SelectionState -
+  const start = selection.getStartOffset();
+  const end = selection.getEndOffset();
+  const selectedText = currentBlock.getText().slice(start, end);
+  return (
+    <div className="bg-green-400">{"selectedText"}</div>
+  )
+}
+
 const HeaderText = (props: any) => {
+
   const { change, id, initState } = props;
 
   const compositeDecorator = new CompositeDecorator([
@@ -76,6 +96,11 @@ const HeaderText = (props: any) => {
     },
     'header-five': {
       element: 'h5'
+    },
+    'atomic': {
+      editable: true,
+      element: "test",
+      wrapper: <MediaComponent editorState={editorState} />
     },
     'unstyled': {
       element: 'div'
@@ -209,6 +234,7 @@ const HeaderText = (props: any) => {
     { label: 'Indigo', style: 'indigo' },
     { label: 'Violet', style: 'violet' },
     { label: 'size', style: 'size' },
+    { label: 'highlight', style: 'highlight' },
   ];
 
   const colorStyleMap = {
@@ -236,31 +262,35 @@ const HeaderText = (props: any) => {
     size: {
       fontSize: "100px",
     },
+    highlight: {
+      backgroundColor: '#faed27',
+    }
   };
 
 
   const renderColors = () => {
     return COLORS.map((color, index) => {
       return (
-        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className="h-10 w-16 border">{color.label}</button>
+        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className="h-10 w-16 border border-t-0 border-b-0">{color.label}</button>
       )
     });
   }
 
   return (
-    <div className="" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
-      <div className={(showControll) ? " sticky top-0 w-full border border-b-0 border-t-0 z-40 bg-white " : "hidden"}>
-        <button onClick={() => _toggleBlocStyle('ITALIC')} className="h-10 w-16 border">I</button>
-        <button onClick={() => _toggleBlocStyle('BOLD')} className="h-10 w-16 border">B</button>
-        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className="h-10 w-16 border">U</button>
-        <button onClick={() => _toggleBlocStyle('CODE')} className="h-10 w-16 border">C</button>
-        <button onClick={() => _toggleBlockType('header-one')} className="h-10 w-16 border">H1</button>
-        <button onClick={() => _toggleBlockType('header-two')} className="h-10 w-16 border">H2</button>
-        <button onClick={() => _toggleBlockType('header-three')} className="h-10 w-16 border">H3</button>
-        <button onClick={() => _toggleBlockType('header-four')} className="h-10 w-16 border">H4</button>
-        <button onClick={() => _toggleBlockType('header-five')} className="h-10 w-16 border">H5</button>
-        <button className="h-10 w-16 border">OL</button>
-        <button className="h-10 w-16 border">UL</button>
+    <div className="m-0 p-0" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
+      <div className={(true) ? " sticky top-0 w-full border z-40 bg-white m-0" : "hidden"}>
+        <button onClick={() => _toggleBlocStyle('ITALIC')} className="h-10 w-16 border border-t-0 border-b-0">I</button>
+        <button onClick={() => _toggleBlocStyle('BOLD')} className="h-10 w-16 border border-t-0 border-b-0">B</button>
+        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className="h-10 w-16 border border-t-0 border-b-0">U</button>
+        <button onClick={() => _toggleBlocStyle('CODE')} className="h-10 w-16 border border-t-0 border-b-0">C</button>
+        <button onClick={() => _toggleBlockType('header-one')} className="h-10 w-16 border border-t-0 border-b-0">H1</button>
+        <button onClick={() => _toggleBlockType('header-two')} className="h-10 w-16 border border-t-0 border-b-0">H2</button>
+        <button onClick={() => _toggleBlockType('header-three')} className="h-10 w-16 border border-t-0 border-b-0">H3</button>
+        <button onClick={() => _toggleBlockType('header-four')} className="h-10 w-16 border border-t-0 border-b-0">H4</button>
+        <button onClick={() => _toggleBlockType('header-five')} className="h-10 w-16 border border-t-0 border-b-0">H5</button>
+        <button onClick={() => _toggleBlockType('atomic')} className="h-10 w-16 border border-t-0 border-b-0">Test</button>
+        <button className="h-10 w-16 border border-t-0 border-b-0">OL</button>
+        <button className="h-10 w-16 border border-t-0 border-b-0">UL</button>
         {renderColors()}
       </div>
       <Editor
@@ -272,6 +302,7 @@ const HeaderText = (props: any) => {
         onChange={(e: any) => handleChange(e)}
         handleKeyCommand={handleKeyCommand}
         spellCheck={true}
+        readOnly={false}
       />
     </div >
   );

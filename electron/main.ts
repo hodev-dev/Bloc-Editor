@@ -32,7 +32,9 @@ const createWindow = () => {
 		width: 1280,
 		height: 760,
 		webPreferences: {
-			nodeIntegration: true
+			nodeIntegration: true,
+			webSecurity: false
+
 		}
 	})
 	if (isDev) {
@@ -125,6 +127,14 @@ ipcMain.on('files:select_path', () => {
 				}
 			];
 			const update = _setting.updateSetting(new_config);
+			const store_path = path.join(dialog_data.filePaths[0], "store");
+			const store_images_path = path.join(dialog_data.filePaths[0], "store", "images");
+			if (!fs.existsSync(store_path)) {
+				fs.mkdirSync(store_path);
+			}
+			if (!fs.existsSync(store_images_path)) {
+				fs.mkdirSync(store_images_path);
+			}
 		}
 	});
 });
@@ -227,5 +237,24 @@ ipcMain.on('files:save_bloc', (event: any, _path: string, component_data: any) =
 				messege: "Bloc File Saved!",
 			}
 		]);
+	});
+});
+
+
+ipcMain.on('files:import_media', (event: any, project_path: any) => {
+	const select_path: Promise<OpenDialogReturnValue> = dialog.showOpenDialog(win, {
+		properties: ['openFile']
+	});
+	select_path.then((dialog_data: OpenDialogReturnValue) => {
+		if (dialog_data.canceled) {
+			// on cancel
+		} else {
+			console.log('daialog reprot', dialog_data.filePaths[0])
+			console.log('project_path', project_path)
+			const file_name = path.basename(dialog_data.filePaths[0]);
+			const store_images_path = path.join(project_path, "store", "images", file_name);
+			fs.createReadStream(dialog_data.filePaths[0]).pipe(fs.createWriteStream(store_images_path));
+			contents.send('files:import_media_path', path.join("file://", store_images_path));
+		}
 	});
 });
