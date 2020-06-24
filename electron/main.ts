@@ -263,8 +263,22 @@ ipcMain.on('files:import_media', (event: any, project_path: any) => {
 		}
 	});
 });
+const getChromiumExecPath = () => {
+	return puppeteer.executablePath().replace('app.asar', 'app.asar.unpacked');
+}
+
 const screenshot = async (href: string, project_path: string) => {
-	const browser = await puppeteer.launch();
+	console.log('start takign screenshot')
+	const browser = await puppeteer.launch({
+		headless: true,
+		devtools: false,
+		args: [
+			'--window-size=1920,1080',
+			'--no-sandbox',
+			'--disable-setuid-sandbox'
+		],
+		executablePath: getChromiumExecPath(),
+	});
 	const page = await browser.newPage();
 	const save_path = path.join(project_path, 'store', 'images', uuid.v1() + 'screenshot.jpeg');
 	await page.goto(href, { waitUntil: "networkidle0", timeout: 60000 });
@@ -273,6 +287,7 @@ const screenshot = async (href: string, project_path: string) => {
 	await browser.close();
 	return save_path;
 }
+
 ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, project_path: string) => {
 	request(
 		{ uri: href },

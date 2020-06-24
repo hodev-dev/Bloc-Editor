@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { IrootReducer } from '../reducers/rootReducer';
-import * as blocAction from '../actions/blocAction';
-import * as cheerio from 'cheerio';
-import axios from 'axios';
-import * as htmlToImage from 'html-to-image';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 
