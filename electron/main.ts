@@ -1,13 +1,18 @@
-import { app, BrowserWindow, ipcMain, globalShortcut, dialog, ipcRenderer } from 'electron';
+import { app, BrowserWindow, ipcMain, globalShortcut, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as isDev from 'electron-is-dev';
-import * as chokidar from 'chokidar';
 import * as log from 'electron-log';
+import * as  request from "request";
 import installExtension, { REACT_DEVELOPER_TOOLS } from "electron-devtools-installer";
 import Setting from './utail/Setting';
 import FileManager from './utail/FileManager';
 import Path from '../electron/utail/Path';
+import chokidar = require('chokidar');
+import cheerio = require('cheerio');
+import * as puppeteer from 'puppeteer';
+import * as uuid from 'uuid';
+
 /* ---------------------------- import type interFace ---------------------------- */
 
 import { EventEmitter } from 'events';
@@ -258,3 +263,76 @@ ipcMain.on('files:import_media', (event: any, project_path: any) => {
 		}
 	});
 });
+const screenshot = async (href: string, project_path: string) => {
+	const browser = await puppeteer.launch();
+	const page = await browser.newPage();
+	const save_path = path.join(project_path, 'store', 'images', uuid.v1() + 'screenshot.jpeg');
+	await page.goto(href, { waitUntil: "networkidle0", timeout: 60000 });
+	await page.setViewport({ width: 1280, height: 720 });
+	await page.screenshot({ path: save_path, type: "jpeg", fullPage: false });
+	await browser.close();
+	return save_path;
+}
+ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, project_path: string) => {
+	request(
+		{ uri: href },
+		function (error, response, body) {
+			if (!error) {
+				const $ = cheerio.load(body)
+				let link_data = {
+					title: $('title').text(),
+					canonical: $('canonical').text(),
+					description: $('meta[name="description"]').attr('content'),
+					alter_description: $('description').text(),
+					// Get OG Values
+					og_title: $('meta[property="og:title"]').attr('content'),
+					og_url: $('meta[property="og:url"]').attr('content'),
+					og_img: $('meta[property="og:image"]').attr('content'),
+					og_type: $('meta[property="og:type"]').attr('content'),
+					// Get Twitter Values
+					twitter_site: $('meta[name="twitter:site"]').attr('content'),
+					twitter_domain: $('meta[name="twitter:domain"]').attr('content'),
+					twitter_img_src: $('meta[name="twitter:image:src"]').attr('content'),
+					// Get Facebook Values
+					fb_appid: $('meta[property="fb:app_id"]').attr('content'),
+					fb_pages: $('meta[property="fb:pages"]').attr('content'),
+					test: $('html').find('img').attr('src')
+				}
+				const shot = screenshot(href, project_path);
+				shot.then((image_path: string) => {
+					contents.send("linkPreview:get_data", link_data, id, image_path);
+					contents.send('notification:push', [
+						{
+							type: "Success",
+							messege: "Fetch Data Was Successfull!",
+						}
+					]);
+				}).catch((err: any) => {
+					console.error(err);
+				});
+			} else {
+				contents.send('notification:push', [
+					{
+						type: "Error",
+						messege: "Something Went Wrong!",
+					}
+				]);
+				console.log("error of get", error);
+			}
+		}
+	);
+});
+
+
+ipcMain.on('clipboard:add', (event: any, url: string) => {
+	clipboard.writeText(url);
+	contents.send('notification:push', [
+		{
+			type: "Success",
+			messege: "Url Added to Cliboard",
+		}
+	]);
+});
+
+
+

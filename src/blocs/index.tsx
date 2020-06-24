@@ -1,6 +1,7 @@
 import Text from './Text';
 import HeaderText from './HeaderText';
 import Image from './Image';
+import LinkPreview from './LinkPreview';
 
 const Bloc_Components: any = {
   HeaderText: {
@@ -15,42 +16,11 @@ const Bloc_Components: any = {
     name: "Text",
     component: Text
   },
-  Table: {
-    name: "Table",
-    component: Text
+  LinkPreview: {
+    name: "LinkPreview",
+    component: LinkPreview
   },
-  Link: {
-    name: "Link",
-    component: Text
-  },
-  Math_Table: {
-    name: "Math_Table",
-    component: Text
-  },
-  Video: {
-    name: "Video",
-    component: Text
-  },
-  Map: {
-    name: "Map",
-    component: Text
-  },
-  Youtube: {
-    name: "Youtube",
-    component: Text
-  },
-  Figma: {
-    name: "Figma",
-    component: Text
-  },
-  Spotify: {
-    name: "Spotify",
-    component: Text
-  },
-  Notion: {
-    name: "Notion",
-    component: Text
-  },
+
 
 }
 

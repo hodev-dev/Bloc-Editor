@@ -43,7 +43,7 @@ const Notification = () => {
     return notification_list.map((notification: any, index: number) => {
       const color = notification_color(notification.type);
       return (
-        <div key={index} className={`w-full h-auto overflow-auto p-3 ${color} rounded-md opacity-50 border hover:opacity-100`}>
+        <div key={index} className={`w-full h-auto overflow-auto p-3 ${color} rounded-md opacity-80 border hover:opacity-100`}>
           <h1><b>{notification.type}</b></h1>
           <h5>{notification.messege}</h5>
         </div>
@@ -52,7 +52,7 @@ const Notification = () => {
   }
 
   return (
-    <div className="absolute w-1/6 h-auto overflow-auto top-0 right-0 mr-10 mt-20">
+    <div className="absolute z-50 w-1/6 h-auto overflow-auto top-0 right-0 mr-10 mt-20">
       {renderNofitications()}
     </div>
   );

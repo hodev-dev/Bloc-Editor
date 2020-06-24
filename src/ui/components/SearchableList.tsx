@@ -110,11 +110,11 @@ const SearchableList = (props: any) => {
   /* ------------------------------- main render ------------------------------ */
   if (display && is_exist) {
     return (
-      <div className="absolute top-0 left-0 w-full flex flex-col justify-center mt-12 items-center">
-        <div className="w-2/6 bg-gray-100 border">
-          <input autoFocus onKeyDown={(e: any) => handleKeyDown(e)} onChange={() => handleChange()} className="w-full h-10 border border-pink-900 bg-gray-white border-2 focus:border-pink-900 outline-none p-2 " type="text" ref={inputRef} />
+      <div className="absolut z-50 top-0 left-0 w-full flex flex-col justify-center mt-12 items-center">
+        <div className="w-3/6 bg-gray-100 border">
+          <input placeholder="Press Enter To Add Component To Page" autoFocus onKeyDown={(e: any) => handleKeyDown(e)} onChange={() => handleChange()} className="w-full h-10 border border-pink-900 bg-gray-white border-2 focus:border-pink-900 outline-none p-2 " type="text" ref={inputRef} />
         </div>
-        <div className="w-2/6 bg-gray-200 border h-64 border overflow-y-scroll" ref={bodyRef}>
+        <div className="w-3/6 bg-gray-200 border h-64 border overflow-y-scroll" ref={bodyRef}>
           {renderBlocComponentList()}
         </div>
       </div>

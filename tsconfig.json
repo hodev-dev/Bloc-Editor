@@ -19,7 +19,11 @@
     "noEmit": true,
     "jsx": "react"
   },
+  "skipLibCheck": true,
   "include": [
     "src"
-  ]
+  ],
+  "typeRoots": [
+    "node_modules/@types"
+  ],
 }

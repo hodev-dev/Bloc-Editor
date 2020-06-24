@@ -297,7 +297,7 @@ const Prompt = () => {
     }
 
     return (
-        <div className={`${(display) ? "absolute" : 'hidden'} w-full flex justify-center`}>
+        <div className={`${(display) ? "absolute z-50" : 'hidden'} w-full flex justify-center`}>
             {renderBody()}
         </div>
     );
