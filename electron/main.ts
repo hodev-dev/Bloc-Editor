@@ -12,6 +12,8 @@ import chokidar = require('chokidar');
 import cheerio = require('cheerio');
 import * as puppeteer from 'puppeteer';
 import * as uuid from 'uuid';
+import fse = require('fs-extra');
+
 
 /* ---------------------------- import type interFace ---------------------------- */
 
@@ -311,7 +313,7 @@ ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, projec
 					// Get Facebook Values
 					fb_appid: $('meta[property="fb:app_id"]').attr('content'),
 					fb_pages: $('meta[property="fb:pages"]').attr('content'),
-					test: $('html').find('img').attr('src')
+					html: body,
 				}
 				const shot = screenshot(href, project_path);
 				shot.then((image_path: string) => {
@@ -347,6 +349,57 @@ ipcMain.on('clipboard:add', (event: any, url: string) => {
 			messege: "Url Added to Cliboard",
 		}
 	]);
+});
+
+const save_page = async (project_path: string, url: string) => {
+	const browser = await puppeteer.launch({
+		headless: false,
+		devtools: false,
+		defaultViewport: null,
+		args: [
+			'--window-size=1920,1080',
+			'--start-fullscreen',
+			'--no-sandbox',
+			'--disable-setuid-sandbox'
+		],
+		executablePath: getChromiumExecPath(),
+	});
+	const [page] = await browser.pages();
+	const saved_path = path.join(project_path, 'store', "offline_pages", uuid.v1() + '.mhtml');
+	await page.goto(url, { waitUntil: "networkidle0", timeout: 60000 });
+	const cdp: any = await page.target().createCDPSession();
+	const { data } = await cdp.send('Page.captureSnapshot', { format: 'mhtml' });
+	fs.writeFileSync(saved_path, data);
+	await browser.close();
+	return saved_path;
+}
+
+ipcMain.on('linkPreview:save_offline', (event: any, project_path: string, url: string, id: string) => {
+	const saved = save_page(project_path, url);
+	saved.then((path: string) => {
+		contents.send("linkPreview:save_offline", id, path);
+	});
+});
+
+const open_page = async (path: string) => {
+	const browser = await puppeteer.launch({
+		headless: false,
+		devtools: false,
+		defaultViewport: null,
+		args: [
+			'--window-size=1920,1080',
+			'--no-sandbox',
+			'--disable-setuid-sandbox'
+		],
+		executablePath: getChromiumExecPath(),
+	});
+	const page = await browser.newPage();
+	console.log({ path })
+	await page.goto("file://" + path);
+}
+ipcMain.on('linkPreview:open_offline', (event: any, path: string, id: string) => {
+	console.log('open offline')
+	open_page(path);
 });
 
 

@@ -2,6 +2,7 @@ import Text from './Text';
 import HeaderText from './HeaderText';
 import Image from './Image';
 import LinkPreview from './LinkPreview';
+import { Code } from './Code/Code';
 
 const Bloc_Components: any = {
   HeaderText: {
@@ -20,7 +21,10 @@ const Bloc_Components: any = {
     name: "LinkPreview",
     component: LinkPreview
   },
-
+  Code: {
+    name: "Code",
+    component: Code
+  },
 
 }
 
