@@ -1,8 +1,9 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import _ from 'lodash';
 import * as cmp from '../../blocs';
 import * as uuid from 'uuid';
+import Fuse from 'fuse.js';
 import * as filesAction from '../../actions/filesAction';
 import * as searchableListAction from '../../actions/searchableListAction';
 import SearchableList from "../components/SearchableList";
@@ -14,12 +15,14 @@ import { IrootReducer } from '../../reducers/rootReducer';
 const BlockEditor = () => {
 	/* ---------------------------------- types --------------------------------- */
 	interface IComponentsList {
+		item?: any,
 		id: any,
 		component: (props: any) => JSX.Element | any
 		state: any
 	}
 	/* ------------------------------ globla state ------------------------------ */
 	const dispatch = useDispatch();
+	const searchRef = useRef<any>(null);
 	const { past_bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { future_bloc_state } = useSelector((store: IrootReducer) => store.blocReducer);
@@ -31,20 +34,16 @@ const BlockEditor = () => {
 
 	const [componentList, setComponentList] = useState<Array<IComponentsList>>(bloc_state);
 	const [selectId, setSelectId] = useState<string>('');
-	const [showDropZone, setShowDropZone] = useState<boolean>(false);
 	const [showControll, setShowControll] = useState<boolean>(false);
-	const [draggable, setDraggable] = useState<boolean>(true);
-	const [dragIndex, setDragIndex] = useState<number>(0);
 	const [dragging, setDragging] = useState<boolean>(false);
-	const [isDraggedOn, setIsDraggedOn] = useState<boolean>(false);
-	const [dragOverID, setDragOverID] = useState<string>('');
-	const [draggOverPos, setDraggOverPos] = useState<string>('');
 	const [showMoreControll, setShowMoreControll] = useState<boolean>(false);
 	const [toInput, setToInput] = useState<number>(-1);
+	const [searchResult, setSearchResult] = useState<Array<any>>([]);
 
 	/* ---------------------------------- hooks --------------------------------- */
 	useEffect(() => {
 		searchableListAction.listen();
+		console.log(componentList);
 		return () => {
 			searchableListAction.unsubscribe();
 		};
@@ -52,20 +51,16 @@ const BlockEditor = () => {
 
 	useEffect(() => {
 		setComponentList(bloc_state);
+		console.log({ bloc_state });
 	}, [bloc_state])
 
 	useEffect(() => {
 		console.log({ past_bloc_state })
 	}, [past_bloc_state])
 
-	useEffect(() => {
-		return () => {
-			setDragOverID('')
-		};
-	}, [selectId]);
 
 	/* --------------------------------- methods -------------------------------- */
-	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string, ) => {
+	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string,) => {
 		dispatch(filesAction.add_to_past(componentList));
 		let clone: any = [...componentList];
 		let newDropIndex: number = _dropIndex;
@@ -134,51 +129,9 @@ const BlockEditor = () => {
 
 	/* --------------------------------- events --------------------------------- */
 	const toggleControll = (e: any, id: string) => {
-		setDraggable(true);
 		setSelectId(id);
 		setShowControll(true);
 	}
-
-	const dragEnter = (e: any, id: string, index: number) => {
-		setDragIndex(index);
-		setShowDropZone(true);
-		setDragging(true);
-		setShowControll(false);
-	}
-
-	const dragEnd = (e: any) => {
-		setShowDropZone(false);
-		setDragging(false);
-	}
-
-	const dragStart = (e: any) => {
-		let elem: any = document.createElement("div");
-		elem.textNode = "Dragging";
-		e.dataTransfer.setDragImage(elem, 500, 600);
-	}
-
-	const dragOverDropZone = useMemo(() => {
-		const throttled = _.throttle((e, _pos: string, _id: string) => {
-			setIsDraggedOn(true);
-			setDraggOverPos(_pos);
-			setDragOverID(_id);
-		}, 100);
-		return (e: any, _pos: string, _id: string) => {
-			e.preventDefault();
-			e.persist();
-			return throttled(e, _pos, _id);
-		};
-	}, []);
-
-	const drop = async (e: any, index: number, _pos: string, _id: string) => {
-		const pos = _pos;
-		const _dragIndex = dragIndex;
-		const _dropIndex = index;
-		// dispatch(filesAction.togge_is_changed(true));
-		console.log('drop')
-		reOrderComponents(_dragIndex, _dropIndex, pos);
-	}
-
 	const add_component = (_component: any) => {
 		const _generate_component = {
 			id: uuid.v1(),
@@ -193,6 +146,56 @@ const BlockEditor = () => {
 		if (e.keyCode === 27) {
 			setShowMoreControll(false);
 			setShowControll(false);
+		}
+	}
+
+	const handleSearchInput = () => {
+		if (searchRef.current.value === '') {
+			setSearchResult([]);
+		} else {
+			const options = {
+				isCaseSensitive: false,
+				includeScore: true,
+				shouldSort: true,
+				// includeMatches: true,
+				findAllMatches: true,
+				// minMatchCharLength: 0,
+				// location: 1000,
+				// threshold: 1,
+				// distance: 100,
+				useExtendedSearch: true,
+				ignoreLocation: true,
+				ignoreFieldNorm: true,
+				keys: [
+					'state.value',
+					'state.title',
+					'state.description',
+				]
+			};
+			var fuse: any = new Fuse(bloc_state, options);
+			const result = fuse.search(searchRef.current.value);
+			if (result.length > 0) {
+				setSearchResult(result);
+				fuse = null;
+			}
+		}
+	}
+
+	const handleChange = (key: string, state: any) => {
+		console.log({ state });
+		componentList.map((component) => {
+			if (component.id === key) {
+				component.state = state;
+			}
+		});
+		if (searchResult.length > 0) {
+			searchResult.map((component) => {
+				console.log("search result component", { component });
+				console.log("search are qual", component.item.id === key);
+				if (component.item.id === key) {
+					component.item.state = state;
+				}
+			});
 		}
 	}
 
@@ -223,41 +226,6 @@ const BlockEditor = () => {
 		}
 	}
 
-	const renderDropZones = (pos: string, index: number, id: string, component: any) => {
-		const normalClass = "w-full h-6 border-dashed border-2 border-gray-600";
-		const onDragOverClass = "w-full h-auto border-dashed border-2 border-pink-900 ";
-		const draggedComponent = componentList[dragIndex];
-		if (dragIndex !== index) {
-			if (index === 0) {
-				if (isDraggedOn && id === dragOverID && draggOverPos === pos) {
-					return (
-						<div data-id={id} data-index={index} data-dropid={id} data-pos={pos} className={(isDraggedOn && id === dragOverID && draggOverPos === pos) ? onDragOverClass : normalClass} onDragOver={(e) => dragOverDropZone(e, pos, id)} onDrop={(e) => drop(e, index, pos, id)}>
-							<draggedComponent.component key={draggedComponent.id} title={draggedComponent.state} />
-						</div>
-					)
-				} else {
-					return (
-						<div data-id={id} data-index={index} data-dropid={id} data-pos={pos} className={(isDraggedOn && id === dragOverID && draggOverPos === pos) ? onDragOverClass : normalClass} onDragOver={(e) => dragOverDropZone(e, pos, id)} onDrop={(e) => drop(e, index, pos, id)}></div>
-					)
-				}
-			} else if (pos === 'AFTER') {
-				if (isDraggedOn && id === dragOverID) {
-					return (
-						<div data-id={id} data-index={index} data-dropid={id} data-pos={pos} className={(isDraggedOn && id === dragOverID) ? onDragOverClass : normalClass} onDragOver={(e) => dragOverDropZone(e, pos, id)} onDrop={(e) => drop(e, index, pos, id)}>
-							<draggedComponent.component key={draggedComponent.id} title={draggedComponent.state} />
-						</div>
-					)
-				} else {
-					return (
-						<div data-id={id} data-index={index} data-dropid={id} data-pos={pos} className={(isDraggedOn && id === dragOverID) ? onDragOverClass : normalClass} onDragOver={(e) => dragOverDropZone(e, pos, id)} onDrop={(e) => drop(e, index, pos, id)}></div>
-					)
-				}
-			}
-			return (
-				''
-			)
-		}
-	}
 
 	const renderTopPanel = () => {
 		if (bloc_state.length > 0) {
@@ -280,6 +248,9 @@ const BlockEditor = () => {
 							<button onClick={() => redo()} className="text-gray-700 text-sm font-semibold rounded p-2">Redo</button>
 						</div>
 					</nav>
+					<div className="flex flex-row bg-gray-200 w-full h-10">
+						<input onChange={handleSearchInput} ref={searchRef} placeholder="Enter Search Query" className="h-10 text-2xl w-full border" type="text" />
+					</div>
 				</div>
 			)
 		} else {
@@ -315,26 +286,28 @@ const BlockEditor = () => {
 		)
 	}
 
-	const handleChange = (key: string, state: any) => {
-		componentList.map((component) => {
-			if (component.id === key) {
-				component.state = state;
-			}
-		});
-	}
+
 
 	const renderComponents = () => {
-		return componentList.map((component: IComponentsList, index: number) => {
+		var renderList;
+		if (searchResult.length > 0) {
+			renderList = searchResult;
+		} else {
+			renderList = componentList;
+		}
+		return renderList.map((component: IComponentsList, index: number) => {
+			if (component.item) {
+				component = component.item;
+			}
 			if (typeof (component.component) === 'string') {
 				component.component = cmp.Bloc_Components[component.component]['component'];
 			}
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
-					<div className="flex relative" key={component.id} draggable={draggable} onDragStart={(e: any) => dragStart(e)} onDragEnter={(e: any) => dragEnter(e, component.id, index)} >
+					<div className="flex relative" key={component.id}>
 						<div className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" >{index + 1}</div>
 						<div className="absolute top-0 flex w-auto bg-white h-10 border items-center ml-10 z-50" >
 							<svg onClick={() => setShowControll(false)} className="w-3 h-3 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
-							<svg className="w-4 h-4 m-2 cursor-move" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M1 1h2v2H1V1zm0 4h2v2H1V5zm0 4h2v2H1V9zm0 4h2v2H1v-2zm0 4h2v2H1v-2zM5 1h2v2H5V1zm0 8h2v2H5V9zm0 8h2v2H5v-2zM9 1h2v2H9V1zm0 4h2v2H9V5zm0 4h2v2H9V9zm0 4h2v2H9v-2zm0 4h2v2H9v-2zm4-16h2v2h-2V1zm0 8h2v2h-2V9zm0 8h2v2h-2v-2zm4-16h2v2h-2V1zm0 4h2v2h-2V5zm0 4h2v2h-2V9zm0 4h2v2h-2v-2zm0 4h2v2h-2v-2z" /></svg>
 							<svg onClick={() => swapComponents(index, index, 'SHIFTUP')} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10.707 7.05L10 6.343 4.343 12l1.414 1.414L10 9.172l4.243 4.242L15.657 12z" /></svg>
 							<svg onClick={() => swapComponents(index, index, 'SHIFTDOWN')} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
 							<svg className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 6V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h4zm2 0h4a2 2 0 0 1 2 2v4h4V2H8v4zM2 8v10h10V8H2z" /></svg>
@@ -354,11 +327,9 @@ const BlockEditor = () => {
 				<div className="flex relative" key={component.id}>
 					<div onMouseOver={(e) => toggleControll(e, component.id)} className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500">{index + 1}</div>
 					<div className={(dragging && component.id === selectId) ? "w-full opacity-25" : "w-full "} key={component.id}   >
-						{(showDropZone) ? renderDropZones('BEFORE', index, component.id, component) : ''}
 						<div key={component.id} className="">
 							<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
 						</div>
-						{(showDropZone) ? renderDropZones('AFTER', index, component.id, component) : ''}
 					</div>
 				</div>
 			)
@@ -369,7 +340,7 @@ const BlockEditor = () => {
 	return (
 		<div className="flex flex-col max-w-full w-full max-h-screen bg-white relative">
 			{renderTopPanel()}
-			<div className="overflow-y-scroll h-auto" onDragEnd={(e) => dragEnd(e)}  >
+			<div className="overflow-y-scroll h-auto" >
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}
 			</div>
 			<SearchableList display={display} list={cmp.Bloc_Components_Array} is_exist={bloc_path} callback={add_component} />

@@ -13,6 +13,8 @@ import cheerio = require('cheerio');
 import * as puppeteer from 'puppeteer';
 import * as uuid from 'uuid';
 import fse = require('fs-extra');
+import glob = require("glob")
+
 
 
 /* ---------------------------- import type interFace ---------------------------- */
@@ -79,10 +81,10 @@ app.on('ready', () => {
 	_path = new Path();
 	_setting.initSetting();
 	/* -------------------------------- shortcuts ------------------------------- */
-	globalShortcut.register('CommandOrControl+Shift+p', () => {
+	globalShortcut.register('CommandOrControl+shift+k', () => {
 		contents.send('prompt:toggleDisplay');
 	})
-	globalShortcut.register('CommandOrControl+Shift+n', () => {
+	globalShortcut.register('CommandOrControlt+shift+j', () => {
 		contents.send('searchableList:toggleDisplay');
 	});
 	contents.on('did-finish-load', () => {
@@ -313,10 +315,10 @@ ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, projec
 					// Get Facebook Values
 					fb_appid: $('meta[property="fb:app_id"]').attr('content'),
 					fb_pages: $('meta[property="fb:pages"]').attr('content'),
-					html: body,
 				}
 				const shot = screenshot(href, project_path);
 				shot.then((image_path: string) => {
+					console.log({ link_data })
 					contents.send("linkPreview:get_data", link_data, id, image_path);
 					contents.send('notification:push', [
 						{
@@ -402,5 +404,20 @@ ipcMain.on('linkPreview:open_offline', (event: any, path: string, id: string) =>
 	open_page(path);
 });
 
+ipcMain.on('searchField:search', (event: any, search_string: string, project_path: string) => {
+	glob(project_path + '/**/*' + ".bloc", {}, function (er, files) {
+		let filter: any = [];
+		if (!er) {
+			filter = files.filter((file: string) => {
+				if (file.indexOf(search_string + ".bloc") !== -1) {
+					return file;
+				}
+			});
+		} else {
+			filter = [];
+		}
+		contents.send('searchField:search', filter);
+	})
+});
 
 

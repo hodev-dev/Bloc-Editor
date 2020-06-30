@@ -15,7 +15,16 @@ const LinkPreview = (props: any) => {
     }, [state])
 
     useEffect(() => {
+        return () => {
+            ipcRenderer.removeAllListeners('linkPreview:get_data');
+        }
+    }, [])
+
+    const handleFtechLink = () => {
+        console.log("send request");
+        ipcRenderer.send('linkPreview:get_data', state.value, id, project_path);
         ipcRenderer.on('linkPreview:get_data', (event: any, _link_data: any, _id: string, image_path: string) => {
+            console.log({ _link_data });
             if (id === _id) {
                 setState((prevState: any) => {
                     return {
@@ -30,28 +39,10 @@ const LinkPreview = (props: any) => {
                 });
             }
         });
-        ipcRenderer.on('linkPreview:save_offline', (event: any, _id: string, path: string) => {
-            if (id === _id) {
-                console.log("saved offline");
-                setState((prevState: any) => {
-                    return {
-                        ...prevState,
-                        offline: path
-                    }
-                });
-            }
-        })
-        return () => {
-            ipcRenderer.removeAllListeners('linkPreview:get_data');
-        }
-    }, [])
-
-    const handleFtechLink = () => {
-        ipcRenderer.send('linkPreview:get_data', state.value, id, project_path);
         setState((prevState: any) => {
             return {
                 ...prevState,
-                loading: true
+                loading: false
             }
         });
     }
@@ -80,6 +71,17 @@ const LinkPreview = (props: any) => {
     }
     const handleSaveOffline = () => {
         ipcRenderer.send('linkPreview:save_offline', project_path, state.url, id);
+        ipcRenderer.on('linkPreview:save_offline', (event: any, _id: string, path: string) => {
+            if (id === _id) {
+                console.log("saved offline");
+                setState((prevState: any) => {
+                    return {
+                        ...prevState,
+                        offline: path
+                    }
+                });
+            }
+        })
     }
 
     const handleOpenOffline = () => {
@@ -90,7 +92,7 @@ const LinkPreview = (props: any) => {
             <div className={(true) ? "sticky top-0 left-0 text-black bg-white w-full border" : "hidden border-none"} >
                 <div className="sticky top-0 w-full border border-b-0 border-t-0 z-40 bg-white">
                     <input onChange={handleInput} value={(state && state.value) ? state.value : ''} className="w-64 h-10 font-light align-middle" type="text" />
-                    <button onClick={handleFtechLink} className={(state.loading) ? 'hidden' : "h-10 w-32 border align-middle"}>
+                    <button onClick={handleFtechLink} className={(false) ? 'hidden' : "h-10 w-32 border align-middle"}>
                         <span>Fetch Link Data</span>
                     </button>
                     <button disabled className={(state.loading) ? "h-10 w-32 border align-middle" : "hidden"}>
@@ -108,7 +110,7 @@ const LinkPreview = (props: any) => {
             <div className="flex flex-row w-full h-full bg-gray-100 p-1">
                 <div className="w-2 h-32 bg-pink-900"> </div>
                 <div className="flex items-center justify-center w-32 h-32 bg-gray-200 rounded-lg">
-                    <img className="object-fill w-full h-full" src={(state && state.img) ? state.img : ''} alt="" />
+                    <img loading="lazy" className="object-fill w-full h-full" src={(state && state.img) ? state.img : ''} alt="" />
                 </div>
                 <div className="ml-3">
                     <h1 className="text-3xl font-semibold">{(state && state.title) ? state.title : "Title"}</h1>
