@@ -29,6 +29,8 @@ const BlockEditor = () => {
 	const { bloc_name } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { bloc_path } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { display } = useSelector((store: IrootReducer) => store.searchableListReducer);
+	const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
+	const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
 	/* ------------------------------- local state ------------------------------ */
 	const componetsListInit: Array<IComponentsList> = [];
 
@@ -203,23 +205,23 @@ const BlockEditor = () => {
 	const renderMoreControll = (index: number) => {
 		if (showMoreControll) {
 			return (
-				<div className="flex items-center justify-center" onKeyDown={(e) => handle_key_down_on_more_control(e)}>
-					<svg onClick={() => setShowMoreControll(false)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+				<div className={"flex items-center justify-center border" + theme_generate} onKeyDown={(e) => handle_key_down_on_more_control(e)}>
+					<svg onClick={() => setShowMoreControll(false)} className={"w-4 h-4 m-2 fill-current cursor-pointer" + theme_generate} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
 						<path d="M7.05 9.293L6.343 10 12 15.657l1.414-1.414L9.172 10l4.242-4.243L12 4.343z" />
 					</svg>
 					<div className="">
-						<input disabled placeholder={String(index + 1)} className="w-32 text-center" type="text" maxLength={5} />
-						<span className="border-l-2 border-r-2 p-2">To</span>
-						<input onChange={(e) => componentInput(e)} placeholder="block number" className="w-32 text-center" type="text" maxLength={5} />
-						<button onClick={() => reOrderComponents(Number(index), Number(toInput - 1), 'BEFORE')} className="btn border-l-2 p-2 hover:bg-gray-300">Before</button>
-						<button onClick={() => swapComponents(index, toInput, 'SWAP')} className="btn border-l-2 p-2 hover:bg-gray-300">Swap</button>
-						<button onClick={() => reOrderComponents(Number(index), Number(toInput - 1), 'AFTER')} className="btn border-l-2 p-2 hover:bg-gray-300">After</button>
+						<input disabled placeholder={String(index + 1)} className={"w-32 text-center" + theme_generate} type="text" maxLength={5} />
+						<span className={"border-l-2 border-r-2 p-2" + theme_generate}>To</span>
+						<input onChange={(e) => componentInput(e)} placeholder="block number" className={"w-32 text-center" + theme_generate} type="text" maxLength={5} />
+						<button onClick={() => reOrderComponents(Number(index), Number(toInput - 1), 'BEFORE')} className={"btn border-l-2 p-2 hover:bg-gray-300" + theme_generate}>Before</button>
+						<button onClick={() => swapComponents(index, toInput, 'SWAP')} className={"btn border-l-2 p-2 hover:bg-gray-300" + theme_generate}>Swap</button>
+						<button onClick={() => reOrderComponents(Number(index), Number(toInput - 1), 'AFTER')} className={"btn border-l-2 p-2 hover:bg-gray-300" + theme_generate}>After</button>
 					</div>
 				</div>
 			)
 		} else {
 			return (
-				<svg onClick={() => setShowMoreControll(true)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+				<svg onClick={() => setShowMoreControll(true)} className={"w-4 h-4 m-2 cursor-pointer fill-current" + theme_generate} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
 					<path d="M12.95 10.707l.707-.707L8 4.343 6.586 5.757 10.828 10l-4.242 4.243L8 15.657l4.95-4.95z" />
 				</svg>
 			)
@@ -231,8 +233,8 @@ const BlockEditor = () => {
 		if (bloc_state.length > 0) {
 			// 
 			return (
-				<div className="sticky bottom-0">
-					<nav className="flex sticky items-center justify-between border mx-auto ">
+				<div className={"sticky bottom-0"}>
+					<nav className={"flex sticky items-center justify-between border mx-auto " + theme_generate}>
 						{/* ---------------------------------- left ---------------------------------- */}
 						<div className="hidden md:flex justify-start items-center mx-auto w-1/3 h-4">
 							<h2 className="text-gray-700 text-sm font-semibold ">{bloc_path}</h2>
@@ -249,7 +251,7 @@ const BlockEditor = () => {
 						</div>
 					</nav>
 					<div className="flex flex-row bg-gray-200 w-full h-10">
-						<input onChange={handleSearchInput} ref={searchRef} placeholder="Enter Search Query" className="h-10 text-2xl w-full border" type="text" />
+						<input onChange={handleSearchInput} ref={searchRef} placeholder="Enter Search Query" className={"h-10 text-2xl w-full border" + theme_generate} type="text" />
 					</div>
 				</div>
 			)
@@ -262,25 +264,15 @@ const BlockEditor = () => {
 
 	const renderBlocPlaceHolder = () => {
 		return (
-			<div className="flex w-full flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden">
+			<div className={"flex w-full flex-col items-center justify-center bg-gray-200 h-screen overflow-hidden" + theme_generate}>
 				<div className="flex flex-row mt-5 mx-auto w-8/12 justify-center">
 					<h1 className="font-light text-6xl text-pink-900 select-none">.Bloc Editor</h1>
 				</div>
-				<div className="flex flex-row mt-5 mx-auto min-w-64 justify-center">
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Ctrl</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Shift</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">P</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">Command Prompt</h1>
+				<div className={"flex flex-row mt-5 mx-auto min-w-64 justify-center" + theme_generate}>
+
 				</div>
-				<div className="flex flex-row mt-5 mx-auto min-w-64 justify-center">
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Ctrl</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">Shift</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">+</h1>
-					<h1 className="font-light text-lg text-gray-600 select-none  p-1 rounded bg-white border shadow-sm">N</h1>
-					<h1 className="font-normal text-lg text-gray-900 select-none border-pink-900 p-1 ml-2">New Files</h1>
+				<div className={"flex flex-row mt-5 mx-auto min-w-64 justify-center" + theme_generate}>
+
 				</div>
 			</div>
 		)
@@ -305,14 +297,14 @@ const BlockEditor = () => {
 			if (String(selectId) === String(component.id) && showControll === true) {
 				return (
 					<div className="flex relative" key={component.id}>
-						<div className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" >{index + 1}</div>
-						<div className="absolute top-0 flex w-auto bg-white h-10 border items-center ml-10 z-50" >
-							<svg onClick={() => setShowControll(false)} className="w-3 h-3 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
-							<svg onClick={() => swapComponents(index, index, 'SHIFTUP')} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10.707 7.05L10 6.343 4.343 12l1.414 1.414L10 9.172l4.243 4.242L15.657 12z" /></svg>
-							<svg onClick={() => swapComponents(index, index, 'SHIFTDOWN')} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-							<svg className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 6V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h4zm2 0h4a2 2 0 0 1 2 2v4h4V2H8v4zM2 8v10h10V8H2z" /></svg>
-							<svg className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 1l10 6-10 6L0 7l10-6zm6.67 10L20 13l-10 6-10-6 3.33-2L10 15l6.67-4z" /></svg>
-							<svg onClick={() => deleteComponent(index)} className="w-4 h-4 m-2 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z" /></svg>
+						<div className={"bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" + theme_generate} >{index + 1}</div>
+						<div className={"absolute top-0 flex w-auto bg-white h-10 border items-center ml-10 z-50" + theme_generate} >
+							<svg onClick={() => setShowControll(false)} className={"w-3 h-3 m-2 cursor-pointer fill-current" + theme_generate} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
+							<svg onClick={() => swapComponents(index, index, 'SHIFTUP')} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10.707 7.05L10 6.343 4.343 12l1.414 1.414L10 9.172l4.243 4.242L15.657 12z" /></svg>
+							<svg onClick={() => swapComponents(index, index, 'SHIFTDOWN')} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
+							<svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 6V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h4zm2 0h4a2 2 0 0 1 2 2v4h4V2H8v4zM2 8v10h10V8H2z" /></svg>
+							<svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 1l10 6-10 6L0 7l10-6zm6.67 10L20 13l-10 6-10-6 3.33-2L10 15l6.67-4z" /></svg>
+							<svg onClick={() => deleteComponent(index)} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z" /></svg>
 							{renderMoreControll(index)}
 						</div>
 						<div className="w-full" data-id={component.id} key={component.id}>
@@ -325,7 +317,7 @@ const BlockEditor = () => {
 			}
 			return (
 				<div className="flex relative" key={component.id}>
-					<div onMouseOver={(e) => toggleControll(e, component.id)} className="bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500">{index + 1}</div>
+					<div onMouseOver={(e) => toggleControll(e, component.id)} className={"bg-white w-10 h-10 mr-2 border border-l-0 flex items-center justify-center text-gray-500" + theme_generate}>{index + 1}</div>
 					<div className={(dragging && component.id === selectId) ? "w-full opacity-25" : "w-full "} key={component.id}   >
 						<div key={component.id} className="">
 							<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
@@ -338,7 +330,7 @@ const BlockEditor = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="flex flex-col max-w-full w-full max-h-screen bg-white relative">
+		<div className={"flex flex-col max-w-full w-full max-h-screen bg-white relative" + theme_generate}>
 			{renderTopPanel()}
 			<div className="overflow-y-scroll h-auto" >
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}

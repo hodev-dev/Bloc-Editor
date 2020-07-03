@@ -64,7 +64,7 @@
     "uuid": "^7.0.2"
   },
   "scripts": {
-    "start": "yarn watch:css & react-scripts start",
+    "start": "yarn watch & react-scripts start",
     "build": "react-scripts build",
     "postinstall": "electron-builder install-app-deps",
     "r:dev": "BROWSER=none yarn start",
@@ -72,6 +72,12 @@
     "e:build": "yarn build && tsc -p electron && electron-builder --linux --windows",
     "build:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "watch:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -97,6 +103,7 @@
     "electron": "^8.2.3",
     "electron-builder": "^22.5.1",
     "electron-reloader": "^1.0.1",
+    "laravel-mix": "^5.0.4",
     "postcss-cli": "^7.1.0",
     "sass": "^1.26.3",
     "tailwindcss": "^1.2.0",

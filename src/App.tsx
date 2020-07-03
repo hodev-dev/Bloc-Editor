@@ -18,7 +18,7 @@ function App() {
       <Router>
         <Switch>
           <Route path={"/"} component={Editor} exact />
-          <Route path={"/search"} component={Search} exact />
+          {/* <Route path={"/search"} component={Search} exact /> */}
         </Switch>
       </Router>
     </Provider>

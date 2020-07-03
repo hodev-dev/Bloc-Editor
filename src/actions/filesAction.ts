@@ -9,13 +9,16 @@ const request_path = () => (dispatch: any) => {
 }
 
 const get_path = () => (dispatch: any) => {
-    ipcRenderer.on('files:get_path', (event: any, _project_path: string) => {
+    ipcRenderer.on('files:get_path', (event: any, _project_path: string, theme_name: string) => {
         dispatch({
             type: "SET_PROJECT_PATH",
             payload: {
                 project_path: _project_path
             }
-        })
+        });
+        dispatch({
+            type: theme_name
+        });
     });
 }
 

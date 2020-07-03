@@ -5,6 +5,8 @@ import * as promptAction from '../../actions/promptAction';
 import * as filesAction from '../../actions/filesAction';
 import { useSelector, useDispatch } from 'react-redux';
 import { IrootReducer } from '../../reducers/rootReducer';
+import * as themeAction from '../../actions/themeAction';
+
 
 const Prompt = () => {
     const dispatch = useDispatch();
@@ -15,7 +17,8 @@ const Prompt = () => {
     const { folder_stack } = useSelector((store: IrootReducer) => store.filesReducer);
     const { display } = useSelector((store: IrootReducer) => store.promptReducer);
     const { select_action } = useSelector((store: IrootReducer) => store.promptReducer);
-
+    const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
+    const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
     /* ------------------------------- local state ------------------------------ */
 
     interface InitAction {
@@ -112,6 +115,38 @@ const Prompt = () => {
                     info: 'Cancel:',
                     value: [''],
                     fire: (answer: Array<string>) => null,
+                }
+            ]
+        },
+        {
+            title: "change theme",
+            key: 'cht',
+            info: 'Select Theme:',
+            mod: 'answer',
+            value_mod: 'string',
+            value: [''],
+            response: [
+                {
+                    title: "light",
+                    key: 'l',
+                    info: 'light',
+                    value: [''],
+                    fire: (answer: Array<string>) => {
+                        dispatch(themeAction.set_theme("SET_LIGHT"));
+                        dispatch(promptAction.set_theme('SET_LIGHT'));
+                        escape();
+                    },
+                },
+                {
+                    title: "dark",
+                    key: 'd',
+                    info: 'dark',
+                    value: [''],
+                    fire: (answer: Array<string>) => {
+                        dispatch(themeAction.set_theme("SET_DARK"));
+                        dispatch(promptAction.set_theme('SET_DARK'));
+                        escape();
+                    },
                 }
             ]
         },
@@ -263,13 +298,13 @@ const Prompt = () => {
         let render: Array<JSX.Element> = actionList.map((action: InitAction, index: number) => {
             if (action.item) {
                 return (
-                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" : "auto border mt-2 p-2 text-gray-500 bg-gray-100 select-none cursor-pointer"} onClick={() => action.item.fire()}>
+                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" + theme_generate : "auto border mt-2 p-2 text-gray-500 select-none cursor-pointer" + theme_generate} onClick={() => action.item.fire()}>
                         <h1 className={(index === cursor) ? 'text-pink-900' : 'text-gray-600'}>{action.item.title}</h1>
                     </div>
                 )
             } else {
                 return (
-                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" : "auto border mt-2 p-2 text-gray-500 bg-gray-100 select-none cursor-pointer"} onClick={() => action.item.fire()}>
+                    <div key={index} className={(index === cursor) ? "auto border border-pink-700 mt-2 p-2 text-gray-500 bg-pink-100 select-none cursor-pointer" + theme_generate : "auto border mt-2 p-2 text-gray-500 bg-gray-100 select-none cursor-pointer" + theme_generate} onClick={() => action.item.fire()}>
                         <h1 className={(index === cursor) ? 'text-pink-900' : 'text-gray-600'}>{action.title}</h1>
                     </div>
                 )
@@ -283,7 +318,7 @@ const Prompt = () => {
             return (
                 <div className={"w-2/6 h-12 bg-transparent mt-10"}>
                     <div className="text-gray-500 text-left">{normalize_actionlist()}</div>
-                    <input autoFocus onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className="auto bg-gray-100 h-full w-full bg-white text p-2 border rounded outline-none" value={value} type="text" />
+                    <input autoFocus onKeyDown={((e: any) => handleKeyDown(e))} onChange={(e: any) => handleChange(e)} className={"auto bg-gray-100 h-full w-full bg-white text p-2 border rounded outline-none" + theme_generate} value={value} type="text" />
                     <div className="mt-3">
                         {renderActionList}
                     </div>

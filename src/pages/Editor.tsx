@@ -7,7 +7,7 @@ import Notification from '../ui/components/Notification';
 const Editor = () => {
     return (
         <div className="flex justify-center min-h-screen">
-            <ActionBar />
+            {/* <ActionBar /> */}
             <Files />
             <BlockEditor />
             <Notification />

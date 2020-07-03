@@ -81,10 +81,10 @@ app.on('ready', () => {
 	_path = new Path();
 	_setting.initSetting();
 	/* -------------------------------- shortcuts ------------------------------- */
-	globalShortcut.register('CommandOrControl+shift+k', () => {
+	globalShortcut.register('CommandOrControl+shift+p', () => {
 		contents.send('prompt:toggleDisplay');
 	})
-	globalShortcut.register('CommandOrControlt+shift+j', () => {
+	globalShortcut.register('CommandOrControl+shift+a', () => {
 		contents.send('searchableList:toggleDisplay');
 	});
 	contents.on('did-finish-load', () => {
@@ -112,7 +112,7 @@ ipcMain.on('files:get_path', () => {
 		const setting = _setting.readSetting();
 		setting.then((config: any) => {
 			const parsed_config = JSON.parse(config);
-			contents.send('files:get_path', parsed_config.project_path);
+			contents.send('files:get_path', parsed_config.project_path, parsed_config.theme);
 			contents.removeAllListeners('files:get_path');
 			if (_files_watcher !== undefined) {
 				_files_watcher.close().then(() => console.log('closed'));
@@ -421,3 +421,12 @@ ipcMain.on('searchField:search', (event: any, search_string: string, project_pat
 });
 
 
+ipcMain.on('prompt:set_theme', (event: any, theme_name: string) => {
+	let new_config = [
+		{
+			key: "theme",
+			value: theme_name
+		}
+	];
+	_setting.updateSetting(new_config);
+});

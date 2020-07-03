@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Fuse from 'fuse.js';
 import * as searchableListAction from '../../actions/searchableListAction';
+import { useSelector, useDispatch } from 'react-redux';
+import { IrootReducer } from '../../reducers/rootReducer';
 
 const SearchableList = (props: any) => {
 
@@ -32,6 +34,9 @@ const SearchableList = (props: any) => {
       'name'
     ]
   };
+  const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
+  const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
+  const theme_generate_no_border = ' ' + theme.default.bg + ' ' + theme.default.text;
   /* ------------------------------ local states ------------------------------ */
   const { list, display, is_exist, callback } = props;
   const inputRef = useRef<any>(null);
@@ -99,7 +104,7 @@ const SearchableList = (props: any) => {
   const renderBlocComponentList = () => {
     return listArray.map((component: any, index: number) => {
       return (
-        <div key={index} className={(index === cursor) ? "flex w-full auto border border-pink-700 mt-2 p-1 text-gray-500 bg-pink-100 select-none cursor-pointer" : "flex w-full border mt-2 p-1 text-gray-500 bg-gray-100 select-none cursor-pointer"}>
+        <div key={index} className={(index === cursor) ? "flex w-full auto border border-pink-700 mt-2 p-1 text-gray-500 bg-pink-100 select-none cursor-pointer" + theme_generate_no_border : "flex w-full border mt-2 p-1 text-gray-500 bg-gray-100 select-none cursor-pointer" + theme_generate}>
           <div className="w-10/12 p-2 font-light">
             {normalizer(component)}
           </div>
@@ -110,14 +115,14 @@ const SearchableList = (props: any) => {
   /* ------------------------------- main render ------------------------------ */
   if (display && is_exist) {
     return (
-      <div className="absolut z-50 top-0 left-0 w-full flex flex-col justify-center mt-12 items-center">
-        <div className="w-3/6 bg-gray-100 border">
-          <input placeholder="Press Enter To Add Component To Page" autoFocus onKeyDown={(e: any) => handleKeyDown(e)} onChange={() => handleChange()} className="w-full h-10 border border-pink-900 bg-gray-white border-2 focus:border-pink-900 outline-none p-2 " type="text" ref={inputRef} />
+      <div className={"absolute z-50 top-0 left-0 w-full flex flex-col justify-center mt-12 items-center"}>
+        <div className={"w-3/6 bg-gray-100 border" + theme_generate} >
+          <input placeholder="Press Enter To Add Component To Page" autoFocus onKeyDown={(e: any) => handleKeyDown(e)} onChange={() => handleChange()} className={"w-full h-10 border border-pink-900 bg-gray-white border-2 focus:border-pink-900 outline-none p-2 " + theme_generate} type="text" ref={inputRef} />
         </div>
-        <div className="w-3/6 bg-gray-200 border h-64 border overflow-y-scroll" ref={bodyRef}>
+        <div className={"w-3/6 bg-gray-200 border h-64 border overflow-y-scroll" + theme_generate} ref={bodyRef}>
           {renderBlocComponentList()}
         </div>
-      </div>
+      </div >
     );
   } else {
     return (

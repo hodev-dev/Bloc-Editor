@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw, CompositeDecorator, ContentBlock, Modifier } from 'draft-js';
 import _ from 'lodash';
 import Immutable from 'immutable';
@@ -6,6 +7,7 @@ import ReactDOM from 'react-dom';
 import * as uuid from 'uuid';
 import "draft-js/dist/Draft.css";
 import { prependOnceListener } from 'cluster';
+import { IrootReducer } from '../reducers/rootReducer';
 
 
 const HANDLE_REGEX = /\@[\w]+/g;
@@ -80,6 +82,8 @@ const HeaderText = (props: any) => {
   const [editorState, setEditorState] = useState(EditorState.createEmpty(compositeDecorator));
   const [showControll, setShowControll] = useState(false);
   const [ReadOnly, setReadOnly] = useState(false);
+  const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
+  const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
 
   const blockRenderMap = Immutable.Map({
     'header-one': {
@@ -271,26 +275,26 @@ const HeaderText = (props: any) => {
   const renderColors = () => {
     return COLORS.map((color, index) => {
       return (
-        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className="h-10 w-16 border border-t-0 border-b-0">{color.label}</button>
+        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>{color.label}</button>
       )
     });
   }
 
   return (
     <div className="m-0 p-0" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
-      <div className={(true) ? " sticky top-0 w-full border z-40 bg-white m-0" : "hidden"}>
-        <button onClick={() => _toggleBlocStyle('ITALIC')} className="h-10 w-16 border border-t-0 border-b-0">I</button>
-        <button onClick={() => _toggleBlocStyle('BOLD')} className="h-10 w-16 border border-t-0 border-b-0">B</button>
-        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className="h-10 w-16 border border-t-0 border-b-0">U</button>
-        <button onClick={() => _toggleBlocStyle('CODE')} className="h-10 w-16 border border-t-0 border-b-0">C</button>
-        <button onClick={() => _toggleBlockType('header-one')} className="h-10 w-16 border border-t-0 border-b-0">H1</button>
-        <button onClick={() => _toggleBlockType('header-two')} className="h-10 w-16 border border-t-0 border-b-0">H2</button>
-        <button onClick={() => _toggleBlockType('header-three')} className="h-10 w-16 border border-t-0 border-b-0">H3</button>
-        <button onClick={() => _toggleBlockType('header-four')} className="h-10 w-16 border border-t-0 border-b-0">H4</button>
-        <button onClick={() => _toggleBlockType('header-five')} className="h-10 w-16 border border-t-0 border-b-0">H5</button>
-        <button onClick={() => _toggleBlockType('atomic')} className="h-10 w-16 border border-t-0 border-b-0">Test</button>
-        <button className="h-10 w-16 border border-t-0 border-b-0">OL</button>
-        <button className="h-10 w-16 border border-t-0 border-b-0">UL</button>
+      <div className={(true) ? "sticky top-0 w-full border z-40 bg-white m-0" + theme_generate : "hidden" + theme_generate}>
+        <button onClick={() => _toggleBlocStyle('ITALIC')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>I</button>
+        <button onClick={() => _toggleBlocStyle('BOLD')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>B</button>
+        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>U</button>
+        <button onClick={() => _toggleBlocStyle('CODE')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>C</button>
+        <button onClick={() => _toggleBlockType('header-one')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H1</button>
+        <button onClick={() => _toggleBlockType('header-two')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H2</button>
+        <button onClick={() => _toggleBlockType('header-three')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H3</button>
+        <button onClick={() => _toggleBlockType('header-four')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H4</button>
+        <button onClick={() => _toggleBlockType('header-five')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H5</button>
+        <button onClick={() => _toggleBlockType('atomic')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>Test</button>
+        <button className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>OL</button>
+        <button className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>UL</button>
         {renderColors()}
       </div>
       <Editor

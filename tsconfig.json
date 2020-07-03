@@ -21,7 +21,8 @@
   },
   "skipLibCheck": true,
   "include": [
-    "src"
+    "src",
+    "tailwind.config.js"
   ],
   "typeRoots": [
     "node_modules/@types"

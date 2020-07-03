@@ -56,9 +56,15 @@ const create_folder = (action_answer: any) => (dispatch: any, getState: any) => 
     const _path = path.join(String(action_answer[0]), String(action_answer[1]));
     ipcRenderer.send('prompt:create_folder', _path);
 }
+
+const set_theme = (theme_name: string) => (dispatch: any, getState: any) => {
+    // console.log({ action_answer })
+    ipcRenderer.send('prompt:set_theme', theme_name);
+}
+
 /* -------------------------- unsbscribe to events -------------------------- */
 const unsubscribe = () => {
     ipcRenderer.removeListener('prompt:toggleDisplay', listenToggleDisplay);
 }
 
-export { listen, dispatchToggleDisplay, set_select, display, create_folder, unsubscribe }
+export { listen, dispatchToggleDisplay, set_select, set_theme, display, create_folder, unsubscribe }

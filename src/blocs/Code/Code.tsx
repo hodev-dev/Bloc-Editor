@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import { useSelector } from 'react-redux';
 import AceEditor from "react-ace";
 import "./themes";
 import "ace-builds/webpack-resolver";
@@ -9,6 +10,7 @@ import ace from "ace-builds";
 import beautify from "ace-builds/src-noconflict/ext-beautify";
 import theme_list from "ace-builds/src-noconflict/ext-themelist";
 import modelist from "ace-builds/src-noconflict/ext-modelist";
+import { IrootReducer } from '../../reducers/rootReducer';
 
 
 export const Code = (props: any) => {
@@ -16,6 +18,9 @@ export const Code = (props: any) => {
     const [state, setState] = useState(initState);
     const [themeList, setThemeList] = useState(theme_list);
     const [editor, setEditor] = useState<any>();
+    const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
+    const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
+
     useEffect(() => {
         var _initeditor = ace.edit("editor");
         setEditor(_initeditor);
@@ -125,23 +130,23 @@ export const Code = (props: any) => {
     }
     return (
         <div className="flex flex-col">
-            <div className={(true) ? "sticky top-0 left-0 text-black bg-white w-full border" : "hidden border-none"} >
-                <div className="sticky top-0 w-full border border-b-0 border-t-0 z-40 bg-white">
+            <div className={(true) ? "sticky top-0 left-0 border text-black bg-white w-full" + ' ' + theme.default.border : "hidden border-none"} >
+                <div className={"sticky top-0 w-full border border-b-0 border-t-0 z-40" + theme_generate}>
                     <label className="p-2" htmlFor="">theme</label>
-                    <select onChange={(e) => handleSelectTheme(e)} className="w-64 h-10 font-light align-middle bg-white" name="themes" id="themes">
+                    <select onChange={(e) => handleSelectTheme(e)} className={"w-64 h-10 font-light align-middle bg-white" + theme_generate} name="themes" id="themes">
                         {renderThemeList()}
                     </select>
                     <label className="p-2" htmlFor="">font-size</label>
-                    <select onChange={(e) => handleFontSize(e)} className="w-32 h-10 font-light align-middle bg-white" name="fontSize" id="fontSize">
+                    <select onChange={(e) => handleFontSize(e)} className={"w-32 h-10 font-light align-middle bg-white" + theme_generate} name="fontSize" id="fontSize">
                         {renderFontSize()}
                     </select>
                     <label className="p-2" htmlFor="">Language</label>
-                    <select onChange={handleSelectLanguage} className="w-64 h-10 font-light align-middle bg-white" name="cars" id="cars">
+                    <select onChange={handleSelectLanguage} className={"w-64 h-10 font-light align-middle bg-white" + theme_generate} name="cars" id="cars">
                         {renderLanguageList()}
                     </select>
                     <label className="p-2" htmlFor="">Height</label>
-                    <input placeholder="Enter Number Of Height" onChange={handleInput} value={(state && state.height) ? state.height : ''} className="w-64 h-10 font-light align-middle" type="text" />
-                    <button onClick={formatCode} className="h-10 w-32 border align-middle">Format Code</button>
+                    <input placeholder="Enter Number Of Height" onChange={handleInput} value={(state && state.height) ? state.height : ''} className={"w-64 h-10 font-light align-middle" + theme_generate} type="text" />
+                    <button onClick={formatCode} className={"h-10 w-32 border align-middle" + theme_generate}>Format Code</button>
                 </div>
             </div>
 

@@ -3,12 +3,14 @@ import * as filesAction from '../../actions/filesAction';
 import * as promptAction from '../../actions/promptAction';
 import { useSelector, useDispatch } from 'react-redux';
 import { IrootReducer } from '../../reducers/rootReducer';
+import { Itheme } from '../../reducers/themeReducer';
 const Files = () => {
 
 	/* ------------------------------ global state ------------------------------ */
 	const dispatch = useDispatch();
 
 	const { project_path } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
 	const { loading } = useSelector((store: IrootReducer) => store.filesReducer);
 	const { list } = useSelector((store: IrootReducer) => store.filesReducer);
 	const { folder_stack } = useSelector((store: IrootReducer) => store.filesReducer);
@@ -27,6 +29,10 @@ const Files = () => {
 			filesAction.unsubscribe();
 		};
 	}, []);
+
+	useEffect(() => {
+		console.log(theme);
+	}, [theme])
 
 	useEffect(() => {
 		// updates redux project path
@@ -79,7 +85,7 @@ const Files = () => {
 		if (loading === false && folder_stack.length > 0) {
 			return (
 				<div className="">
-					<button onClick={() => click_on_back()} className="flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 hover:bg-pink-900 hover:text-white">
+					<button onClick={() => click_on_back()} className={"flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 hover:bg-pink-900 hover:text-white" + ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text}>
 						<svg className="w-5 h-5 fill-current mr-2 mt-0 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M217.9 256L345 129c9.4-9.4 9.4-24.6 0-33.9-9.4-9.4-24.6-9.3-34 0L167 239c-9.1 9.1-9.3 23.7-.7 33.1L310.9 417c4.7 4.7 10.9 7 17 7s12.3-2.3 17-7c9.4-9.4 9.4-24.6 0-33.9L217.9 256z" /></svg>
 						<div className="font-bold text-sm text-left">
 							back
@@ -113,8 +119,8 @@ const Files = () => {
 		} else if (!loading && list.length > 0) {
 			return list.map((item: any, index: number) => {
 				return (
-					<div key={index} className="bg-gray-100">
-						<button onClick={() => click_on_list_item(item)} className={`flex w-full p-2 bg-gray-100 cursor-pointer border text-gray-700 font-bold text-sm text-left hover:bg-pink-900 hover:text-white ${(is_changed && item.path === bloc_path) ? 'bg-yellow-200' : 'bg-white'} bg-white`}>
+					<div key={index} className="b">
+						<button onClick={() => click_on_list_item(item)} className={"flex w-full p-2 border cursor-pointer font-bold text-sm text-left hover:bg-pink-900 hover:text-white" + ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text}>
 							{render_list_icon(item)}
 							{item.title}
 						</button>
@@ -124,12 +130,12 @@ const Files = () => {
 		}
 	}
 
-	const renderListMemo = useMemo(() => renderList(), [loading, list, is_changed]);
+	// const renderListMemo = useMemo(() => renderList(), [loading, list, is_changed]);
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className="w-64 bg-gray-100 self-stretch">
-			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto border">
+		<div className={"w-64 bg-gray-100 self-stretch" + ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text}>
+			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto">
 				{/* ---------------------------------- left ---------------------------------- */}
 				<div className="flex justify-start items-center mx-auto w-1/3 h-4">
 					<h2 className="text-gray-700 text-sm font-semibold ">Explorer</h2>
@@ -139,7 +145,7 @@ const Files = () => {
 				</div>
 				{/* ---------------------------------- right --------------------------------- */}
 				<div className="flex justify-end items-center mx-auto w-1/3 ">
-					<svg onClick={() => click_new_folder()} className="w-5 h-5 stroke-current mr-0 cursor-pointer" style={{ fill: "none", stroke: "#000", strokeLinecap: "round", strokeMiterlimit: 10, strokeWidth: 32 }} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64,192V120a40,40,0,0,1,40-40h75.89a40,40,0,0,1,22.19,6.72l27.84,18.56A40,40,0,0,0,252.11,112H408a40,40,0,0,1,40,40v40" /><path d="M479.9,226.55,463.68,392a40,40,0,0,1-39.93,40H88.25a40,40,0,0,1-39.93-40L32.1,226.55A32,32,0,0,1,64,192h384.1A32,32,0,0,1,479.9,226.55Z" /></svg>
+					<svg style={{ fill: "none", stroke: theme.default.editor_foreground, strokeLinecap: "round", strokeMiterlimit: 10, strokeWidth: 32 }} onClick={() => click_new_folder()} className="w-5 h-5 stroke-current mr-0 cursor-pointer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64,192V120a40,40,0,0,1,40-40h75.89a40,40,0,0,1,22.19,6.72l27.84,18.56A40,40,0,0,0,252.11,112H408a40,40,0,0,1,40,40v40" /><path d="M479.9,226.55,463.68,392a40,40,0,0,1-39.93,40H88.25a40,40,0,0,1-39.93-40L32.1,226.55A32,32,0,0,1,64,192h384.1A32,32,0,0,1,479.9,226.55Z" /></svg>
 				</div>
 			</nav>
 			{/* ----------------------------- phone menu body ---------------------------- */}
@@ -149,7 +155,7 @@ const Files = () => {
 						{renderBack()}
 					</div>
 					<div>
-						{renderListMemo}
+						{renderList()}
 					</div>
 				</ul>
 			</div>
@@ -157,4 +163,7 @@ const Files = () => {
 	)
 }
 
+
 export default React.memo(Files);
+
+

@@ -1,8 +1,18 @@
 module.exports = {
   prefix: '',
-  important: false,
+  important: true,
   separator: ':',
   theme: {
+    extend: {
+      colors: {
+        onedark: {
+          'bg': '#000',
+          'border': '#181a1f',
+          "text": "#6b778e",
+          "bgc": "#000",
+        }
+      }
+    },
     screens: {
       sm: '640px',
       md: '768px',
@@ -691,4 +701,4 @@ module.exports = {
   },
   corePlugins: {},
   plugins: [],
-}
+};
