@@ -132,8 +132,8 @@ export const Code = (props: any) => {
         }
     }
     return (
-        <div className="flex flex-col">
-            <div className={(true) ? "sticky top-0 left-0 border text-black bg-white w-full" + ' ' + theme.default.border : "hidden border-none"} >
+        <div className="flex flex-col relative">
+            <div className={(true) ? "sticky z-40 top-0 left-0 border text-black bg-white w-full" + ' ' + theme.default.border : "hidden border-none"} >
                 <div className={"sticky top-0 w-full border border-b-0 border-t-0 z-40" + theme_generate}>
                     <label className="p-2" htmlFor="">theme</label>
                     <select defaultValue={state.selectedTheme} onChange={(e) => handleSelectTheme(e)} className={"w-64 h-10 font-light align-middle bg-white" + theme_generate} name="themes" id="themes">
@@ -158,10 +158,10 @@ export const Code = (props: any) => {
                 theme={(state.selectedTheme) ? state.selectedTheme : "xcode"}
                 onChange={onChange}
                 name={id}
-                width={'100%'}
+                width={'100&'}
                 height={(state.height) ? state.height + 'vh' : '50vh'}
-                className="flex overflow-auto"
-                editorProps={{ $blockScrolling: false }}
+                className="overflow-hidden"
+                editorProps={{ $blockScrolling: true }}
                 fontSize={(state.fontSize) ? state.fontSize : "24"}
                 showPrintMargin={true}
                 showGutter={true}

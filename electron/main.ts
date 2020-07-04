@@ -1,6 +1,7 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
+import * as fsx from ('fs-extra');
 import * as isDev from 'electron-is-dev';
 import * as log from 'electron-log';
 import * as  request from "request";
@@ -14,6 +15,7 @@ import * as puppeteer from 'puppeteer';
 import * as uuid from 'uuid';
 import fse = require('fs-extra');
 import glob = require("glob")
+
 
 
 
@@ -250,7 +252,7 @@ ipcMain.on('files:save_bloc', (event: any, _path: string, component_data: any) =
 });
 
 
-ipcMain.on('files:import_media', (event: any, project_path: any) => {
+ipcMain.on('files:import_media', (event: any, project_path: any, id: string) => {
 	const select_path: Promise<OpenDialogReturnValue> = dialog.showOpenDialog(win, {
 		properties: ['openFile']
 	});
@@ -262,8 +264,13 @@ ipcMain.on('files:import_media', (event: any, project_path: any) => {
 			console.log('project_path', project_path)
 			const file_name = path.basename(dialog_data.filePaths[0]);
 			const store_images_path = path.join(project_path, "store", "images", file_name);
-			fs.createReadStream(dialog_data.filePaths[0]).pipe(fs.createWriteStream(store_images_path));
-			contents.send('files:import_media_path', path.join("file://", store_images_path));
+			try {
+				fsx.copySync(dialog_data.filePaths[0], store_images_path)
+				contents.send('files:import_media_path', path.join("file://", store_images_path), id);
+				console.log('success!')
+			} catch (err) {
+				console.error(err)
+			}
 		}
 	});
 });
