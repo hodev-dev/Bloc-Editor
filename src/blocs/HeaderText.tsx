@@ -80,6 +80,7 @@ const HeaderText = (props: any) => {
   ]);
 
   const [editorState, setEditorState] = useState(EditorState.createEmpty(compositeDecorator));
+  const [state, setState] = useState<any>('');
   const [showControll, setShowControll] = useState(false);
   const [ReadOnly, setReadOnly] = useState(false);
   const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
@@ -131,6 +132,9 @@ const HeaderText = (props: any) => {
     return "";
   }
 
+  useEffect(() => {
+    console.log({ state });
+  }, [state])
 
   useEffect(() => {
     var init;
