@@ -18,7 +18,7 @@ const Prompt = () => {
     const { display } = useSelector((store: IrootReducer) => store.promptReducer);
     const { select_action } = useSelector((store: IrootReducer) => store.promptReducer);
     const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
-    const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
+    const theme_generate = ' ' + theme.default.bg.name + ' ' + theme.default.border.name + ' ' + theme.default.text.name;
     /* ------------------------------- local state ------------------------------ */
 
     interface InitAction {

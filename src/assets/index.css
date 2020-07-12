@@ -8,3 +8,12 @@
     from {transform:rotate(0deg);}
     to {transform:rotate(360deg);}
   }
+
+  .swatches-picker > div {
+    position: absolute;
+    width: 100%;
+    height: 15rem !important;
+    background-color: #000000 !important;
+    z-index: 9999 !important;
+    border: 1px solid #181a1f;
+}

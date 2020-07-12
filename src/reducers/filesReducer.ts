@@ -9,7 +9,9 @@ export interface IinitialFiles {
     root_path: string,
     list: Array<string>,
     folder_stack: Array<string>
-    last_file_imported: string | null
+    last_file_imported: string | null,
+    render_index: number,
+    items_per_page: number,
 }
 /* -------------------------- SECTION initial state ------------------------- */
 const initialFiles: IinitialFiles = {
@@ -19,6 +21,8 @@ const initialFiles: IinitialFiles = {
     list: [],
     folder_stack: [],
     last_file_imported: null,
+    render_index: 0,
+    items_per_page: 10
 }
 /* -------------------------- SECTION reducer body -------------------------- */
 function filesReducer(state = initialFiles, action: IAction) {
@@ -26,6 +30,10 @@ function filesReducer(state = initialFiles, action: IAction) {
         case "SET_PROJECT_PATH":
             return {
                 ...state, loading: false, project_path: action.payload.project_path, root_path: action.payload.project_path
+            }
+        case "SET_LOADING":
+            return {
+                ...state, loading: action.payload.loading
             }
         case "SET_LIST":
             return {
@@ -42,6 +50,14 @@ function filesReducer(state = initialFiles, action: IAction) {
         case "SET_LAST_FILE_IMPORTED":
             return {
                 ...state, last_file_imported: action.payload.last_file_imported
+            }
+        case "SET_RENDER_INDEX":
+            return {
+                ...state, render_index: action.payload.render_index
+            }
+        case "SET_ITEMS_PER_PAGE":
+            return {
+                ...state, items_per_page: action.payload.items_per_page
             }
         default:
             return state;

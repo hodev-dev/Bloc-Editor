@@ -1,7 +1,7 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as fsx from ('fs-extra');
+import * as zlib from 'zlib';
 import * as isDev from 'electron-is-dev';
 import * as log from 'electron-log';
 import * as  request from "request";
@@ -11,12 +11,15 @@ import FileManager from './utail/FileManager';
 import Path from '../electron/utail/Path';
 import chokidar = require('chokidar');
 import cheerio = require('cheerio');
-import * as puppeteer from 'puppeteer';
 import * as uuid from 'uuid';
-import fse = require('fs-extra');
-import glob = require("glob")
+import glob = require("glob");
+import fsx = require('fs-extra');
 
-
+const { chain } = require('stream-chain');
+const { parser } = require('stream-json');
+const { pick } = require('stream-json/filters/Pick');
+const { ignore } = require('stream-json/filters/Ignore');
+const { streamValues } = require('stream-json/streamers/StreamValues');
 
 
 /* ---------------------------- import type interFace ---------------------------- */
@@ -117,7 +120,8 @@ ipcMain.on('files:get_path', () => {
 			contents.send('files:get_path', parsed_config.project_path, parsed_config.theme);
 			contents.removeAllListeners('files:get_path');
 			if (_files_watcher !== undefined) {
-				_files_watcher.close().then(() => console.log('closed'));
+				_files_watcher.close().then(() => console.log('file watcher closed'));
+				_setting_watcher.close().then(() => console.log('setting watcher closed'));
 			}
 		});
 	});
@@ -203,13 +207,29 @@ ipcMain.on('prompt:create_folder', (event: any, _path: string) => {
 	log.info({ _path });
 });
 
-ipcMain.on('files:read_file', (event: any, _path: any) => {
-	fs.readFile(_path, { encoding: 'utf-8' }, (err, data) => {
-		if (!err) {
-			contents.send('files:read_file', data);
-		} else {
-			log.error(err);
+
+
+ipcMain.on('files:read_file', (event: any, _path: any, render_index: number, items_per_page: number) => {
+	const pipeline = chain([
+		fs.createReadStream(_path),
+		parser(),
+		streamValues(),
+		(data: any) => {
+			const value = data.value;
+			return value;
 		}
+	]);
+	let counter = 0;
+	let arr: any = [];
+	pipeline.on('data', (data: any) => {
+		counter++;
+		// if (counter > render_index && counter < render_index + items_per_page) {
+		arr.push(data);
+		// }
+	});
+	pipeline.on('end', (data: any) => {
+		console.log({ arr })
+		contents.send('files:read_file', arr, counter)
 	});
 });
 
@@ -274,30 +294,8 @@ ipcMain.on('files:import_media', (event: any, project_path: any, id: string) => 
 		}
 	});
 });
-const getChromiumExecPath = () => {
-	return puppeteer.executablePath().replace('app.asar', 'app.asar.unpacked');
-}
 
-const screenshot = async (href: string, project_path: string) => {
-	console.log('start takign screenshot')
-	const browser = await puppeteer.launch({
-		headless: true,
-		devtools: false,
-		args: [
-			'--window-size=1920,1080',
-			'--no-sandbox',
-			'--disable-setuid-sandbox'
-		],
-		executablePath: getChromiumExecPath(),
-	});
-	const page = await browser.newPage();
-	const save_path = path.join(project_path, 'store', 'images', uuid.v1() + 'screenshot.jpeg');
-	await page.goto(href, { waitUntil: "networkidle0", timeout: 60000 });
-	await page.setViewport({ width: 1280, height: 720 });
-	await page.screenshot({ path: save_path, type: "jpeg", fullPage: false });
-	await browser.close();
-	return save_path;
-}
+
 
 ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, project_path: string) => {
 	request(
@@ -323,19 +321,14 @@ ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, projec
 					fb_appid: $('meta[property="fb:app_id"]').attr('content'),
 					fb_pages: $('meta[property="fb:pages"]').attr('content'),
 				}
-				const shot = screenshot(href, project_path);
-				shot.then((image_path: string) => {
-					console.log({ link_data })
-					contents.send("linkPreview:get_data", link_data, id, image_path);
-					contents.send('notification:push', [
-						{
-							type: "Success",
-							messege: "Fetch Data Was Successfull!",
-						}
-					]);
-				}).catch((err: any) => {
-					console.error(err);
-				});
+				console.log({ link_data })
+				contents.send("linkPreview:get_data", link_data, id);
+				contents.send('notification:push', [
+					{
+						type: "Success",
+						messege: "Fetch Data Was Successfull!",
+					}
+				]);
 			} else {
 				contents.send('notification:push', [
 					{
@@ -349,7 +342,6 @@ ipcMain.on('linkPreview:get_data', (event: any, href: string, id: string, projec
 	);
 });
 
-
 ipcMain.on('clipboard:add', (event: any, url: string) => {
 	clipboard.writeText(url);
 	contents.send('notification:push', [
@@ -358,57 +350,6 @@ ipcMain.on('clipboard:add', (event: any, url: string) => {
 			messege: "Url Added to Cliboard",
 		}
 	]);
-});
-
-const save_page = async (project_path: string, url: string) => {
-	const browser = await puppeteer.launch({
-		headless: false,
-		devtools: false,
-		defaultViewport: null,
-		args: [
-			'--window-size=1920,1080',
-			'--start-fullscreen',
-			'--no-sandbox',
-			'--disable-setuid-sandbox'
-		],
-		executablePath: getChromiumExecPath(),
-	});
-	const [page] = await browser.pages();
-	const saved_path = path.join(project_path, 'store', "offline_pages", uuid.v1() + '.mhtml');
-	await page.goto(url, { waitUntil: "networkidle0", timeout: 60000 });
-	const cdp: any = await page.target().createCDPSession();
-	const { data } = await cdp.send('Page.captureSnapshot', { format: 'mhtml' });
-	fs.writeFileSync(saved_path, data);
-	await browser.close();
-	return saved_path;
-}
-
-ipcMain.on('linkPreview:save_offline', (event: any, project_path: string, url: string, id: string) => {
-	const saved = save_page(project_path, url);
-	saved.then((path: string) => {
-		contents.send("linkPreview:save_offline", id, path);
-	});
-});
-
-const open_page = async (path: string) => {
-	const browser = await puppeteer.launch({
-		headless: false,
-		devtools: false,
-		defaultViewport: null,
-		args: [
-			'--window-size=1920,1080',
-			'--no-sandbox',
-			'--disable-setuid-sandbox'
-		],
-		executablePath: getChromiumExecPath(),
-	});
-	const page = await browser.newPage();
-	console.log({ path })
-	await page.goto("file://" + path);
-}
-ipcMain.on('linkPreview:open_offline', (event: any, path: string, id: string) => {
-	console.log('open offline')
-	open_page(path);
 });
 
 ipcMain.on('searchField:search', (event: any, search_string: string, project_path: string) => {
@@ -437,3 +378,23 @@ ipcMain.on('prompt:set_theme', (event: any, theme_name: string) => {
 	];
 	_setting.updateSetting(new_config);
 });
+
+// test
+ipcMain.on('test:change_id', (event: any, project_path: string) => {
+	const _path = path.join(project_path, '1.bloc');
+	fs.readFile(_path, { encoding: 'utf-8' }, (err, data) => {
+		if (!err) {
+			const _parsed = JSON.parse(data);
+			const temp: any = [];
+			_parsed.forEach((component: any) => {
+				component.id = String(uuid.v3(String(Math.random()), uuid.v3.DNS));
+				temp.push(component);
+			});
+			fs.writeFile(_path, JSON.stringify(temp), (err) => {
+				console.log({ temp })
+			});
+		} else {
+			log.error(err);
+		}
+	});
+})

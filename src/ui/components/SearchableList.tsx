@@ -35,8 +35,8 @@ const SearchableList = (props: any) => {
     ]
   };
   const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
-  const theme_generate = ' ' + theme.default.bg + ' ' + theme.default.border + ' ' + theme.default.text;
-  const theme_generate_no_border = ' ' + theme.default.bg + ' ' + theme.default.text;
+  const theme_generate = ' ' + theme.default.bg.name + ' ' + theme.default.border.name + ' ' + theme.default.text.name;
+  const theme_generate_no_border = ' ' + theme.default.bg.name + ' ' + theme.default.text.name;
   /* ------------------------------ local states ------------------------------ */
   const { list, display, is_exist, callback } = props;
   const inputRef = useRef<any>(null);

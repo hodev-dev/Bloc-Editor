@@ -1,6 +1,18 @@
 {
-    "bg": "bg-onedark-bg",
-    "border": "border-onedark-border",
-    "text": "text-onedark-text",
-    "bgc": "bg-onedark-bgc"
+    "bg": {
+        "name": "bg-onedark-bg",
+        "color": "#000"
+    },
+    "border": {
+        "name": "border-onedark-border",
+        "color": "#181a1f"
+    },
+    "text": {
+        "name": "text-onedark-text",
+        "color": "#6b778e"
+    },
+    "bgc": {
+        "name": "bg-onedark-bgc",
+        "color": "#000"
+    }
 }

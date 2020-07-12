@@ -4,6 +4,12 @@ import * as cmp from '../blocs';
 import { store } from '../App';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
+const set_loading = (_loading_state: boolean) => (dispatch: any) => {
+    dispatch({
+        type: "SET_LOADING",
+        payload: _loading_state
+    });
+}
 const request_path = () => (dispatch: any) => {
     ipcRenderer.send('files:get_path');
 }
@@ -69,22 +75,52 @@ const go_to_folder_stack = () => (dispatch: any, getState: any) => {
     const _path = path.join(project_path, ...folder_stack);
     ipcRenderer.send('files:request_list', _path);
 }
+const set_items_per_page = (_items_pager_page: number) => (dispatch: any) => {
+    dispatch({
+        type: "SET_ITEMS_PER_PAGE",
+        payload: {
+            items_per_page: _items_pager_page
+        }
+    });
+}
+
+const set_render_index = (_render_index: number) => (dispatch: any) => {
+    dispatch({
+        type: "SET_RENDER_INDEX",
+        payload: {
+            render_index: _render_index
+        }
+    });
+}
+
+const set_bloc_size = (_new_bloc_size: number) => (dispatch: any) => {
+    dispatch({
+        type: "SET_BLOC_SIZE",
+        payload: {
+            bloc_size: _new_bloc_size
+        }
+    })
+}
 
 const read_file = (item: any) => (dispatch: any, getState: any) => {
     const { project_path } = getState().filesReducer;
     const { folder_stack } = getState().filesReducer;
+    const { render_index } = getState().filesReducer;
+    const { items_per_page } = getState().filesReducer;
+
     const _path = path.join(project_path, ...folder_stack, item.title);
-    ipcRenderer.send('files:read_file', _path);
-    ipcRenderer.on('files:read_file', (event: any, data: any) => {
-        const parse_file = JSON.parse(data);
+    ipcRenderer.send('files:read_file', _path, render_index, items_per_page);
+    ipcRenderer.on('files:read_file', (event: any, data: any, _bloc_size: number) => {
+        console.log(data);
         dispatch({
             type: 'SET_BLOC',
             payload: {
                 bloc_name: item.title,
-                bloc_state: parse_file,
+                bloc_state: data,
                 bloc_path: _path,
+                bloc_size: _bloc_size
             }
-        })
+        });
     });
 }
 
@@ -110,7 +146,7 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
 const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => {
     const cmplist = componentList.map((obj: any) => {
         if (obj.component) {
-            obj.component = cmp.Bloc_Components[obj.component.name]['name'];
+            obj.component = cmp.Bloc_Components[obj.component.name].name;
         }
         return obj;
     });
@@ -172,8 +208,8 @@ const redo = (_future_bloc_state: any, _bloc_state: any, _past_bloc_state: any) 
 }
 
 
-const import_media = (_project_path: any) => (dispatch: any) => {
-
+const test_change_path = (_project_path: any) => (dispatch: any) => {
+    ipcRenderer.send('test:change_id', _project_path);
 }
 
 /* -------------------------- unsbscribe to events -------------------------- */
@@ -191,6 +227,7 @@ const unsubscribe = () => {
 }
 
 export {
+    set_loading,
     request_path,
     request_list,
     get_path,
@@ -199,6 +236,9 @@ export {
     add_to_folder_stack,
     pop_folder_stack,
     go_to_folder_stack,
+    set_items_per_page,
+    set_render_index,
+    set_bloc_size,
     read_file,
     create_file,
     save_file,
@@ -206,6 +246,6 @@ export {
     add_to_past,
     undo,
     redo,
-    import_media,
+    test_change_path,
     unsubscribe,
 }
