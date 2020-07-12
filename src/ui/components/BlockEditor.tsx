@@ -177,7 +177,7 @@ const BlockEditor = () => {
 			state: ''
 		}
 		dispatch(filesAction.add_to_past(componentList));
-		setComponentList((prevState: Array<IComponentsList>) => [...prevState, _generate_component]);
+		setComponentList((prevState: Array<IComponentsList>) => [_generate_component, ...prevState,]);
 	}
 
 	const handle_key_down_on_more_control = (e: any) => {
@@ -296,7 +296,7 @@ const BlockEditor = () => {
 					<h1 className="text-6xl font-light text-pink-900 select-none">.Bloc Editor</h1>
 				</div>
 				<div className={"flex flex-row justify-center mx-auto mt-5 min-w-64" + theme_generate}>
-					<button onClick={filesAction.test_change_path(project_path)}>click</button>
+					{/* <button onClick={filesAction.test_change_path(project_path)}>click</button> */}
 				</div>
 				<div className={"flex flex-row justify-center mx-auto mt-5 min-w-64" + theme_generate}></div>
 			</div>

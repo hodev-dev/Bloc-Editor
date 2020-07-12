@@ -82,6 +82,9 @@ const Files = () => {
 	const click_new_folder = () => {
 		dispatch(promptAction.set_select('crf'));
 	}
+	const click_new_bloc = () => {
+		dispatch(promptAction.set_select('crb'));
+	}
 
 	/* --------------------------------- render --------------------------------- */
 	const renderBack = useCallback(() => {
@@ -135,6 +138,7 @@ const Files = () => {
 				</div>
 				{/* ---------------------------------- right --------------------------------- */}
 				<div className="flex items-center justify-end w-1/3 mx-auto ">
+					<svg style={{ fill: "none", stroke: theme.default.editor_foreground, strokeLinecap: "round", strokeMiterlimit: 10, strokeWidth: 32 }} onClick={() => click_new_bloc()} className="w-5 h-5 mr-2 cursor-pointer stroke-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M312 155h91c2.8 0 5-2.2 5-5 0-8.9-3.9-17.3-10.7-22.9L321 63.5c-5.8-4.8-13-7.4-20.6-7.4-4.1 0-7.4 3.3-7.4 7.4V136c0 10.5 8.5 19 19 19z" /><path d="M267 136V56H136c-17.6 0-32 14.4-32 32v336c0 17.6 14.4 32 32 32h240c17.6 0 32-14.4 32-32V181h-96c-24.8 0-45-20.2-45-45z" /></svg>
 					<svg style={{ fill: "none", stroke: theme.default.editor_foreground, strokeLinecap: "round", strokeMiterlimit: 10, strokeWidth: 32 }} onClick={() => click_new_folder()} className="w-5 h-5 mr-0 cursor-pointer stroke-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M64,192V120a40,40,0,0,1,40-40h75.89a40,40,0,0,1,22.19,6.72l27.84,18.56A40,40,0,0,0,252.11,112H408a40,40,0,0,1,40,40v40" /><path d="M479.9,226.55,463.68,392a40,40,0,0,1-39.93,40H88.25a40,40,0,0,1-39.93-40L32.1,226.55A32,32,0,0,1,64,192h384.1A32,32,0,0,1,479.9,226.55Z" /></svg>
 				</div>
 			</nav>

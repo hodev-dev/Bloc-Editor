@@ -130,8 +130,8 @@ export const Code = (props: any) => {
 
     return (
         <div className="w-full h-auto">
-            <div className={(true) ? "sticky z-50 top-0 left-0 border text-black bg-white w-full" + ' ' + theme.default.border.name : "hidden border-none"} >
-                <div className={"sticky top-0 w-full border border-b-0 border-t-0 z-40" + theme_generate}>
+            <div className={(true) ? "sticky z-40 top-0 left-0 border text-black bg-white w-full" + ' ' + theme.default.border.name : "hidden border-none"} >
+                <div className={"sticky top-0 z-40 w-full border border-t-0 border-b-0" + theme_generate}>
                     <label className="p-2" htmlFor="">theme</label>
                     <select defaultValue={state.selectedTheme} onChange={(e) => handleSelectTheme(e)} className={"w-64 h-10 font-light align-middle bg-white" + theme_generate} name="themes" id="themes">
                         {renderThemeList()}
@@ -146,7 +146,7 @@ export const Code = (props: any) => {
                     </select>
                     <label className="p-2" htmlFor="">Height</label>
                     <input placeholder="Enter Number Of Height" onChange={handleInput} value={(state && state.height) ? state.height : ''} className={"w-64 h-10 font-light align-middle" + theme_generate} type="text" />
-                    <button onClick={(e: any) => formatCode(e, id)} className={"h-10 w-32 border align-middle" + theme_generate}>Format Code</button>
+                    <button onClick={(e: any) => formatCode(e, id)} className={"w-32 h-10 align-middle border" + theme_generate}>Format Code</button>
                 </div>
             </div>
 
