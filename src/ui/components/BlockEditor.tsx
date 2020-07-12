@@ -117,7 +117,11 @@ const BlockEditor = () => {
 		} else if (mod === 'SHIFTDOWN' && _dropIndex < componentList.length - 1) {
 			_dropIndex = _dropIndex + 1;
 		} else if ((mod === 'SWAP') && (_dropIndex <= componentList.length || _dropIndex >= componentList.length)) {
-			_dropIndex = _dropIndex - 1;
+			if (_dropIndex === 0) {
+				_dropIndex = _dropIndex
+			} else {
+				_dropIndex = _dropIndex - 1;
+			}
 		}
 		let componentListClone = [...componentList];
 		let temp = componentListClone[_dragIndex];
@@ -412,11 +416,9 @@ const BlockEditor = () => {
 		}
 		else if (index >= renderIndex && index < renderIndex + ITEMS_PER_PAGE - 1) {
 			return (
-				<div>
-					<div className="w-full" id={component.id} data-id={component.id} key={component.id}>
-						<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
-					</div >
-				</div>
+				<div className="w-full" id={component.id} data-id={component.id} key={component.id}>
+					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
+				</div >
 			)
 		}
 		else if (index === renderIndex + ITEMS_PER_PAGE - 1) {
@@ -460,7 +462,7 @@ const BlockEditor = () => {
 	};
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className={"relative flex flex-col w-full max-h-screen bg-white " + theme_generate} >
+		<div className={"relative flex flex-col w-full max-h-screen bg-white" + theme_generate} >
 			{renderTopPanel()}
 			<div className="h-auto overflow-y-scroll">
 				{(bloc_state.length === 0) ? renderBlocPlaceHolder() : renderComponents()}
