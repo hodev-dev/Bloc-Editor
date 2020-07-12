@@ -22,10 +22,10 @@ const Image = (props: any) => {
 
     const handleClick = () => {
         ipcRenderer.send('files:import_media', project_path, id);
-        ipcRenderer.on('files:import_media_path', (event: any, last_file_imported_path: string, _id: string) => {
+        ipcRenderer.on('files:import_media_path', (event: any, base64_image_data: string, _id: string) => {
             if (id === _id) {
                 setState((prevState: any) => {
-                    return { ...prevState, src: last_file_imported_path }
+                    return { ...prevState, src: base64_image_data }
                 });
             }
         });
@@ -56,18 +56,18 @@ const Image = (props: any) => {
         setShowControll(false);
     }
     return (
-        <div className={"bg-white w-full h-full relative flex flex-col min-h-screen" + theme_generate} style={{ alignItems: state.align }} onMouseOver={handleMosueEnter} onMouseLeave={handleMouseLeave} onClick={handleMosueEnter}>
+        <div className={"relative flex flex-col w-full h-full min-h-screen bg-white" + theme_generate} style={{ alignItems: state.align }} onMouseOver={handleMosueEnter} onMouseLeave={handleMouseLeave} onClick={handleMosueEnter}>
             <div className={(true) ? "sticky top-0 left-0 text-black bg-white w-full border" + theme_generate : "hidden border-none"} >
-                <div className={"sticky top-0 w-full border border-b-0 border-t-0 z-40 bg-white" + theme_generate}>
-                    <button onClick={() => handleClick()} className={"h-10 w-32 border" + theme_generate}>Set Image</button>
-                    <input onChange={handleWidthinput} placeholder="Enter Width" type="text" className={"h-10 w-32 p-2" + theme_generate} />
-                    <input onChange={handleHeightInput} placeholder="Enter Height" type="text" className={"h-10 w-32 p-2" + theme_generate} />
-                    <button onClick={() => handleAlign('flex-start')} className={"h-10 w-32 border" + theme_generate}>Right</button>
-                    <button onClick={() => handleAlign('center')} className={"h-10 w-32 border" + theme_generate}>Center</button>
-                    <button onClick={() => handleAlign('flex-end')} className={"h-10 w-32 border" + theme_generate}>Left</button>
+                <div className={"sticky top-0 z-40 w-full bg-white border border-t-0 border-b-0" + theme_generate}>
+                    <button onClick={() => handleClick()} className={"w-32 h-10 border" + theme_generate}>Set Image</button>
+                    <input onChange={handleWidthinput} placeholder="Enter Width" type="text" className={"w-32 h-10 p-2" + theme_generate} />
+                    <input onChange={handleHeightInput} placeholder="Enter Height" type="text" className={"w-32 h-10 p-2" + theme_generate} />
+                    <button onClick={() => handleAlign('flex-start')} className={"w-32 h-10 border" + theme_generate}>Right</button>
+                    <button onClick={() => handleAlign('center')} className={"w-32 h-10 border" + theme_generate}>Center</button>
+                    <button onClick={() => handleAlign('flex-end')} className={"w-32 h-10 border" + theme_generate}>Left</button>
                 </div>
             </div>
-            <img loading="lazy" className="rounded-lg" style={{ width: state.width + 'vw', height: state.height + 'vh', }} src={state.src} alt="image doesnt exist" />
+            <img loading="lazy" className="rounded-lg" style={{ width: state.width + 'vw', height: state.height + 'vh', }} src={"data:image/png;base64," + state.src} alt="image doesnt exist" />
         </div>
     )
 }

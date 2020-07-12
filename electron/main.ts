@@ -285,9 +285,13 @@ ipcMain.on('files:import_media', (event: any, project_path: any, id: string) => 
 			const file_name = path.basename(dialog_data.filePaths[0]);
 			const store_images_path = path.join(project_path, "store", "images", file_name);
 			try {
-				fsx.copySync(dialog_data.filePaths[0], store_images_path)
-				contents.send('files:import_media_path', path.join("file://", store_images_path), id);
-				console.log('success!')
+				fs.readFile(dialog_data.filePaths[0], function read(err, data) {
+					if (err) {
+						throw err;
+					}
+					const content = new Buffer(data).toString('base64');;
+					contents.send('files:import_media_path', content, id);
+				});
 			} catch (err) {
 				console.error(err)
 			}
