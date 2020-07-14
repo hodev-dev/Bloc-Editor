@@ -111,7 +111,6 @@ const read_file = (item: any) => (dispatch: any, getState: any) => {
     const _path = path.join(project_path, ...folder_stack, item.title);
     ipcRenderer.send('files:read_file', _path, render_index, items_per_page);
     ipcRenderer.on('files:read_file', (event: any, data: any, _bloc_size: number) => {
-        console.log(data);
         dispatch({
             type: 'SET_BLOC',
             payload: {
@@ -164,7 +163,6 @@ const togge_is_changed = (_is_changed: boolean) => (dispatch: any) => {
 
 const add_to_past: any = (_bloc_state: any) => (dispatch: any, getState: any): Promise<any> => {
     return new Promise((resolve) => {
-        console.log({ _bloc_state })
         dispatch({
             type: "ADD_TO_PAST",
             payload: {
@@ -207,6 +205,21 @@ const redo = (_future_bloc_state: any, _bloc_state: any, _past_bloc_state: any) 
     }
 }
 
+const toggleDisplay = () => (dispatch: any, getState: any) => {
+    const { visible } = getState().filesReducer;
+    dispatch({
+        type: "SET_VISIBLE",
+        payload: {
+            visible: !visible
+        }
+    });
+}
+
+const listenToggleDisplay = () => (dispatch: any) => {
+    ipcRenderer.on('files:toggleDisplay', (event: any, initState: boolean) => {
+        dispatch(toggleDisplay());
+    });
+}
 
 const test_change_path = (_project_path: any) => (dispatch: any) => {
     ipcRenderer.send('test:change_id', _project_path);
@@ -227,6 +240,8 @@ const unsubscribe = () => {
 }
 
 export {
+    toggleDisplay,
+    listenToggleDisplay,
     set_loading,
     request_path,
     request_list,

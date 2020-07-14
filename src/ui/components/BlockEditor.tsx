@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _, { divide, last } from 'lodash';
+import _, { divide, last, toPlainObject } from 'lodash';
 import * as cmp from '../../blocs';
 import * as uuid from 'uuid';
 import Fuse from 'fuse.js';
@@ -11,7 +11,6 @@ import Prompt from '../components/Prompt';
 import { IrootReducer } from '../../reducers/rootReducer';
 import { render } from 'react-dom';
 const ipcRenderer = window.require('electron').ipcRenderer;
-
 /* ------------------------------ import types ------------------------------ */
 
 const BlockEditor = () => {
@@ -244,6 +243,9 @@ const BlockEditor = () => {
 	const handleLoadBack = () => {
 		setRenderIndex(renderIndex - 9);
 	}
+	const handelAddComponent = () => {
+		searchableListAction.dispatchToggleDisplay();
+	}
 	/* ---------------------------- render functions ---------------------------- */
 
 	const renderSearch = () => {
@@ -261,11 +263,11 @@ const BlockEditor = () => {
 		if (bloc_state.length > 0) {
 			//
 			return (
-				<div className={"sticky bottom-0"}>
-					<nav className={"sticky flex items-center justify-between mx-auto border " + theme_generate}>
+				<div className={"sticky bottom-0 select-none"}>
+					<nav className={"sticky flex items-center justify-between mx-auto " + theme_generate}>
 						{/* ---------------------------------- left ---------------------------------- */}
-						<div className="items-center justify-start hidden w-1/3 h-4 mx-auto md:flex">
-							<h2 className="text-sm font-semibold text-gray-700 ">{bloc_path}</h2>
+						<div className="items-center justify-start hidden w-1/3 h-8 mt-1 ml-2 md:flex">
+							<svg onClick={handelAddComponent} className={"w-8 h-8 cursor-pointer fill-current" + theme_generate} xmlns="http://www.w3.org/2000/svg"><path d="M17 11a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4H7a1 1 0 0 1 0-2h4V7a1 1 0 0 1 2 0v4h4z" /></svg>
 						</div>
 						{/* --------------------------------- center --------------------------------- */}
 						<div className="flex items-center justify-center w-1/3 mx-auto">

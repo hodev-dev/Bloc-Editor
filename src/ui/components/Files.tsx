@@ -14,6 +14,7 @@ const Files = () => {
 	const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
 	const { loading } = useSelector((store: IrootReducer) => store.filesReducer);
 	const { list } = useSelector((store: IrootReducer) => store.filesReducer);
+	const { visible } = useSelector((store: IrootReducer) => store.filesReducer);
 	const { folder_stack } = useSelector((store: IrootReducer) => store.filesReducer);
 	const { is_changed } = useSelector((store: IrootReducer) => store.blocReducer);
 	const { render_index } = useSelector((store: IrootReducer) => store.filesReducer);
@@ -26,6 +27,8 @@ const Files = () => {
 	useEffect(() => {
 		// request project fodler path
 		dispatch(filesAction.request_path());
+		// listen to toggle command
+		dispatch(filesAction.listenToggleDisplay());
 		// listen to new lists
 		dispatch(filesAction.get_list());
 		return () => {
@@ -127,7 +130,7 @@ const Files = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className={"self-stretch w-2/12 bg-gray-100" + theme_generate}>
+		<div className={(visible) ? "self-stretch w-2/12 bg-gray-100" + theme_generate : 'hidden'}>
 			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto">
 				{/* ---------------------------------- left ---------------------------------- */}
 				<div className="flex items-center justify-start w-1/3 h-4 mx-auto">

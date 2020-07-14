@@ -14,7 +14,7 @@ import cheerio = require('cheerio');
 import * as uuid from 'uuid';
 import glob = require("glob");
 import fsx = require('fs-extra');
-
+const { Menu, MenuItem } = require('electron')
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json');
 const { pick } = require('stream-json/filters/Pick');
@@ -50,7 +50,10 @@ const createWindow = () => {
 			webSecurity: false
 
 		}
-	})
+	});
+	// hide menu bar
+	win.setMenuBarVisibility(false);
+
 	if (isDev) {
 		win.loadURL('http://localhost:3000/index.html');
 	} else {
@@ -86,14 +89,31 @@ app.on('ready', () => {
 	_path = new Path();
 	_setting.initSetting();
 	/* -------------------------------- shortcuts ------------------------------- */
-	globalShortcut.register('CommandOrControl+shift+p', () => {
-		contents.send('prompt:toggleDisplay');
-	})
-	globalShortcut.register('CommandOrControl+shift+a', () => {
-		contents.send('searchableList:toggleDisplay');
-	});
-	contents.on('did-finish-load', () => {
-	});
+	const template = [
+		{
+			label: "Menu",
+			submenu: [
+				{
+					label: `open coommand prompt`,
+					accelerator: 'CommandOrControl +p',
+					click: () => contents.send('prompt:toggleDisplay')
+				},
+				{
+					label: `add new component`,
+					accelerator: 'CommandOrControl + n',
+					click: () => contents.send('searchableList:toggleDisplay')
+				},
+				{
+					label: `toggle sidebar`,
+					accelerator: 'CommandOrControl + b',
+					click: () => contents.send('files:toggleDisplay')
+				},
+			]
+		}
+	]
+	const menu = Menu.buildFromTemplate(template);
+	Menu.setApplicationMenu(menu)
+	contents.on('did-finish-load', () => { });
 });
 
 app.on('window-all-closed', () => {

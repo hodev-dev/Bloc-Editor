@@ -279,27 +279,27 @@ const HeaderText = (props: any) => {
   const renderColors = () => {
     return COLORS.map((color, index) => {
       return (
-        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>{color.label}</button>
+        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>{color.label}</button>
       )
     });
   }
 
   return (
-    <div className="m-0 p-0" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
+    <div className="p-0 m-0" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
       <div className={(true) ? "sticky top-0 w-full border z-40 bg-white m-0" + theme_generate : "hidden" + theme_generate}>
-        <button onClick={() => _toggleBlocStyle('ITALIC')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>I</button>
-        <button onClick={() => _toggleBlocStyle('BOLD')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>B</button>
-        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>U</button>
-        <button onClick={() => _toggleBlocStyle('CODE')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>C</button>
-        <button onClick={() => _toggleBlockType('header-one')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H1</button>
-        <button onClick={() => _toggleBlockType('header-two')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H2</button>
-        <button onClick={() => _toggleBlockType('header-three')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H3</button>
-        <button onClick={() => _toggleBlockType('header-four')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H4</button>
-        <button onClick={() => _toggleBlockType('header-five')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>H5</button>
-        <button onClick={() => _toggleBlockType('atomic')} className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>Test</button>
-        <button className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>OL</button>
-        <button className={"h-10 w-16 border border-t-0 border-b-0" + theme_generate}>UL</button>
-        {renderColors()}
+        <button onClick={() => _toggleBlocStyle('ITALIC')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>I</button>
+        <button onClick={() => _toggleBlocStyle('BOLD')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>B</button>
+        <button onClick={() => _toggleBlocStyle('UNDERLINE')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>U</button>
+        <button onClick={() => _toggleBlocStyle('CODE')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>C</button>
+        <button onClick={() => _toggleBlockType('header-one')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H1</button>
+        <button onClick={() => _toggleBlockType('header-two')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H2</button>
+        <button onClick={() => _toggleBlockType('header-three')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H3</button>
+        <button onClick={() => _toggleBlockType('header-four')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H4</button>
+        <button onClick={() => _toggleBlockType('header-five')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H5</button>
+        {/* <button onClick={() => _toggleBlockType('atomic')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>Test</button>
+        <button className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>OL</button>
+        <button className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>UL</button> */}
+        {/* {renderColors()} */}
       </div>
       <Editor
         editorState={editorState}

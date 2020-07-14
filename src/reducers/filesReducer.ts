@@ -4,6 +4,7 @@ interface IAction {
     payload: any
 }
 export interface IinitialFiles {
+    visible: boolean,
     loading: boolean,
     project_path: string,
     root_path: string,
@@ -15,6 +16,7 @@ export interface IinitialFiles {
 }
 /* -------------------------- SECTION initial state ------------------------- */
 const initialFiles: IinitialFiles = {
+    visible: true,
     loading: true,
     project_path: "",
     root_path: "",
@@ -27,6 +29,10 @@ const initialFiles: IinitialFiles = {
 /* -------------------------- SECTION reducer body -------------------------- */
 function filesReducer(state = initialFiles, action: IAction) {
     switch (action.type) {
+        case "SET_VISIBLE":
+            return {
+                ...state, visible: action.payload.visible
+            }
         case "SET_PROJECT_PATH":
             return {
                 ...state, loading: false, project_path: action.payload.project_path, root_path: action.payload.project_path
