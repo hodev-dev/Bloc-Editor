@@ -119,9 +119,9 @@ const Prompt = () => {
             ]
         },
         {
-            title: "Toggle SideBar",
-            key: 'tgs',
-            info: 'Toggle SideBar Visibility:',
+            title: "hide/show explorer",
+            key: 'tge',
+            info: 'hide/show explorer visibility:',
             mod: 'answer',
             value_mod: 'string',
             value: [''],
