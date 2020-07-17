@@ -5,7 +5,7 @@ import Colors from '../ui/themes/colors';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const LinkPreview = (props: any) => {
-    const { change, id, initState } = props;
+    const { change, id, initState, lock } = props;
     const [state, setState] = useState<any>(initState);
     const { project_path } = useSelector((store: IrootReducer) => store.filesReducer);
     const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
@@ -149,7 +149,7 @@ const LinkPreview = (props: any) => {
 
     return (
         <div className="relative flex flex-col h-auto">
-            <div className={(true) ? "sticky z-10 top-0 left-0 text-black w-full max-w-full border " + theme_generate : "hidden border-none"} >
+            <div className={(!lock) ? "sticky z-10 top-0 left-0 text-black w-full max-w-full border " + theme_generate : "hidden border-none"} >
                 <div className={"z-10 w-full aboslute"}>
                     <input onChange={handleInput} value={(state && state.value) ? state.value : ''} className={"z-20 w-64 h-10 font-light align-middle" + theme_generate} type="text" />
                     <input onChange={handTitleInput} value={(state && state.cardTitle) ? state.cardTitle : ''} className={"z-20 w-64 h-10 font-light align-middle" + theme_generate} type="text" />

@@ -6,7 +6,7 @@ import src from '*.bmp';
 const ipcRenderer = window.require('electron').ipcRenderer;
 
 const Image = (props: any) => {
-    const { change, id, initState } = props;
+    const { change, id, initState, lock } = props;
     const dispatch = useDispatch();
     const { project_path } = useSelector((store: IrootReducer) => store.filesReducer);
     const { last_file_imported } = useSelector((store: IrootReducer) => store.filesReducer);
@@ -302,7 +302,7 @@ const Image = (props: any) => {
     }
     return (
         <div className={"relative flex flex-col w-full h-full min-h-screen bg-white" + theme_generate} style={{ alignItems: (state.align) ? state.align : 'center' }} onMouseOver={handleMosueEnter} onMouseLeave={handleMouseLeave} onClick={handleMosueEnter}>
-            <div className={(true) ? "sticky top-0 left-0 text-black bg-white w-full border" + theme_generate : "hidden border-none"} >
+            <div className={(!lock) ? "sticky top-0 left-0 text-black bg-white w-full border" + theme_generate : "hidden border-none"} >
                 <div className={"sticky top-0 z-40 w-full bg-white border border-t-0 border-b-0" + theme_generate}>
                     <button onClick={() => handleClick()} className={"w-32 h-10 border" + theme_generate}>Set Image</button>
                     <input onChange={handleWidthinput} placeholder="Enter Width" type="text" className={"w-32 h-10 p-2" + theme_generate} />

@@ -79,8 +79,7 @@ const HeaderText = (props: any) => {
     }
   ]);
 
-  const [editorState, setEditorState] = useState(EditorState.createEmpty(compositeDecorator));
-  const [state, setState] = useState<any>('');
+  const [editorState, setEditorState] = useState({ state: EditorState.createEmpty(compositeDecorator) }) as any;
   const [showControll, setShowControll] = useState(false);
   const [ReadOnly, setReadOnly] = useState(false);
   const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
@@ -105,7 +104,7 @@ const HeaderText = (props: any) => {
     'atomic': {
       editable: true,
       element: "test",
-      wrapper: <MediaComponent editorState={editorState} />
+      wrapper: <MediaComponent editorState={editorState.state} />
     },
     'unstyled': {
       element: 'div'
@@ -132,35 +131,54 @@ const HeaderText = (props: any) => {
     return "";
   }
 
-  useEffect(() => {
-    console.log({ state });
-  }, [state])
+
 
   useEffect(() => {
-    var init;
-    if (initState && initState == '') {
-      init = EditorState.createEmpty(compositeDecorator);
-    } else if (initState) {
-      const raw = convertFromRaw(initState);
+    var init: any;
+    if (initState && initState.raw && initState.state === null) {
+      const raw = convertFromRaw(initState.raw);
       init = EditorState.createWithContent(raw, compositeDecorator);
     } else {
       init = EditorState.createEmpty(compositeDecorator);
     }
-    setEditorState(init);
+    setEditorState((prevState: any) => {
+      return {
+        ...prevState,
+        state: init,
+      }
+    });
   }, [initState])
 
-  const handleChange = (e: any) => {
+  useEffect(() => {
+    console.log(editorState);
+  }, [editorState])
+
+  const handleChange = (editorState: any) => {
     const rawState: any = convertToRaw(editorState.getCurrentContent());
-    setEditorState(e);
-    change(id, rawState);
+    const blocks = convertToRaw(editorState.getCurrentContent()).blocks;
+    const value = blocks.map(block => (!block.text.trim() && '\n') || block.text).join('\n');
+    setEditorState((prevState: any) => {
+      return {
+        ...prevState,
+        state: editorState,
+        raw: rawState,
+        value: value
+      }
+    });
+    change(id, { state: null, raw: rawState, value: value });
   }
 
   const update = (newState: any) => {
-    setEditorState(newState);
+    setEditorState((prevState: any) => {
+      return {
+        ...prevState,
+        state: newState
+      }
+    });
   }
 
   const handleKeyCommand = (command: any) => {
-    const newState = RichUtils.handleKeyCommand(editorState, command)
+    const newState = RichUtils.handleKeyCommand(editorState.state, command)
     if (newState) {
       update(newState);
       return 'handled';
@@ -169,11 +187,11 @@ const HeaderText = (props: any) => {
   }
 
   const _toggleBlockType = (blockType: string) => {
-    update(RichUtils.toggleBlockType(editorState, blockType));
+    update(RichUtils.toggleBlockType(editorState.state, blockType));
   }
 
   const _toggleBlocStyle = (blocStyle: string) => {
-    update(RichUtils.toggleInlineStyle(editorState, blocStyle));
+    update(RichUtils.toggleInlineStyle(editorState.state, blocStyle));
   }
   const focus = () => {
     setReadOnly(false);
@@ -202,21 +220,21 @@ const HeaderText = (props: any) => {
 
 
   const _toggle_color = (color: string) => {
-    const inlineStyle = editorState.getCurrentInlineStyle();
-    const selection = editorState.getSelection();
+    const inlineStyle = editorState.state.getCurrentInlineStyle();
+    const selection = editorState.state.getSelection();
 
     // Let's just allow one color at a time. Turn off all active colors.
     const nextContentState = Object.keys(colorStyleMap)
       .reduce((contentState, color) => {
         return Modifier.removeInlineStyle(contentState, selection, color)
-      }, editorState.getCurrentContent());
+      }, editorState.state.getCurrentContent());
 
     let nextEditorState = EditorState.push(
-      editorState,
+      editorState.state,
       nextContentState,
       'change-inline-style'
     );
-    const currentStyle = editorState.getCurrentInlineStyle();
+    const currentStyle = editorState.state.getCurrentInlineStyle();
     // Unset style override for current color.
     if (selection.isCollapsed()) {
       nextEditorState = currentStyle.reduce((state: any, color: any) => {
@@ -302,7 +320,7 @@ const HeaderText = (props: any) => {
         {/* {renderColors()} */}
       </div>
       <Editor
-        editorState={editorState}
+        editorState={editorState.state}
         blockRenderMap={blockRenderMap}
         blockStyleFn={myBlockStyleFn}
         customStyleMap={colorStyleMap}

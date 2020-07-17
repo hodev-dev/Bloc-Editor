@@ -10,6 +10,7 @@ import SearchableList from "../components/SearchableList";
 import Prompt from '../components/Prompt';
 import { IrootReducer } from '../../reducers/rootReducer';
 import { render } from 'react-dom';
+import BlocEditorIcon from './BlocEditorIcon';
 const ipcRenderer = window.require('electron').ipcRenderer;
 /* ------------------------------ import types ------------------------------ */
 
@@ -51,6 +52,7 @@ const BlockEditor = () => {
 	const [pageNumber, setPageNumber] = useState<number>(0);
 	const [renderIndex, setRenderIndex] = useState<number>(0);
 	const [lastItem, setLastItem] = useState<number>(0);
+	const [lock, setLock] = useState<boolean>(false);
 
 	/* ---------------------------------- hooks --------------------------------- */
 	useEffect(() => {
@@ -82,8 +84,7 @@ const BlockEditor = () => {
 	}, [componentList])
 
 	useEffect(() => {
-		console.log({ lastItem })
-	}, [lastItem])
+	}, [componentList])
 
 	/* --------------------------------- methods -------------------------------- */
 	const reOrderComponents = (_dragIndex: number, _dropIndex: number, pos: string,) => {
@@ -187,6 +188,7 @@ const BlockEditor = () => {
 	}
 
 	const handleSearchInput = () => {
+		console.log({ componentList });
 		if (searchRef.current.value === '') {
 			setSearchResult([]);
 		} else {
@@ -198,7 +200,7 @@ const BlockEditor = () => {
 				findAllMatches: true,
 				// minMatchCharLength: 0,
 				// location: 100000,
-				threshold: 0.1,
+				threshold: 0.5,
 				// distance: 100,
 				useExtendedSearch: true,
 				ignoreLocation: true,
@@ -210,8 +212,9 @@ const BlockEditor = () => {
 					'state.cardTitle'
 				]
 			};
-			var fuse: any = new Fuse(bloc_state, options);
+			var fuse: any = new Fuse(componentList, options);
 			const result = fuse.search(searchRef.current.value);
+			console.log({ result });
 			if (result.length > 0) {
 				setSearchResult(result);
 				fuse = null;
@@ -220,28 +223,30 @@ const BlockEditor = () => {
 	}
 
 	const handleChange = (key: string, state: any) => {
-		if (state !== componentList) {
-			componentList.map((component) => {
-				if (component.id === key) {
-					component.state = state;
-				}
-			});
-			if (searchResult.length > 0) {
-				searchResult.map((component) => {
-					if (component.item.id === key) {
-						component.item.state = state;
-					}
-				});
+		componentList.map((component) => {
+			if (component.id === key) {
+				component.state = state;
 			}
-		}
+		});
+		searchResult.map((component) => {
+			if (component.item.id === key) {
+				component.item.state = state;
+			}
+		});
 	};
 
 	const handleLoadMore = () => {
-		setRenderIndex(renderIndex + 9);
+		if (renderIndex + ITEMS_PER_PAGE <= lastItem) {
+			setRenderIndex(renderIndex + ITEMS_PER_PAGE);
+			setPageNumber(pageNumber + 1);
+		}
 	}
 
 	const handleLoadBack = () => {
-		setRenderIndex(renderIndex - 9);
+		if (renderIndex - ITEMS_PER_PAGE >= 0) {
+			setRenderIndex(renderIndex - ITEMS_PER_PAGE);
+			setPageNumber(pageNumber - 1);
+		}
 	}
 	const handelAddComponent = () => {
 		searchableListAction.dispatchToggleDisplay();
@@ -275,10 +280,12 @@ const BlockEditor = () => {
 						</div>
 						{/* ---------------------------------- right --------------------------------- */}
 						<div className="items-stretch justify-end hidden w-1/3 mx-auto md:flex">
+							<button onClick={() => dispatch(filesAction.close())} className="p-2 text-sm font-semibold text-gray-700 rounded">close</button>
 							<button onClick={() => saveFile()} className="p-2 text-sm font-semibold text-gray-700 rounded">Save</button>
 							<button onClick={() => undo()} className="p-2 text-sm font-semibold text-gray-700 rounded">Undo</button>
 							<button onClick={() => redo()} className="p-2 text-sm font-semibold text-gray-700 rounded">Redo</button>
 							<button onClick={() => showSearch()} className="p-2 text-sm font-semibold text-gray-700 rounded">Search</button>
+							<button onClick={() => setLock((prevLock) => !prevLock)} className="p-2 text-sm font-semibold text-gray-700 rounded">lock</button>
 						</div>
 					</nav>
 					{renderSearch()}
@@ -294,13 +301,12 @@ const BlockEditor = () => {
 	const renderBlocPlaceHolder = () => {
 		return (
 			<div className={"flex flex-col items-center justify-center w-full h-screen overflow-hidden bg-gray-200" + theme_generate}>
-				<div className="flex flex-row justify-center w-8/12 mx-auto mt-5">
-					<h1 className="text-6xl font-light text-pink-900 select-none">.Bloc Editor</h1>
-				</div>
 				<div className={"flex flex-row justify-center mx-auto mt-5 min-w-64" + theme_generate}>
-					{/* <button onClick={filesAction.test_change_path(project_path)}>click</button> */}
+					{BlocEditorIcon()}
 				</div>
-				<div className={"flex flex-row justify-center mx-auto mt-5 min-w-64" + theme_generate}></div>
+				<div className="flex flex-row justify-center w-8/12 mx-auto mt-1">
+					<h1 className="text-5xl font-light text-pink-900 select-none">.Bloc Editor</h1>
+				</div>
 			</div>
 		)
 	}
@@ -337,8 +343,8 @@ const BlockEditor = () => {
 				<svg onClick={() => setShowControll(false)} className={"w-3 h-3 m-2 cursor-pointer fill-current" + theme_generate} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 8.586L2.929 1.515 1.515 2.929 8.586 10l-7.071 7.071 1.414 1.414L10 11.414l7.071 7.071 1.414-1.414L11.414 10l7.071-7.071-1.414-1.414L10 8.586z" /></svg>
 				<svg onClick={() => swapComponents(selectIndex, selectIndex, 'SHIFTUP')} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10.707 7.05L10 6.343 4.343 12l1.414 1.414L10 9.172l4.243 4.242L15.657 12z" /></svg>
 				<svg onClick={() => swapComponents(selectIndex, selectIndex, 'SHIFTDOWN')} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z" /></svg>
-				<svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 6V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h4zm2 0h4a2 2 0 0 1 2 2v4h4V2H8v4zM2 8v10h10V8H2z" /></svg>
-				<svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 1l10 6-10 6L0 7l10-6zm6.67 10L20 13l-10 6-10-6 3.33-2L10 15l6.67-4z" /></svg>
+				{/* <svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 6V2c0-1.1.9-2 2-2h10a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-4v4a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V8c0-1.1.9-2 2-2h4zm2 0h4a2 2 0 0 1 2 2v4h4V2H8v4zM2 8v10h10V8H2z" /></svg> */}
+				{/* <svg className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M10 1l10 6-10 6L0 7l10-6zm6.67 10L20 13l-10 6-10-6 3.33-2L10 15l6.67-4z" /></svg> */}
 				<svg onClick={() => deleteComponent(selectIndex)} className="w-4 h-4 m-2 cursor-pointer fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M6 2l2-2h4l2 2h4v2H2V2h4zM3 6h14l-1 14H4L3 6zm5 2v10h1V8H8zm3 0v10h1V8h-1z" /></svg>
 				{renderMoreControll(selectIndex)}
 			</div>
@@ -407,7 +413,7 @@ const BlockEditor = () => {
 		if (index === lastItem - 1 && index >= renderIndex && index < renderIndex + ITEMS_PER_PAGE - 1) {
 			return (
 				<div className="w-full" id={component.id} data-id={component.id} key={component.id}>
-					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
+					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} lock={lock} />
 					<div className={"flex flex-row flex-wrap w-full mt-2" + theme_generate}>
 						{renderBack()}
 						{renderMore()}
@@ -419,14 +425,14 @@ const BlockEditor = () => {
 		else if (index >= renderIndex && index < renderIndex + ITEMS_PER_PAGE - 1) {
 			return (
 				<div className="w-full" id={component.id} data-id={component.id} key={component.id}>
-					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
+					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} lock={lock} />
 				</div >
 			)
 		}
 		else if (index === renderIndex + ITEMS_PER_PAGE - 1) {
 			return (
 				<div className="w-full" id={component.id} data-id={component.id} key={component.id}>
-					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} />
+					<component.component id={component.id} key={component.id} title={component.state} initState={component.state} change={handleChange} lock={lock} />
 					<div className={"flex flex-row flex-wrap w-full mt-2 " + theme_generate}>
 						{renderBack()}
 						{renderMore()}

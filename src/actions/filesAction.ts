@@ -127,12 +127,8 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
     const init_component = [
         {
             id: uuidv4(),
-            component: cmp.Bloc_Components.Text.name,
-            state: 'text-1'
-        }, {
-            id: uuidv4(),
-            component: cmp.Bloc_Components.Text.name,
-            state: 'text-2'
+            component: cmp.Bloc_Components.HeaderText.name,
+            state: ''
         }
     ];
     const { project_path } = getState().filesReducer;
@@ -221,6 +217,12 @@ const listenToggleDisplay = () => (dispatch: any) => {
     });
 }
 
+const close = () => (dispatch: any, getState: any) => {
+    dispatch({
+        type: "CLOSE_BLOC",
+    });
+}
+
 const test_change_path = (_project_path: any) => (dispatch: any) => {
     ipcRenderer.send('test:change_id', _project_path);
 }
@@ -261,6 +263,7 @@ export {
     add_to_past,
     undo,
     redo,
+    close,
     test_change_path,
     unsubscribe,
 }

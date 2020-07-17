@@ -33,6 +33,10 @@ function counterReducer(state = initialBloc, action: IAction) {
       return {
         ...state, bloc_state: action.payload.bloc_state, bloc_name: action.payload.bloc_name, bloc_path: action.payload.bloc_path
       }
+    case "CLOSE_BLOC":
+      return {
+        ...state, bloc_state: [], bloc_name: '', bloc_path: ''
+      }
     case "TOGGLE_IS_CHANGED":
       return {
         ...state, is_changed: action.payload.is_changed

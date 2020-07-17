@@ -114,7 +114,15 @@ const Files = () => {
 	}
 
 	const renderList = useCallback(() => {
+
+		const sort = (a: any, b: any) => {
+			if (b.type === "F") {
+				return -1;
+			}
+			return 0;
+		};
 		if (!loading && list.length > 0) {
+			list.sort(sort);
 			return list.map((item: any, index: number) => {
 				return (
 					<div key={index} className="b">
@@ -130,8 +138,8 @@ const Files = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className={(visible) ? "self-stretch w-2/12 bg-gray-100" + theme_generate : 'hidden'}>
-			<nav className="flex flex-wrap items-center justify-between p-2 mx-auto">
+		<div className={(visible) ? "relative max-h-screen overflow-auto self-stretch w-2/12 bg-gray-100" + theme_generate : 'hidden'}>
+			<nav className={"sticky top-0 flex flex-wrap items-center justify-between p-2 mx-auto scrolling-touch " + theme_generate}>
 				{/* ---------------------------------- left ---------------------------------- */}
 				<div className="flex items-center justify-start w-1/3 h-4 mx-auto">
 					<h2 className="text-sm font-semibold text-gray-700 ">Explorer</h2>

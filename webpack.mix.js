@@ -16,7 +16,7 @@ const tailwindcss = require('tailwindcss');
 
 mix.postCss('./src/assets/index.css', './src/assets/tailwind.css', [
     require("tailwindcss")('./tailwind.config.js')
-]);
+]);;
 
 
 // Full API

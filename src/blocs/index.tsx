@@ -3,6 +3,7 @@ import HeaderText from './HeaderText';
 import Image from './Image';
 import LinkPreview from './LinkPreview';
 import { Code } from './Code/Code';
+import { Video } from './Video';
 
 const Bloc_Components: any = {
   HeaderText: {
@@ -25,7 +26,10 @@ const Bloc_Components: any = {
     name: "Code",
     component: Code
   },
-
+  Video: {
+    name: "Video",
+    component: Video
+  },
 }
 
 let Bloc_Components_Array: Array<any> = [];

@@ -50,6 +50,33 @@ const Prompt = () => {
 
     const initAction: Array<InitAction> = [
         {
+            title: "create bloc",
+            key: 'crb',
+            info: 'Create Bloc File:',
+            mod: 'answer',
+            value_mod: 'string',
+            value: [''],
+            response: [
+                {
+                    title: "confirm",
+                    key: 'c',
+                    info: 'Enter Bloc File Name:',
+                    value: ['_value'],
+                    fire: (answer: Array<string>) => {
+                        dispatch(filesAction.create_file(answer));
+                        escape();
+                    },
+                },
+                {
+                    title: "cancel",
+                    key: 'c',
+                    info: 'Cancel:',
+                    value: [''],
+                    fire: (answer: Array<string>) => escape,
+                }
+            ]
+        },
+        {
             title: "create folder",
             key: 'crf',
             info: 'Create Folder:',
@@ -92,31 +119,13 @@ const Prompt = () => {
             ]
         },
         {
-            title: "create bloc",
-            key: 'crb',
-            info: 'Create Bloc File:',
+            title: "change project folder",
+            key: 'chpf',
+            info: 'change project folder:',
             mod: 'answer',
             value_mod: 'string',
             value: [''],
-            response: [
-                {
-                    title: "confirm",
-                    key: 'c',
-                    info: 'Enter Bloc File Name:',
-                    value: ['_value'],
-                    fire: (answer: Array<string>) => {
-                        dispatch(filesAction.create_file(answer));
-                        escape();
-                    },
-                },
-                {
-                    title: "cancel",
-                    key: 'c',
-                    info: 'Cancel:',
-                    value: [''],
-                    fire: (answer: Array<string>) => escape,
-                }
-            ]
+            fire: () => { dispatch(filesAction.select_path()); escape() }
         },
         {
             title: "hide/show explorer",
@@ -158,7 +167,7 @@ const Prompt = () => {
                     },
                 }
             ]
-        },
+        }
     ]
 
     const [actionList, setActionList] = useState<Array<InitAction> | any>(initAction);

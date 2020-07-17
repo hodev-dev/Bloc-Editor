@@ -1,7 +1,6 @@
 import { app, BrowserWindow, ipcMain, globalShortcut, dialog, clipboard } from 'electron';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as zlib from 'zlib';
 import * as isDev from 'electron-is-dev';
 import * as log from 'electron-log';
 import * as  request from "request";
@@ -11,14 +10,11 @@ import FileManager from './utail/FileManager';
 import Path from '../electron/utail/Path';
 import chokidar = require('chokidar');
 import cheerio = require('cheerio');
-import * as uuid from 'uuid';
 import glob = require("glob");
 import fsx = require('fs-extra');
 const { Menu, MenuItem } = require('electron')
 const { chain } = require('stream-chain');
 const { parser } = require('stream-json');
-const { pick } = require('stream-json/filters/Pick');
-const { ignore } = require('stream-json/filters/Ignore');
 const { streamValues } = require('stream-json/streamers/StreamValues');
 
 
@@ -42,13 +38,15 @@ let _files_watcher: FSWatcher;
 /* ------------------------------- main window ------------------------------- */
 
 const createWindow = () => {
+	const iconPath = path.join(__dirname, "../", "icons", "icon.png");
+	console.log({ iconPath })
 	win = new BrowserWindow({
 		width: 1280,
 		height: 760,
+		icon: iconPath,
 		webPreferences: {
 			nodeIntegration: true,
 			webSecurity: false
-
 		}
 	});
 	// hide menu bar
@@ -112,7 +110,7 @@ app.on('ready', () => {
 		}
 	]
 	const menu = Menu.buildFromTemplate(template);
-	Menu.setApplicationMenu(menu)
+	// Menu.setApplicationMenu(menu)
 	contents.on('did-finish-load', () => { });
 });
 
@@ -162,14 +160,6 @@ ipcMain.on('files:select_path', () => {
 				}
 			];
 			const update = _setting.updateSetting(new_config);
-			const store_path = path.join(dialog_data.filePaths[0], "store");
-			const store_images_path = path.join(dialog_data.filePaths[0], "store", "images");
-			if (!fs.existsSync(store_path)) {
-				fs.mkdirSync(store_path);
-			}
-			if (!fs.existsSync(store_images_path)) {
-				fs.mkdirSync(store_images_path);
-			}
 		}
 	});
 });
@@ -254,21 +244,32 @@ ipcMain.on('files:read_file', (event: any, _path: any, render_index: number, ite
 });
 
 ipcMain.on('files:create_bloc', (event: any, _path: string, component_data: any) => {
-	fs.writeFile(_path, JSON.stringify(component_data), (err) => {
-		if (err) {
+	fs.access(_path, (err) => {
+		if (!err) {
 			contents.send('notification:push', [
 				{
 					type: "Error",
-					messege: "Can't Create Bloc File!",
+					messege: "BLoc File Already Exist With This Name!",
 				}
 			]);
+		} else {
+			fs.writeFile(_path, JSON.stringify(component_data), (err) => {
+				if (err) {
+					contents.send('notification:push', [
+						{
+							type: "Error",
+							messege: "Can't Create Bloc File!",
+						}
+					]);
+				}
+				contents.send('notification:push', [
+					{
+						type: "Success",
+						messege: "bloc file created",
+					}
+				]);
+			});
 		}
-		contents.send('notification:push', [
-			{
-				type: "Success",
-				messege: "bloc file created",
-			}
-		]);
 	});
 });
 
@@ -402,23 +403,3 @@ ipcMain.on('prompt:set_theme', (event: any, theme_name: string) => {
 	];
 	_setting.updateSetting(new_config);
 });
-
-// test
-ipcMain.on('test:change_id', (event: any, project_path: string) => {
-	const _path = path.join(project_path, '1.bloc');
-	fs.readFile(_path, { encoding: 'utf-8' }, (err, data) => {
-		if (!err) {
-			const _parsed = JSON.parse(data);
-			const temp: any = [];
-			_parsed.forEach((component: any) => {
-				component.id = String(uuid.v3(String(Math.random()), uuid.v3.DNS));
-				temp.push(component);
-			});
-			fs.writeFile(_path, JSON.stringify(temp), (err) => {
-				console.log({ temp })
-			});
-		} else {
-			log.error(err);
-		}
-	});
-})
