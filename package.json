@@ -1,8 +1,8 @@
 {
-  "name": "notilda",
-  "version": "0.1.0",
+  "name": "Bloc_Editor",
+  "version": "0.0.1",
   "homepage": ".",
-  "description": "Electron base Bloc Editor For Managing Contetnts",
+  "description": "cross platform content management app",
   "main": "build/electron/main.js",
   "category": "Office",
   "author": "Hosein Mola <aeonthread@gmail.com>",
