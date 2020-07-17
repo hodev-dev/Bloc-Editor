@@ -20,22 +20,26 @@
 
 /* width */
 ::-webkit-scrollbar {
-  width: 16px;
-  height: 16px;
+  width: 10px;
   background: transparent;
+  direction: rtl;
+  transform: scaleX(-1); 
 }
 
 /* Track */
 ::-webkit-scrollbar-track {
   background: transparent;
+  direction: rtl;
 }
 
 /* Handle */
 ::-webkit-scrollbar-thumb {
   background: transparent;
+  width: 1px !important;
 }
 
 /* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: transparent;
+  background: #181a1f;
+  width: 1px !important;
 }

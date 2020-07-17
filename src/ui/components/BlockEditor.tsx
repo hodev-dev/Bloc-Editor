@@ -280,12 +280,11 @@ const BlockEditor = () => {
 						</div>
 						{/* ---------------------------------- right --------------------------------- */}
 						<div className="items-stretch justify-end hidden w-1/3 mx-auto md:flex">
-							<button onClick={() => dispatch(filesAction.close())} className="p-2 text-sm font-semibold text-gray-700 rounded">close</button>
-							<button onClick={() => saveFile()} className="p-2 text-sm font-semibold text-gray-700 rounded">Save</button>
+							<button onClick={() => showSearch()} className="p-2 text-sm font-semibold text-gray-700 rounded">Search</button>
 							<button onClick={() => undo()} className="p-2 text-sm font-semibold text-gray-700 rounded">Undo</button>
 							<button onClick={() => redo()} className="p-2 text-sm font-semibold text-gray-700 rounded">Redo</button>
-							<button onClick={() => showSearch()} className="p-2 text-sm font-semibold text-gray-700 rounded">Search</button>
-							<button onClick={() => setLock((prevLock) => !prevLock)} className="p-2 text-sm font-semibold text-gray-700 rounded">lock</button>
+							<button onClick={() => saveFile()} className="p-2 text-sm font-semibold text-gray-700 rounded">Save</button>
+							<button onClick={() => dispatch(filesAction.close())} className="p-2 text-sm font-semibold text-gray-700 rounded">Close The File</button>
 						</div>
 					</nav>
 					{renderSearch()}
@@ -306,6 +305,25 @@ const BlockEditor = () => {
 				</div>
 				<div className="flex flex-row justify-center w-8/12 mx-auto mt-1">
 					<h1 className="text-5xl font-light text-pink-900 select-none">.Bloc Editor</h1>
+				</div>
+				<div className="flex flex-row justify-center w-8/12 mx-auto mt-3">
+					<table className="w-4/12">
+						<tr className={"flex justify-center"}>
+							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Command Prompt</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>P</td>
+						</tr>
+						<tr className={"flex justify-center"}>
+							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Add Component</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>N</td>
+						</tr>
+						<tr className={"flex justify-center"}>
+							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Toggle Explorer</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>B</td>
+						</tr>
+					</table>
 				</div>
 			</div>
 		)
@@ -355,7 +373,7 @@ const BlockEditor = () => {
 		return (
 			<div className={"flex items-center justify-center w-10 h-10 mr-2 text-gray-500 bg-white border border-l-0" + theme_generate} >{++index}</div>
 		)
-	}, []);
+	}, [theme_generate]);
 
 	const renderIfSelected = (component: any, index: any) => {
 		let render: any;

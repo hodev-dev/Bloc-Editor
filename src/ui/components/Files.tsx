@@ -138,8 +138,8 @@ const Files = () => {
 
 	/* ------------------------------- main render ------------------------------ */
 	return (
-		<div className={(visible) ? "relative max-h-screen overflow-auto self-stretch w-2/12 bg-gray-100" + theme_generate : 'hidden'}>
-			<nav className={"sticky top-0 flex flex-wrap items-center justify-between p-2 mx-auto scrolling-touch " + theme_generate}>
+		<div className={(visible) ? "relative max-h-screen overflow-auto self-stretch w-3/12 p-0" + theme_generate : 'hidden'}>
+			<nav className={"sticky top-0 flex flex-wrap items-center justify-between w-full p-2 mx-auto scrolling-touch bg-white" + theme_generate}>
 				{/* ---------------------------------- left ---------------------------------- */}
 				<div className="flex items-center justify-start w-1/3 h-4 mx-auto">
 					<h2 className="text-sm font-semibold text-gray-700 ">Explorer</h2>
@@ -154,14 +154,12 @@ const Files = () => {
 				</div>
 			</nav>
 			{/* ----------------------------- phone menu body ---------------------------- */}
-			<div className="flex flex-col">
+			<div className="flex flex-col w-full mx-auto">
 				<div className="flex flex-col justify-center w-full">
 					{renderBack()}
 				</div>
-				<ul className="flex flex-col justify-center w-full" >
-					<div>
-						{renderList()}
-					</div>
+				<ul className={"flex flex-col justify-center w-full" + theme_generate} >
+					{renderList()}
 				</ul>
 			</div>
 		</div>
