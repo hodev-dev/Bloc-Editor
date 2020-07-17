@@ -37,10 +37,8 @@ it is planned to fully support all RTL language like
     - snap
     - pacman
     - Flatpak @soon
-
 - Windows @Supported
     - exe file
-
 - Mac @Soon
     - dmg 
 
