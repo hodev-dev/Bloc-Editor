@@ -1,87 +1,16 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Editor, EditorState, RichUtils, convertToRaw, convertFromRaw, CompositeDecorator, ContentBlock, Modifier } from 'draft-js';
-import _ from 'lodash';
 import Immutable from 'immutable';
-import ReactDOM from 'react-dom';
-import * as uuid from 'uuid';
 import "draft-js/dist/Draft.css";
-import { prependOnceListener } from 'cluster';
 import { IrootReducer } from '../reducers/rootReducer';
 
 
-const HANDLE_REGEX = /\@[\w]+/g;
-const HASHTAG_REGEX = /\#[\w\u0590-\u05ff]+/g;
-
-function handleStrategy(contentBlock: any, callback: any, contentState: any) {
-  findWithRegex(HANDLE_REGEX, contentBlock, callback);
-}
-
-function hashtagStrategy(contentBlock: any, callback: any, contentState: any) {
-  findWithRegex(HASHTAG_REGEX, contentBlock, callback);
-}
-
-function findWithRegex(regex: any, contentBlock: any, callback: any) {
-  const text = contentBlock.getText();
-  let matchArr,
-    start;
-  while ((matchArr = regex.exec(text)) !== null) {
-    start = matchArr.index;
-    callback(start, start + matchArr[0].length);
-  }
-}
-
-const HandleSpan = (props: any) => {
-  return (
-    <span className="bg-green-100" data-offset-key={props.offsetKey}>
-      {props.children}
-    </span>
-  );
-};
-
-const HashtagSpan = (props: any) => {
-  return (
-    <span className="bg-blue-600" data-offset-key={props.offsetKey}>
-      {props.children}
-    </span>
-  );
-};
-
-
-
-const MediaComponent = (props: any) => {
-  const { editorState } = props;
-  let selection = editorState.getSelection();
-  const anchorKey = selection.getAnchorKey();
-  const currentContent = editorState.getCurrentContent();
-  const currentBlock = currentContent.getBlockForKey(anchorKey);
-
-  //Then based on the docs for SelectionState -
-  const start = selection.getStartOffset();
-  const end = selection.getEndOffset();
-  const selectedText = currentBlock.getText().slice(start, end);
-  return (
-    <div className="bg-green-400">{"selectedText"}</div>
-  )
-}
 
 const HeaderText = (props: any) => {
 
   const { change, id, initState } = props;
-
-  const compositeDecorator = new CompositeDecorator([
-    {
-      strategy: handleStrategy,
-      component: HandleSpan
-    }, {
-      strategy: hashtagStrategy,
-      component: HashtagSpan
-    }
-  ]);
-
-  const [editorState, setEditorState] = useState({ state: EditorState.createEmpty(compositeDecorator) }) as any;
-  const [showControll, setShowControll] = useState(false);
-  const [ReadOnly, setReadOnly] = useState(false);
+  const [editorState, setEditorState] = useState({ state: EditorState.createEmpty() }) as any;
   const { theme } = useSelector((store: IrootReducer) => store.themeReducer);
   const theme_generate = ' ' + theme.default.bg.name + ' ' + theme.default.border.name + ' ' + theme.default.text.name;
 
@@ -100,11 +29,6 @@ const HeaderText = (props: any) => {
     },
     'header-five': {
       element: 'h5'
-    },
-    'atomic': {
-      editable: true,
-      element: "test",
-      wrapper: <MediaComponent editorState={editorState.state} />
     },
     'unstyled': {
       element: 'div'
@@ -136,21 +60,23 @@ const HeaderText = (props: any) => {
   useEffect(() => {
     var init: any;
     if (initState && initState.raw && initState.state === null) {
+      console.log('conver from raw');
       const raw = convertFromRaw(initState.raw);
-      init = EditorState.createWithContent(raw, compositeDecorator);
+      init = EditorState.createWithContent(raw);
     } else {
-      init = EditorState.createEmpty(compositeDecorator);
+      init = EditorState.createEmpty();
     }
     setEditorState((prevState: any) => {
       return {
         ...prevState,
         state: init,
+        raw: ''
       }
     });
-  }, [initState])
+  }, [])
 
   useEffect(() => {
-    console.log(editorState);
+    console.log({ editorState });
   }, [editorState])
 
   const handleChange = (editorState: any) => {
@@ -172,7 +98,8 @@ const HeaderText = (props: any) => {
     setEditorState((prevState: any) => {
       return {
         ...prevState,
-        state: newState
+        state: newState,
+        raw: ''
       }
     });
   }
@@ -193,117 +120,8 @@ const HeaderText = (props: any) => {
   const _toggleBlocStyle = (blocStyle: string) => {
     update(RichUtils.toggleInlineStyle(editorState.state, blocStyle));
   }
-  const focus = () => {
-    setReadOnly(false);
-    setShowControll(true)
-  }
-
-  const blur = () => {
-    setReadOnly(true);
-    setShowControll(false)
-  }
-
-  const clearInlineStyles = (editorState: any, styles: any) => {
-    const contentWithoutStyles = _.reduce(styles, (newContentState, style) => (
-      Modifier.removeInlineStyle(
-        newContentState,
-        editorState.getSelection(),
-        style
-      )
-    ), editorState.getCurrentContent());
-    return EditorState.push(
-      editorState,
-      contentWithoutStyles,
-      'change-inline-style'
-    );
-  };
-
-
-  const _toggle_color = (color: string) => {
-    const inlineStyle = editorState.state.getCurrentInlineStyle();
-    const selection = editorState.state.getSelection();
-
-    // Let's just allow one color at a time. Turn off all active colors.
-    const nextContentState = Object.keys(colorStyleMap)
-      .reduce((contentState, color) => {
-        return Modifier.removeInlineStyle(contentState, selection, color)
-      }, editorState.state.getCurrentContent());
-
-    let nextEditorState = EditorState.push(
-      editorState.state,
-      nextContentState,
-      'change-inline-style'
-    );
-    const currentStyle = editorState.state.getCurrentInlineStyle();
-    // Unset style override for current color.
-    if (selection.isCollapsed()) {
-      nextEditorState = currentStyle.reduce((state: any, color: any) => {
-        return RichUtils.toggleInlineStyle(state, color);
-      }, nextEditorState);
-    }
-    // If the color is being toggled on, apply it.
-    if (!currentStyle.has(color)) {
-      nextEditorState = RichUtils.toggleInlineStyle(
-        nextEditorState,
-        color
-      );
-    }
-    update(nextEditorState);
-  }
-
-  var COLORS = [
-    { label: 'Red', style: 'red' },
-    { label: 'Orange', style: 'orange' },
-    { label: 'Yellow', style: 'yellow' },
-    { label: 'Green', style: 'green' },
-    { label: 'Blue', style: 'blue' },
-    { label: 'Indigo', style: 'indigo' },
-    { label: 'Violet', style: 'violet' },
-    { label: 'size', style: 'size' },
-    { label: 'highlight', style: 'highlight' },
-  ];
-
-  const colorStyleMap = {
-    red: {
-      color: 'rgba(255, 0, 0, 1.0)',
-    },
-    orange: {
-      color: 'rgba(255, 127, 0, 1.0)',
-    },
-    yellow: {
-      color: 'rgba(180, 180, 0, 1.0)',
-    },
-    green: {
-      color: 'rgba(0, 180, 0, 1.0)',
-    },
-    blue: {
-      color: 'rgba(0, 0, 255, 1.0)',
-    },
-    indigo: {
-      color: 'rgba(75, 0, 130, 1.0)',
-    },
-    violet: {
-      color: 'rgba(127, 0, 255, 1.0)',
-    },
-    size: {
-      fontSize: "100px",
-    },
-    highlight: {
-      backgroundColor: '#faed27',
-    }
-  };
-
-
-  const renderColors = () => {
-    return COLORS.map((color, index) => {
-      return (
-        <button onClick={(e: any) => _toggle_color(color.style)} key={index} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>{color.label}</button>
-      )
-    });
-  }
-
   return (
-    <div className="p-0 m-0" onMouseEnter={focus} onClick={focus} onMouseLeave={blur}>
+    <div className="p-0 m-0">
       <div className={(true) ? "sticky top-0 w-full border z-40 bg-white m-0" + theme_generate : "hidden" + theme_generate}>
         <button onClick={() => _toggleBlocStyle('ITALIC')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>I</button>
         <button onClick={() => _toggleBlocStyle('BOLD')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>B</button>
@@ -314,16 +132,11 @@ const HeaderText = (props: any) => {
         <button onClick={() => _toggleBlockType('header-three')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H3</button>
         <button onClick={() => _toggleBlockType('header-four')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H4</button>
         <button onClick={() => _toggleBlockType('header-five')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>H5</button>
-        {/* <button onClick={() => _toggleBlockType('atomic')} className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>Test</button>
-        <button className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>OL</button>
-        <button className={"w-16 h-10 border border-t-0 border-b-0" + theme_generate}>UL</button> */}
-        {/* {renderColors()} */}
       </div>
       <Editor
         editorState={editorState.state}
         blockRenderMap={blockRenderMap}
         blockStyleFn={myBlockStyleFn}
-        customStyleMap={colorStyleMap}
         placeholder="enter something"
         onChange={(e: any) => handleChange(e)}
         handleKeyCommand={handleKeyCommand}

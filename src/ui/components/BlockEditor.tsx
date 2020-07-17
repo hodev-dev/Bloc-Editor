@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import _, { divide, last, toPlainObject } from 'lodash';
 import * as cmp from '../../blocs';
 import * as uuid from 'uuid';
 import Fuse from 'fuse.js';
@@ -9,7 +8,6 @@ import * as searchableListAction from '../../actions/searchableListAction';
 import SearchableList from "../components/SearchableList";
 import Prompt from '../components/Prompt';
 import { IrootReducer } from '../../reducers/rootReducer';
-import { render } from 'react-dom';
 import BlocEditorIcon from './BlocEditorIcon';
 const ipcRenderer = window.require('electron').ipcRenderer;
 /* ------------------------------ import types ------------------------------ */
@@ -76,6 +74,7 @@ const BlockEditor = () => {
 	}, [past_bloc_state])
 
 	useEffect(() => {
+		console.log({ componentList });
 		if (componentList.length !== 0) {
 			let totalPage = (componentList.length + ITEMS_PER_PAGE - 1) / ITEMS_PER_PAGE;
 			setTotalPages(totalPage);
@@ -308,21 +307,23 @@ const BlockEditor = () => {
 				</div>
 				<div className="flex flex-row justify-center w-8/12 mx-auto mt-3">
 					<table className="w-4/12">
-						<tr className={"flex justify-center"}>
-							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Command Prompt</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>P</td>
-						</tr>
-						<tr className={"flex justify-center"}>
-							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Add Component</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>N</td>
-						</tr>
-						<tr className={"flex justify-center"}>
-							<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Toggle Explorer</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-							<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>B</td>
-						</tr>
+						<tbody>
+							<tr className={"flex justify-center"}>
+								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Command Prompt</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>P</td>
+							</tr>
+							<tr className={"flex justify-center"}>
+								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Add Component</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>N</td>
+							</tr>
+							<tr className={"flex justify-center"}>
+								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Toggle Explorer</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>B</td>
+							</tr>
+						</tbody>
 					</table>
 				</div>
 			</div>
@@ -377,7 +378,7 @@ const BlockEditor = () => {
 
 	const renderIfSelected = (component: any, index: any) => {
 		let render: any;
-		if (selectIndex === index && showControll === true) {
+		if (selectIndex === index && selectId === component.id && showControll === true) {
 			render = (
 				<div className="flex" key={index}>
 					{memoIndex(index, () => 0)}
