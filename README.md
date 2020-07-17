@@ -1,44 +1,19 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# What is Bloc Editor ?
+Bloc Editor is a free and powerful app to manage and store set of related data as component inside a compact package which called bloc with extension .bloc. each .bloc file contain many type of component
+# What Kind Of Data I Can Store ?
+### Right You Can Store:
+**Link Preview** => **Any Browser Standard Link Supported** @Offline @OnlineToFetchData,
+**Image** => **Most Type Of Image Supported Like png ,jpg ...** @Offline,
+**Code*** => **All Programming Language  Supported** @Offline,
+**Text** => **WYSIWYG** @Offline,
+**Streamable Meida** => [**Youtube Video**,**Viemo**, **Sound Cloud**, **Facebook**,**Twitch**] @Online
 
-## Available Scripts
-
-In the project directory, you can run:
-
-### `yarn start`
-
-Runs the app in the development mode.<br />
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
-
-The page will reload if you make edits.<br />
-You will also see any lint errors in the console.
-
-### `yarn test`
-
-Launches the test runner in the interactive watch mode.<br />
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+### But More Components Are Planned To Add Before version 1
+**Markdown Editor** => @Offline, 
+**Map** => @Offline, 
+**Table** => @Offline,
+**Chart** => @Offline,
+**Excel Grid Table** => @Offline
+# How Backup And Sync .Bloc Files ?
+because Bloc Editor doesn't use database to store data and all data are stored in a simple file you just drop them into any cloud service **[dropbox,google drive,pcloud,onedrive, Yandex Drive, Beidu drive ...]** etc. folder so after each change in .bloc file you only upload that chunk of file that is changed. 
+read more about **( Block Level File Sync)**
