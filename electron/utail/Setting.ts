@@ -13,6 +13,7 @@ class Setting {
         let setting: any = {};
         setting['project_path'] = '';
         setting['folder_stack'] = [];
+        setting['theme'] = "SET_DARK";
         const configFilePath = this.path.getConfigFilePath();
         if (!fs.existsSync(this.path.getConfigFolderPath())) {
             fs.mkdirSync(this.path.getConfigFolderPath());
