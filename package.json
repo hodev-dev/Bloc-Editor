@@ -1,5 +1,5 @@
 {
-  "name": "Bloc_Editor",
+  "name": "bloc_editor",
   "version": "0.0.1",
   "homepage": ".",
   "description": "cross platform content management app",
@@ -129,12 +129,20 @@
     "asarUnpack": "node_modules/puppeteer/.local-chromium/**/*",
     "linux": {
       "icon": "../icons/icon.png",
+      "category": "Office",
+      "executableName": "Bloc Editor",
       "target": [
-        "deb"
+        "AppImage",
+        "snap",
+        "deb",
+        "rpm",
+        "freebsd",
+        "pacman"
       ]
     },
     "win": {
       "icon": "../icons/icon.png",
+      "category": "Office",
       "target": "nsis"
     },
     "files": [
