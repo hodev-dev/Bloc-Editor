@@ -15,6 +15,7 @@ Bloc Editor is a free and powerful app to manage and store set of related data a
  - **Table**,
  - **Chart**,
  - **Excel Grid Table**
+ - **Embed Video Into FIle**
 # How Backup And Sync .Bloc Files ?
 because Bloc Editor doesn't use database to store data and all data are stored in a simple file you just drop them into any cloud service **[dropbox,google drive,pcloud,onedrive, Yandex Drive, Beidu drive ...]** etc. folder so after each change in .bloc file you only upload that chunk of file that is changed. 
 read more about **( Block Level File Sync)**
@@ -31,8 +32,8 @@ it is planned to fully support all RTL language like
 - Urdu
 # OS support ?
 - Linux @Supported
-    - [deb](#debian-base-distro)
-    - [rpm](#RPM-base-distro)
+    - [deb](#debian-package)
+    - [rpm](#rpm-package)
     - [Appimage](#Appimage-package)
     - [snap](#snap-package)
     - pacman @soon
@@ -42,12 +43,12 @@ it is planned to fully support all RTL language like
 - Mac @Soon
     - dmg 
 # Linux install :
-## debian base distro :
+## debian package :
 1. downlaod [deb file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
 ```zsh
 sudo apt install ./debfile.deb
 ```
-## RPM base distro : 
+## rpm package : 
 1. downlaod [rpm file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
 ```zsh
 sudo dnf install ./rpmfile.rpm
