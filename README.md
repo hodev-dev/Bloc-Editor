@@ -19,5 +19,30 @@ Bloc Editor is a free and powerful app to manage and store set of related data a
 because Bloc Editor doesn't use database to store data and all data are stored in a simple file you just drop them into any cloud service **[dropbox,google drive,pcloud,onedrive, Yandex Drive, Beidu drive ...]** etc. folder so after each change in .bloc file you only upload that chunk of file that is changed. 
 read more about **( Block Level File Sync)**
 # RTL Support ?
-app going to fully support all rtl language support like 
-**Arabic Farsi-Hebrew ...etc**
+![light main](./screenshots/rtl.png)
+it is planned to fully support all RTL language like 
+- Arabic
+- Aramaic
+- Azeri
+- Dhivehi/Maldivian
+- Hebrew
+- Kurdish (Sorani)
+- Persian/Farsi
+- Urdu
+# OS support ?
+- Linux @Supported
+    - deb
+    - rpm
+    - Appimage
+    - snap
+    - pacman
+    - Flatpak @soon
+
+- Windows @Supported
+    - exe file
+
+- Mac @Soon
+    - dmg 
+
+# How To Contribute ?
+you can test the app and give feedback at github issue.
