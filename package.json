@@ -75,7 +75,7 @@
     "postinstall": "electron-builder install-app-deps",
     "r:dev": "BROWSER=none yarn start",
     "e:dev": "concurrently \"BROWSER=none yarn start\" \"tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron &&  electron .\"",
-    "e:build": "yarn prod && yarn build && tsc -p electron && electron-builder --linux",
+    "e:build": "yarn prod && yarn build && tsc -p electron && electron-builder --windows",
     "build:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "watch:css": "postcss src/assets/index.css -o src/assets/tailwind.css",
     "postbuild": "purgecss --css build/static/css/*.css --content build/index.html build/static/js/*.js --output build/static/css",
@@ -124,25 +124,22 @@
     "webpack-cli": "^3.3.11"
   },
   "build": {
-    "asar": false,
+    "asar": true,
     "extends": null,
     "asarUnpack": "node_modules/puppeteer/.local-chromium/**/*",
     "linux": {
       "icon": "../icons/icon.png",
-      "category": "Office",
       "executableName": "Bloc Editor",
       "target": [
         "AppImage",
         "snap",
         "deb",
         "rpm",
-        "freebsd",
-        "pacman"
+        "freebsd"
       ]
     },
     "win": {
-      "icon": "../icons/icon.png",
-      "category": "Office",
+      "icon": "build/icons/icon.png",
       "target": "nsis"
     },
     "files": [

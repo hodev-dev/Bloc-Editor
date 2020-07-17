@@ -31,16 +31,42 @@ it is planned to fully support all RTL language like
 - Urdu
 # OS support ?
 - Linux @Supported
-    - deb
-    - rpm
-    - Appimage
-    - snap
-    - pacman
+    - [deb](#debian-base-distro)
+    - [rpm](#RPM-base-distro)
+    - [Appimage](#Appimage-package)
+    - [snap](#snap-package)
+    - pacman @soon
     - Flatpak @soon
 - Windows @Supported
-    - exe file
+    - [exe](#windows-install)
 - Mac @Soon
     - dmg 
-
+# Linux install :
+## debian base distro :
+1. downlaod [deb file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+```zsh
+sudo apt install ./debfile.deb
+```
+## RPM base distro : 
+1. downlaod [rpm file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+```zsh
+sudo dnf install ./rpmfile.rpm
+```
+## snap package
+1. downlaod [snap file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+```zsh
+sudo snap install --dangerous ./snapfile.snap
+```
+## Appimage package
+1. downlaod [AppImage file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+```bash
+sudo chmod +x  ./appimagefile.appimage
+sudo ./appimagefile.appimage
+```
+# windows install :
+1. downlaod [.exe file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+2. run .exe file
+# Mac install :
+1. it will be supported in version 1
 # How To Contribute ?
 you can test the app and give feedback at github issue.
