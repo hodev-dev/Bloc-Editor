@@ -127,6 +127,7 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
     const init_component = [
         {
             id: uuidv4(),
+            type: cmp.Bloc_Components.HeaderText.name,
             component: cmp.Bloc_Components.HeaderText.name,
             state: ''
         }
@@ -141,7 +142,7 @@ const create_file = (answer: Array<string>) => (dispatch: any, getState: any) =>
 const save_file = (bloc_path: string, componentList: any) => (dispatch: any) => {
     const cmplist = componentList.map((obj: any) => {
         if (obj.component) {
-            obj.component = cmp.Bloc_Components[obj.component.name].name;
+            obj.component = cmp.Bloc_Components[obj.type].name;
         }
         return obj;
     });

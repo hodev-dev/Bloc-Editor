@@ -17,6 +17,7 @@ const BlockEditor = () => {
 	interface IComponentsList {
 		item?: any,
 		id: any,
+		type: string,
 		component: (props: any) => JSX.Element | any
 		state: any
 	}
@@ -172,6 +173,7 @@ const BlockEditor = () => {
 	const add_component = (_component: any) => {
 		const _generate_component = {
 			id: uuid.v1(),
+			type: String(_component.name),
 			component: _component.component,
 			state: ''
 		}
@@ -475,8 +477,8 @@ const BlockEditor = () => {
 				component = component.item;
 			}
 			if (typeof (component.component) === 'string') {
-				if (component.component !== cmp.Bloc_Components[component.component]['component']) {
-					component.component = cmp.Bloc_Components[component.component]['component'];
+				if (component.component !== cmp.Bloc_Components[component.type]['component']) {
+					component.component = cmp.Bloc_Components[component.type]['component'];
 				}
 			}
 			return (

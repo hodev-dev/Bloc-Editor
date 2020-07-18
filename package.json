@@ -81,7 +81,7 @@
     "postinstall": "electron-builder install-app-deps",
     "r:dev": "BROWSER=none yarn start",
     "app:dev": "concurrently \"yarn dev\" \"yarn build\" \"BROWSER=none yarn start\" \"tsc -p electron -w\" \"wait-on http://localhost:3000 && tsc -p electron &&  electron .\"",
-    "app:build": "yarn dev && yarn build && tsc -p electron && electron-builder --windows",
+    "app:build": "yarn dev && yarn build && tsc -p electron && electron-builder  --linux",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -126,11 +126,7 @@
       "icon": "../icons/icon.png",
       "executableName": "Bloc Editor",
       "target": [
-        "deb",
-        "AppImage",
-        "snap",
-        "rpm",
-        "freebsd"
+        "deb"
       ]
     },
     "win": {
