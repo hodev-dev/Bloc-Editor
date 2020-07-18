@@ -92,13 +92,34 @@ app.on('ready', () => {
 			label: "Menu",
 			submenu: [
 				{
+					label: "Reload",
+					accelerator: "F5",
+					click: (item: any, focusedWindow: any) => {
+						if (focusedWindow) {
+							if (focusedWindow.id === 1) {
+								BrowserWindow.getAllWindows().forEach(win => {
+									if (win.id > 1) win.close();
+								});
+							}
+							focusedWindow.reload();
+						}
+					}
+				},
+				{
+					label: "Toggle Dev Tools",
+					accelerator: "F12",
+					click: () => {
+						win.webContents.toggleDevTools();
+					}
+				},
+				{
 					label: `open coommand prompt`,
 					accelerator: 'CommandOrControl +p',
 					click: () => contents.send('prompt:toggleDisplay')
 				},
 				{
 					label: `add new component`,
-					accelerator: 'CommandOrControl + n',
+					accelerator: 'CommandOrControl + i',
 					click: () => contents.send('searchableList:toggleDisplay')
 				},
 				{
@@ -110,7 +131,7 @@ app.on('ready', () => {
 		}
 	]
 	const menu = Menu.buildFromTemplate(template);
-	// Menu.setApplicationMenu(menu)
+	Menu.setApplicationMenu(menu)
 	contents.on('did-finish-load', () => { });
 });
 

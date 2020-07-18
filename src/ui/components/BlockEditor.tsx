@@ -313,17 +313,17 @@ const BlockEditor = () => {
 							<tr className={"flex justify-center"}>
 								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Command Prompt</td>
 								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>P</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>p</td>
 							</tr>
 							<tr className={"flex justify-center"}>
 								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Add Component</td>
 								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>N</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>i</td>
 							</tr>
 							<tr className={"flex justify-center"}>
 								<td className={"flex items-center justify-center w-40 p-2 font-semibold border" + theme_generate}>Toggle Explorer</td>
 								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>Control</td>
-								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>B</td>
+								<td className={"flex items-center justify-center w-40 p-2 border" + theme_generate}>b</td>
 							</tr>
 						</tbody>
 					</table>
