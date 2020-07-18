@@ -137,7 +137,7 @@ const HeaderText = (props: any) => {
         editorState={editorState.state}
         blockRenderMap={blockRenderMap}
         blockStyleFn={myBlockStyleFn}
-        placeholder="enter something"
+        placeholder=""
         onChange={(e: any) => handleChange(e)}
         handleKeyCommand={handleKeyCommand}
         spellCheck={true}

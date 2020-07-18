@@ -1,6 +1,5 @@
 let mix = require('laravel-mix');
 const tailwindcss = require('tailwindcss');
-require('laravel-mix-purgecss');
 
 /*
  |--------------------------------------------------------------------------
@@ -15,17 +14,16 @@ require('laravel-mix-purgecss');
 
 // mix.js('src/app.js', 'dist/').sass('src/app.scss', 'dist/');
 
-// mix.postCss('./src/assets/index.css', './src/assets/tailwind.css', [
-//     require("tailwindcss")('./tailwind.config.js')
-// ]).purgeCss({
-//     enabled: true,
-// });
 
-mix.sass('./src/assets/index.scss', './src/assets/tailwind.css')
-    .options({
-        processCssUrls: false,
-        postCss: [require('tailwindcss')]
-    });;
+mix.postCss('./src/assets/index.css', './src/assets/tailwind.css', [
+    require("tailwindcss")('./tailwind.config.js')
+]);
+
+// mix.sass('./src/assets/index.scss', './src/assets/tailwind.css')
+//     .options({
+//         processCssUrls: false,
+//         postCss: [require('tailwindcss')]
+//     });;
     // .purgeCss({
     //     enabled: true,
     //     folders: ['ui', 'bloc'],
