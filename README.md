@@ -64,7 +64,7 @@ sudo snap install --dangerous ./snapfile.snap
 sudo chmod +x  ./appimagefile.appimage
 sudo ./appimagefile.appimage
 ```
-# windows install :
+# Windows install :
 1. downlaod [.exe file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
 2. run .exe file
 # Mac install :
