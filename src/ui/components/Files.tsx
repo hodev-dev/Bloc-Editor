@@ -115,17 +115,28 @@ const Files = () => {
 
 	const renderList = useCallback(() => {
 
-		const sort = (a: any, b: any) => {
-			if (b.type === "F") {
+		const compareType = (a: any, b: any) => {
+			if (String(b.type) === "F") {
 				return -1;
+			} else {
+				return 1;
 			}
-			return 0;
-		};
+		}
+
+		const compareTitle = (a: any, b: any) => {
+			if (String(a.title) > String(b.title)) {
+				return -1;
+			} else if (String(a.title) < String(b.title)) {
+				return +1;
+			} else {
+				return 0;
+			}
+		}
+
 		if (!loading && list.length > 0) {
-			list.sort(sort);
-			return list.map((item: any, index: number) => {
+			return list.sort(compareTitle).sort(compareType).map((item: any, index: number) => {
 				return (
-					<div key={index} className="b">
+					<div key={index} className="">
 						<button onClick={() => click_on_list_item(item)} className={"flex w-full p-2 text-sm font-bold text-left border cursor-pointer hover:bg-pink-900 hover:text-white" + theme_generate}>
 							{render_list_icon(item)}
 							{item.title}
