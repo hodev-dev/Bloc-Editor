@@ -95,6 +95,10 @@ const HeaderText = (props: any) => {
   }
 
   const update = (newState: any) => {
+    const rawState: any = convertToRaw(newState.getCurrentContent());
+    const blocks = convertToRaw(newState.getCurrentContent()).blocks;
+    const value = blocks.map(block => (!block.text.trim() && '\n') || block.text).join('\n');
+    change(id, { state: null, raw: rawState, value: value });
     setEditorState((prevState: any) => {
       return {
         ...prevState,
