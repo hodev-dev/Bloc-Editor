@@ -44,28 +44,28 @@ it is planned to fully support all RTL language like
     - dmg 
 # Linux install :
 ## debian package :
-1. downlaod [deb file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+1. downlaod [deb file](https://github.com/hodev-dev/Bloc-Editor/releases)
 ```zsh
 sudo apt install ./debfile.deb
 ```
 ## rpm package : 
-1. downlaod [rpm file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+1. downlaod [rpm file](https://github.com/hodev-dev/Bloc-Editor/releases)
 ```zsh
 sudo dnf install ./rpmfile.rpm
 ```
 ## snap package
-1. downlaod [snap file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+1. downlaod [snap file](https://github.com/hodev-dev/Bloc-Editor/releases)
 ```zsh
 sudo snap install --dangerous ./snapfile.snap
 ```
 ## Appimage package
-1. downlaod [AppImage file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+1. downlaod [AppImage file](https://github.com/hodev-dev/Bloc-Editor/releases)
 ```bash
 sudo chmod +x  ./appimagefile.appimage
 sudo ./appimagefile.appimage
 ```
 # Windows install :
-1. downlaod [.exe file](https://github.com/hodev-dev/Bloc-Editor/releases/tag/0.0.1)
+1. downlaod [.exe file](https://github.com/hodev-dev/Bloc-Editor/releases)
 2. run .exe file
 # Mac install :
 1. it will be supported in version 1
