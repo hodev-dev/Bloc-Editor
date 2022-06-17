@@ -104,7 +104,7 @@
     "autoprefixer": "^9.7.5",
     "concurrently": "^5.1.0",
     "cross-env": "^7.0.2",
-    "electron": "^8.2.3",
+    "electron": "^15.5.5",
     "electron-builder": "^22.5.1",
     "electron-packager": "^15.0.0",
     "electron-reloader": "^1.0.1",
